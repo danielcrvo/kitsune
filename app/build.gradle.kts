@@ -18,7 +18,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86_64"))
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
         }
     }
 
@@ -63,9 +63,39 @@ android {
         abi {
             isEnable = true
             reset()
-            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            include("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
             isUniversalApk = true
         }
+    }
+}
+
+val abiVersionCodes = mapOf(
+    "armeabi-v7a" to 1,
+    "arm64-v8a" to 2,
+    "x86" to 3,
+    "x86_64" to 4
+)
+
+android.applicationVariants.all {
+    val variant = this
+    val baseCode = variant.versionCode
+    val versionName = variant.versionName ?: "1.0.0"
+    val buildType = variant.buildType.name
+
+    outputs.all {
+        val output = this as? com.android.build.gradle.internal.api.ApkVariantOutputImpl
+        val abiName = output?.getFilter(com.android.build.OutputFile.ABI)
+
+        if (abiName != null) {
+            val abiPriority = abiVersionCodes[abiName] ?: 0
+            output?.versionCodeOverride = baseCode * 10 + abiPriority
+        } else {
+            // APK Universal (todas as arquiteturas juntas)
+            output?.versionCodeOverride = baseCode * 10 + 0
+        }
+
+        val architecture = abiName ?: "universal"
+        output?.outputFileName = "Kitsune-v${versionName}-${architecture}-${buildType}.apk"
     }
 }
 
