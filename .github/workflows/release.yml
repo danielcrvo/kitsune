@@ -45,20 +45,40 @@ jobs:
         run: ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Sign Android Release APKs
-        if: ${{ env.SIGNING_KEY != '' }}
-        id: sign_app
-        uses: r0adkll/sign-android-release@v1
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          ALIAS: ${{ secrets.ALIAS }}
+          KEY_ALIAS: ${{ secrets.ALIAS }}
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKey: ${{ secrets.SIGNING_KEY }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          alias: ${{ secrets.ALIAS }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -z "$SIGNING_KEY" ]; then
+            echo "SIGNING_KEY secret not found. Skipping signing step."
+            exit 0
+          fi
+
+          echo "Decoding release keystore from secrets..."
+          echo "$SIGNING_KEY" | base64 -d > /tmp/release.keystore
+
+          # Automatically resolve the latest Android build-tools on runner (e.g. 35.0.0 / 34.0.0)
+          BUILD_TOOLS_PATH=$(ls -d ${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools/* | sort -V | tail -n 1)
+          echo "Using Android Build Tools: $BUILD_TOOLS_PATH"
+
+          for apk in app/build/outputs/apk/release/Kitsune-*.apk; do
+            echo "Signing $apk..."
+            $BUILD_TOOLS_PATH/apksigner sign \
+              --ks /tmp/release.keystore \
+              --ks-key-alias "$KEY_ALIAS" \
+              --ks-pass "pass:$KEY_STORE_PASSWORD" \
+              --key-pass "pass:$KEY_PASSWORD" \
+              --out "$apk" \
+              "$apk"
+
+            echo "Verifying signature for $apk..."
+            $BUILD_TOOLS_PATH/apksigner verify "$apk"
+          done
+
+          # Cleanup temporary keystore
+          rm -f /tmp/release.keystore
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
