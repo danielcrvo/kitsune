@@ -24,7 +24,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -275,36 +274,7 @@ fun MainScreenContent(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
-
-
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(Color(0xFF221A14))
-                        .border(BorderStroke(1.dp, Color(0xFF3F2E20)), CircleShape)
-                        .padding(horizontal = 12.dp, vertical = 4.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Bolt,
-                            contentDescription = null,
-                            tint = Color(0xFFF59E0B),
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "turbo",
-                            color = Color(0xFFD97706),
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 12.sp
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
 
                 Text(
