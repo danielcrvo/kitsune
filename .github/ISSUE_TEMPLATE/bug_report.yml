@@ -1,0 +1,104 @@
+name: Bug Report
+description: Create a report to help us fix a bug or unexpected behavior in Kitsune.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue! Please check if your issue already exists in the open issues before creating a new one.
+
+  - type: input
+    id: app-version
+    attributes:
+      label: Kitsune App Version
+      description: What version of Kitsune are you using? (e.g., 1.0.0 or commit hash)
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: engine-version
+    attributes:
+      label: yt-dlp Engine Version
+      description: The yt-dlp version displayed in the Settings sheet.
+      placeholder: "2025.xx.xx"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Target Media Platform
+      description: Which service is causing the issue?
+      options:
+        - YouTube
+        - TikTok
+        - Instagram
+        - X / Twitter
+        - Reddit
+        - Bilibili
+        - SoundCloud
+        - Pinterest
+        - Generic URL
+        - General App Crash / UI Issue
+    validations:
+      required: true
+
+  - type: input
+    id: device-info
+    attributes:
+      label: Device & Android Version
+      description: Your phone model and Android version (e.g., Pixel 8, Android 15 / API 35)
+      placeholder: "Samsung Galaxy S24, Android 14"
+    validations:
+      required: true
+
+  - type: textarea
+    id: media-url
+    attributes:
+      label: Sample URL
+      description: The URL that triggered the error (if public and shareable).
+      placeholder: "https://..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: What did you do leading up to the issue?
+      placeholder: |
+        1. Paste the URL into the input field
+        2. Select 'Audio' mode (MP3)
+        3. Tap 'Download'
+        4. See error notification
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Log / Stack Trace
+      description: Any error messages displayed in-app, in notifications, or via Logcat.
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Verification Checklist
+      options:
+        - label: I checked if updating the engine in Settings resolved the issue.
+          required: false
+        - label: I confirmed this is not a duplicate of an existing issue.
+          required: true

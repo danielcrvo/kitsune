@@ -1,0 +1,43 @@
+name: Feature Request
+description: Propose a new feature, extractor support, or enhancement for Kitsune.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a feature for Kitsune! Please explain the use-case clearly.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement / Use Case
+      description: Is your feature request related to a problem or limitation?
+      placeholder: "I'm always frustrated when..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution / Enhancement
+      description: Describe the solution or capability you would like to see added.
+      placeholder: "Provide an option to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any alternative solutions or workarounds you have considered.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context & Mockups
+      description: Screenshots, UI mockups, or API references that help illustrate the request.
+    validations:
+      required: false

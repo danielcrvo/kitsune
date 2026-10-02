@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Kitsune</string>
+    <string name="download_channel_name">Downloads do Kitsune</string>
+    <string name="download_channel_desc">Notificações de progresso de download e muxing de vídeos</string>
+</resources>
