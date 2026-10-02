@@ -96,6 +96,7 @@ For an in-depth breakdown of the component hierarchy, threading model, and Scope
 - **UI Framework:** [Jetpack Compose](https://developer.android.com/jetpack/compose) (Compose BOM `2025.02.00`)
 - **Design System:** Material 3 with custom Cobalt Design Tokens (`CompositionLocalProvider`)
 - **Native Engine:** [youtubedl-android](https://github.com/junkfood02/youtubedl-android) (v0.18.1 bundling yt-dlp and FFmpeg)
+- **Animations & Micro-interactions:** [Lottie Compose](https://airbnb.io/lottie/#/android-compose) (v6.6.2)
 - **Image & Vector Loading:** [Coil Compose](https://coil-kt.github.io/coil/) (with SVG decoder)
 - **Local Persistence:** [Jetpack DataStore Preferences](https://developer.android.com/topic/libraries/architecture/datastore) (v1.1.3)
 - **Asynchronous & Streams:** Kotlin Coroutines & StateFlow (v1.10.1)

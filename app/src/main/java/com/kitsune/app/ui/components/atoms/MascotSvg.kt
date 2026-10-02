@@ -2,24 +2,54 @@ package com.kitsune.app.ui.components.atoms
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 
-enum class MascotType(val assetPath: String) {
-    IDLE("file:///android_asset/mascot/mascot_idle.svg"),
-    DOWNLOADING("file:///android_asset/mascot/mascot_downloading.svg"),
-    COMPLETED("file:///android_asset/mascot/mascot_completed.svg"),
-    ERROR("file:///android_asset/mascot/mascot_error.svg")
+enum class MascotType(
+    val assetPath: String,
+    val startFrame: Int,
+    val endFrame: Int
+) {
+    IDLE(
+        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        startFrame = 0,
+        endFrame = 59
+    ),
+    DOWNLOADING(
+        assetPath = "file:///android_asset/mascot/mascot_downloading.svg",
+        startFrame = 60,
+        endFrame = 119
+    ),
+    COMPLETED(
+        assetPath = "file:///android_asset/mascot/mascot_completed.svg",
+        startFrame = 120,
+        endFrame = 179
+    ),
+    ERROR(
+        assetPath = "file:///android_asset/mascot/mascot_error.svg",
+        startFrame = 180,
+        endFrame = 239
+    )
 }
 
 @Composable
-fun MascotSvg(
+fun MascotStaticSvg(
     type: MascotType,
     contentDescription: String?,
     modifier: Modifier = Modifier,
@@ -39,4 +69,74 @@ fun MascotSvg(
         contentDescription = contentDescription,
         modifier = modifier.size(size)
     )
+}
+
+@Composable
+fun MascotAnimation(
+    type: MascotType,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    size: Dp = 64.dp
+) {
+    val isInspection = LocalInspectionMode.current
+    val compositionResult = rememberLottieComposition(
+        LottieCompositionSpec.Asset("mascot/mascot.json")
+    )
+    val composition = compositionResult.value
+
+    if (isInspection || composition == null) {
+        MascotStaticSvg(
+            type = type,
+            contentDescription = contentDescription,
+            modifier = modifier,
+            size = size
+        )
+    } else {
+        val clipSpec = remember(type) {
+            LottieClipSpec.Frame(min = type.startFrame, max = type.endFrame)
+        }
+        val progress by animateLottieCompositionAsState(
+            composition = composition,
+            clipSpec = clipSpec,
+            iterations = LottieConstants.IterateForever,
+            isPlaying = true
+        )
+
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = modifier
+                .size(size)
+                .semantics {
+                    if (contentDescription != null) {
+                        this.contentDescription = contentDescription
+                    }
+                }
+        )
+    }
+}
+
+@Composable
+fun MascotSvg(
+    type: MascotType,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    size: Dp = 64.dp,
+    animate: Boolean = true
+) {
+    if (animate) {
+        MascotAnimation(
+            type = type,
+            contentDescription = contentDescription,
+            modifier = modifier,
+            size = size
+        )
+    } else {
+        MascotStaticSvg(
+            type = type,
+            contentDescription = contentDescription,
+            modifier = modifier,
+            size = size
+        )
+    }
 }

@@ -89,7 +89,7 @@ Single-purpose, highly reusable composables with slot APIs:
 - **`CobaltBadge`**: Compact pill badges displaying extraction status or platform tags.
 - **`CobaltTextField`**: Custom styled input field supporting prefix icons, clear actions, and edge-to-edge keyboard padding.
 - **`CobaltLinearGauge`**: Smoothly animated progress indicator utilizing `animateFloatAsState`.
-- **`MascotSvg`**: Reactive vector mascot rendering dynamic emotional states (`IDLE`, `DOWNLOADING`, `COMPLETED`, `ERROR`) using Coil SVG.
+- **`MascotSvg` / `MascotAnimation`**: Reactive mascot rendering dynamic emotional states (`IDLE`, `DOWNLOADING`, `COMPLETED`, `ERROR`) using Lottie Compose with seamless marker/frame loop clipping and SVG fallback.
 
 ### 2.3 Molecules (`ui/components/molecules`)
 Composites of two or more atoms forming functional units:

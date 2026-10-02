@@ -12,6 +12,7 @@ youtubedlAndroid = "0.18.1"
 datastore = "1.1.3"
 junit = "4.13.2"
 coil = "2.7.0"
+lottie = "6.6.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,11 +34,11 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
-# Suporte direto e nativo a SVG no Jetpack Compose
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 
-# On-device yt-dlp & FFmpeg local engine (Maven Central oficial)
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+
 youtubedl-library = { group = "io.github.junkfood02.youtubedl-android", name = "library", version.ref = "youtubedlAndroid" }
 youtubedl-ffmpeg = { group = "io.github.junkfood02.youtubedl-android", name = "ffmpeg", version.ref = "youtubedlAndroid" }
 

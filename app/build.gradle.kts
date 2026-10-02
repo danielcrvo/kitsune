@@ -77,7 +77,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
 
-    // Jetpack Compose BOM & UI
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
@@ -85,22 +84,19 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
 
-    // Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
-    // DataStore Preferences
     implementation(libs.androidx.datastore.preferences)
 
-    // On-Device yt-dlp & FFmpeg NDK
     implementation(libs.youtubedl.library)
     implementation(libs.youtubedl.ffmpeg)
 
-    // Suporte direto a SVG no Jetpack Compose
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
 
-    // Test
+    implementation(libs.lottie.compose)
+
     testImplementation(libs.junit)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
