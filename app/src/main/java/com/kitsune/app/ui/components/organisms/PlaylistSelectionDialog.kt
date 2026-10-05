@@ -35,6 +35,8 @@ import com.kitsune.app.R
 import com.kitsune.app.core.model.PlaylistInfo
 import com.kitsune.app.core.model.PlaylistItem
 import com.kitsune.app.ui.components.atoms.KitsuneButton
+import com.kitsune.app.ui.components.atoms.MascotSvg
+import com.kitsune.app.ui.components.atoms.MascotType
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
@@ -62,29 +64,39 @@ fun PlaylistSelectionDialog(
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.playlist_dialog_title),
-                    color = KitsuneTheme.colors.accentCyan,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = playlistInfo.title,
-                    color = KitsuneTheme.colors.textPrimary,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Text(
-                    text = stringResource(R.string.playlist_total_items, playlistInfo.items.size),
-                    color = KitsuneTheme.colors.textSecondary,
-                    fontSize = 13.sp
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    MascotSvg(
+                        type = MascotType.SURPRISED,
+                        contentDescription = null,
+                        size = 48.dp
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.playlist_dialog_title),
+                            color = KitsuneTheme.colors.accentCyan,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = playlistInfo.title,
+                            color = KitsuneTheme.colors.textPrimary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = stringResource(R.string.playlist_total_items, playlistInfo.items.size),
+                            color = KitsuneTheme.colors.textSecondary,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 

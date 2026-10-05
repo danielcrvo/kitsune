@@ -31,9 +31,14 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -143,6 +148,15 @@ fun MainScreenContent(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val haptic = LocalHapticFeedback.current
+    var isInteractingWithMascot by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isInteractingWithMascot) {
+        if (isInteractingWithMascot) {
+            delay(2000L)
+            isInteractingWithMascot = false
+        }
+    }
 
     Box(
         modifier = modifier
@@ -258,17 +272,33 @@ fun MainScreenContent(
                             )
                     )
 
-                    val currentMascot = when (uiState.downloadState) {
-                        is DownloadState.Downloading, is DownloadState.Muxing -> MascotType.DOWNLOADING
-                        is DownloadState.Completed -> MascotType.COMPLETED
-                        is DownloadState.Error -> MascotType.ERROR
+                    val currentMascot = when {
+                        isInteractingWithMascot -> MascotType.WAVING
+                        uiState.isLoadingMetadata || uiState.isLoadingPlaylist -> MascotType.SEARCHING
+                        uiState.isCheckingUpdate -> MascotType.ROCKET
+                        uiState.downloadState is DownloadState.Downloading -> {
+                            if (uiState.downloadConfig.audioOnly) MascotType.DANCING else MascotType.DOWNLOADING
+                        }
+                        uiState.downloadState is DownloadState.Muxing -> MascotType.MUXING
+                        uiState.downloadState is DownloadState.WaitingForWifi -> MascotType.WAITING_FOR_WIFI
+                        uiState.downloadState is DownloadState.Completed -> MascotType.COMPLETED
+                        uiState.downloadState is DownloadState.Error -> MascotType.ERROR
                         else -> MascotType.IDLE
                     }
 
                     MascotSvg(
                         type = currentMascot,
                         contentDescription = stringResource(R.string.cd_mascot_idle),
-                        size = 165.dp
+                        size = 165.dp,
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            if (uiState.downloadState is DownloadState.Idle && !uiState.isLoadingMetadata) {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                isInteractingWithMascot = true
+                            }
+                        }
                     )
                 }
 

@@ -26,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kitsune.app.R
+import com.kitsune.app.ui.components.atoms.MascotSvg
+import com.kitsune.app.ui.components.atoms.MascotType
 import com.kitsune.app.ui.theme.KitsuneTheme
 import com.kitsune.app.ui.theme.ThemePreviews
 
@@ -50,13 +52,24 @@ fun SupportedServicesDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.services_dialog_title),
-                    color = KitsuneTheme.colors.textPrimary,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    MascotSvg(
+                        type = MascotType.LOVE,
+                        contentDescription = null,
+                        size = 48.dp
+                    )
+                    Text(
+                        text = stringResource(R.string.services_dialog_title),
+                        color = KitsuneTheme.colors.textPrimary,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
 
                 Text(
                     text = stringResource(R.string.services_dialog_desc),

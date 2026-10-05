@@ -198,9 +198,9 @@ fun DownloadsHistorySheet(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         MascotSvg(
-                            type = MascotType.IDLE,
+                            type = if (files.isEmpty()) MascotType.SLEEPING else MascotType.SEARCHING,
                             contentDescription = null,
-                            size = 80.dp
+                            size = 88.dp
                         )
                         Text(
                             text = stringResource(R.string.history_empty_title),

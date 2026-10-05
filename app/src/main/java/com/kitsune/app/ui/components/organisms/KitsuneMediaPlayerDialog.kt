@@ -12,6 +12,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import com.kitsune.app.ui.components.atoms.MascotSvg
+import com.kitsune.app.ui.components.atoms.MascotType
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -249,7 +251,7 @@ fun KitsuneMediaPlayerDialog(
 
                     Box(
                         modifier = Modifier
-                            .size(110.dp)
+                            .size(120.dp)
                             .scale(pulseScale)
                             .clip(CircleShape)
                             .background(
@@ -264,11 +266,10 @@ fun KitsuneMediaPlayerDialog(
                             .border(BorderStroke(2.dp, KitsuneTheme.colors.accentOrange.copy(alpha = 0.6f)), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Headphones,
+                        MascotSvg(
+                            type = if (isPlaying) MascotType.SINGING else MascotType.PAUSED,
                             contentDescription = null,
-                            tint = KitsuneTheme.colors.accentOrange,
-                            modifier = Modifier.size(46.dp)
+                            size = 96.dp
                         )
                     }
 

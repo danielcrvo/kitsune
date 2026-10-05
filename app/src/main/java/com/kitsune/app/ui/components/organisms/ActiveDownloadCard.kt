@@ -119,7 +119,7 @@ fun ActiveDownloadCard(
                             horizontalArrangement = Arrangement.spacedBy(KitsuneTheme.spacing.sm)
                         ) {
                             MascotSvg(
-                                type = MascotType.DOWNLOADING,
+                                type = MascotType.WAITING_FOR_WIFI,
                                 contentDescription = stringResource(R.string.status_waiting_wifi),
                                 size = 48.dp
                             )
@@ -152,17 +152,30 @@ fun ActiveDownloadCard(
                 }
 
                 is DownloadState.Muxing -> {
-                    Text(
-                        text = stringResource(R.string.status_muxing_title),
-                        style = KitsuneTheme.typography.titleMedium,
-                        color = KitsuneTheme.colors.accentCyan
-                    )
-                    Text(
-                        text = stringResource(R.string.status_muxing_desc),
-                        style = KitsuneTheme.typography.bodyMedium,
-                        color = KitsuneTheme.colors.textSecondary,
-                        modifier = Modifier.padding(top = KitsuneTheme.spacing.xs)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(KitsuneTheme.spacing.sm)
+                    ) {
+                        MascotSvg(
+                            type = MascotType.MUXING,
+                            contentDescription = stringResource(R.string.status_muxing_title),
+                            size = 48.dp
+                        )
+                        Column {
+                            Text(
+                                text = stringResource(R.string.status_muxing_title),
+                                style = KitsuneTheme.typography.titleMedium,
+                                color = KitsuneTheme.colors.accentCyan
+                            )
+                            Text(
+                                text = stringResource(R.string.status_muxing_desc),
+                                style = KitsuneTheme.typography.bodyMedium,
+                                color = KitsuneTheme.colors.textSecondary,
+                                modifier = Modifier.padding(top = KitsuneTheme.spacing.xs)
+                            )
+                        }
+                    }
                 }
 
                 is DownloadState.Completed -> {
@@ -247,11 +260,21 @@ fun ActiveDownloadCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = stringResource(R.string.queue_title),
-                        style = KitsuneTheme.typography.labelLarge,
-                        color = KitsuneTheme.colors.textPrimary
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(KitsuneTheme.spacing.xs)
+                    ) {
+                        MascotSvg(
+                            type = MascotType.QUEUE,
+                            contentDescription = stringResource(R.string.queue_title),
+                            size = 28.dp
+                        )
+                        Text(
+                            text = stringResource(R.string.queue_title),
+                            style = KitsuneTheme.typography.labelLarge,
+                            color = KitsuneTheme.colors.textPrimary
+                        )
+                    }
                     Text(
                         text = stringResource(R.string.queue_pending_count, pendingTasks.size),
                         style = KitsuneTheme.typography.labelSmall,
