@@ -1,4 +1,4 @@
-name: Release & Publish APKs
+name: Production Release
 
 on:
   push:
@@ -35,16 +35,22 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Make gradlew executable
+      - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Release APKs (Splits & Universal)
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
+
+      - name: Run Android Lint
+        run: ./gradlew lintDebug --no-daemon --stacktrace
+
+      - name: Build release APKs
         run: ./gradlew assembleRelease --no-daemon --stacktrace
 
-      - name: Sign Android Release APKs
+      - name: Sign release APKs
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           KEY_ALIAS: ${{ secrets.ALIAS }}
@@ -56,14 +62,11 @@ jobs:
             exit 0
           fi
 
-          echo "Decoding release keystore from secrets..."
           echo "$SIGNING_KEY" | base64 -d > /tmp/release.keystore
 
           BUILD_TOOLS_PATH=$(ls -d ${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools/* | sort -V | tail -n 1)
-          echo "Using Android Build Tools: $BUILD_TOOLS_PATH"
 
           for apk in app/build/outputs/apk/release/Kitsune-*.apk; do
-            echo "Signing $apk..."
             $BUILD_TOOLS_PATH/apksigner sign \
               --ks /tmp/release.keystore \
               --ks-key-alias "$KEY_ALIAS" \
@@ -72,13 +75,20 @@ jobs:
               --out "$apk" \
               "$apk"
 
-            echo "Verifying signature for $apk..."
             $BUILD_TOOLS_PATH/apksigner verify "$apk"
           done
 
           rm -f /tmp/release.keystore
 
-      - name: Publish GitHub Release
+      - name: Upload release APKs
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kitsune-release-apks
+          path: app/build/outputs/apk/release/Kitsune-*.apk
+          if-no-files-found: warn
+
+      - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}

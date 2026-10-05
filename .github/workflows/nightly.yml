@@ -1,4 +1,4 @@
-name: Nightly Dev Build
+name: Nightly Build
 
 on:
   push:
@@ -9,16 +9,16 @@ permissions:
   contents: write
 
 concurrency:
-  group: nightly-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-and-publish-nightly:
-    name: Build & Publish Nightly Release
+  build-and-publish:
+    name: Build & Publish Nightly
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -29,45 +29,50 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run Unit Tests
+      - name: Run unit tests
         run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
 
-      - name: Build Debug APKs (Splits & Universal)
+      - name: Run Android Lint
+        run: ./gradlew lintDebug --no-daemon --stacktrace
+
+      - name: Build debug APKs
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Upload Artifacts as Backup
+      - name: Upload debug APKs
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: kitsune-nightly-apks
           path: app/build/outputs/apk/debug/Kitsune-*.apk
           if-no-files-found: warn
 
-      - name: Publish Nightly GitHub Pre-Release
+      - name: Publish Nightly release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly
-          name: "🌙 Kitsune Nightly (Dev Build)"
+          name: "Kitsune Nightly (Development Build)"
           body: |
-            ## 🌙 Kitsune Nightly (Build de Desenvolvimento)
-            
-            Esta é a versão mais recente em desenvolvimento (**Nightly / Dev Build**), gerada automaticamente a partir do commit `${{ github.sha }}` na branch `main`.
+            ## Kitsune Nightly (Development Build)
 
-            > [!TIP]
-            > - **Instalação lado a lado**: Possui ID de pacote `com.kitsune.app.debug`, então você pode manter a versão oficial de produção e esta versão de testes instaladas juntas no mesmo celular.
-            > - **Nome no aparelho**: `Kitsune Nightly`
-            > - **Assinatura**: Assinado com chave de depuração padrão (Debug Keystore). Habilite a instalação de fontes desconhecidas no Android se solicitado.
+            This is an automated development build generated from commit ${{ github.sha }} on branch main.
 
-            ### 📦 Downloads Disponíveis
-            - 🚀 **[ARM64 (Recomendado)]**: `Kitsune-*-arm64-v8a-debug.apk` (para a maioria dos celulares modernos)
-            - 🌐 **[Universal]**: `Kitsune-*-universal-debug.apk` (compatível com qualquer aparelho)
-            - 📱 **[ARM 32-bit]**: `Kitsune-*-armeabi-v7a-debug.apk`
-            - 💻 **[Emuladores / x86]**: `Kitsune-*-x86_64-debug.apk`
+            ### Installation Notes
+            - Package ID: com.kitsune.app.debug (can be installed alongside the production release)
+            - App Name: Kitsune Nightly
+            - Signing: Signed with standard Android debug keystore
+
+            ### Available Downloads
+            - ARM64 (Recommended): Kitsune-*-arm64-v8a-debug.apk (modern 64-bit devices)
+            - Universal: Kitsune-*-universal-debug.apk (all architectures included)
+            - ARM 32-bit: Kitsune-*-armeabi-v7a-debug.apk (legacy 32-bit devices)
+            - x86_64: Kitsune-*-x86_64-debug.apk (emulators and Chromebooks)
+            - x86: Kitsune-*-x86-debug.apk (32-bit emulators)
           prerelease: true
           draft: false
           make_latest: false

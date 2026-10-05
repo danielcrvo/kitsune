@@ -1,4 +1,4 @@
-name: Android CI
+name: Continuous Integration
 
 on:
   pull_request:
@@ -10,13 +10,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  build:
-    name: Build & Test
+  validate-and-build:
+    name: Validate & Build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -25,25 +28,25 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run Unit Tests
+      - name: Run unit tests
         run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
 
       - name: Run Android Lint
         run: ./gradlew lintDebug --no-daemon --stacktrace
 
-      - name: Build Debug APK
+      - name: Build debug APKs
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Upload Debug APK
+      - name: Upload debug APKs
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: kitsune-debug-apk
+          name: kitsune-debug-apks
           path: app/build/outputs/apk/debug/Kitsune-*.apk
           if-no-files-found: warn
