@@ -127,6 +127,10 @@ dependencies {
 
     implementation(libs.lottie.compose)
 
+    // Media3 ExoPlayer para reprodução in-app
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+
     testImplementation(libs.junit)
 
     debugImplementation(libs.androidx.compose.ui.tooling)

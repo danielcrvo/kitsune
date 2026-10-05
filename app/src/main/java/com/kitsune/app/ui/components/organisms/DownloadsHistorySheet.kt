@@ -78,6 +78,7 @@ fun DownloadsHistorySheet(
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
     val context = LocalContext.current
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
     var selectedFilter by remember { mutableStateOf(MediaFilter.ALL) }
     var fileToRename by remember { mutableStateOf<DownloadedMediaFile?>(null) }
     var fileToDelete by remember { mutableStateOf<DownloadedMediaFile?>(null) }
@@ -126,7 +127,10 @@ fun DownloadsHistorySheet(
                 }
 
                 CobaltIconButton(
-                    onClick = onDismiss,
+                    onClick = {
+                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        onDismiss()
+                    },
                     containerColor = Color(0xFF1E2435)
                 ) {
                     Icon(
@@ -146,17 +150,26 @@ fun DownloadsHistorySheet(
                 FilterChipItem(
                     label = "Todos (${files.size})",
                     isSelected = selectedFilter == MediaFilter.ALL,
-                    onClick = { selectedFilter = MediaFilter.ALL }
+                    onClick = {
+                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        selectedFilter = MediaFilter.ALL
+                    }
                 )
                 FilterChipItem(
                     label = "Vídeos (${files.count { it.isVideo }})",
                     isSelected = selectedFilter == MediaFilter.VIDEOS,
-                    onClick = { selectedFilter = MediaFilter.VIDEOS }
+                    onClick = {
+                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        selectedFilter = MediaFilter.VIDEOS
+                    }
                 )
                 FilterChipItem(
                     label = "Áudios (${files.count { !it.isVideo }})",
                     isSelected = selectedFilter == MediaFilter.AUDIOS,
-                    onClick = { selectedFilter = MediaFilter.AUDIOS }
+                    onClick = {
+                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        selectedFilter = MediaFilter.AUDIOS
+                    }
                 )
             }
 
@@ -257,6 +270,7 @@ fun DownloadsHistorySheet(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                         val newName = renameInputText.trim()
                         if (newName.isNotBlank()) {
                             onRenameFile(item, newName)
@@ -309,6 +323,7 @@ fun DownloadsHistorySheet(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                         onDeleteFile(item)
                         fileToDelete = null
                     }
@@ -368,6 +383,7 @@ private fun DownloadedFileCard(
     onRename: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
     val dateString = remember(file.dateModified) {
         val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         sdf.format(Date(file.dateModified))
@@ -379,7 +395,10 @@ private fun DownloadedFileCard(
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFF131722))
             .border(BorderStroke(1.dp, Color(0xFF202638)), RoundedCornerShape(16.dp))
-            .clickable(onClick = onPlay)
+            .clickable {
+                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                onPlay()
+            }
             .padding(12.dp)
     ) {
         Row(
@@ -443,7 +462,10 @@ private fun DownloadedFileCard(
 
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 CobaltIconButton(
-                    onClick = onPlay,
+                    onClick = {
+                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        onPlay()
+                    },
                     containerColor = Color(0xFF1E2435),
                     modifier = Modifier.size(34.dp)
                 ) {
@@ -456,7 +478,10 @@ private fun DownloadedFileCard(
                 }
 
                 CobaltIconButton(
-                    onClick = onRename,
+                    onClick = {
+                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        onRename()
+                    },
                     containerColor = Color(0xFF1E2435),
                     modifier = Modifier.size(34.dp)
                 ) {
@@ -469,7 +494,10 @@ private fun DownloadedFileCard(
                 }
 
                 CobaltIconButton(
-                    onClick = onDelete,
+                    onClick = {
+                        haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        onDelete()
+                    },
                     containerColor = Color(0xFF1E2435),
                     modifier = Modifier.size(34.dp)
                 ) {

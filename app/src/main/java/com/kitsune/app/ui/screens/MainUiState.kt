@@ -33,7 +33,8 @@ data class MainUiState(
     val downloadedFiles: List<DownloadedMediaFile> = emptyList(),
     val isLoadingDownloadedFiles: Boolean = false,
     val renamingFile: DownloadedMediaFile? = null,
-    val deletingFile: DownloadedMediaFile? = null
+    val deletingFile: DownloadedMediaFile? = null,
+    val playingFile: DownloadedMediaFile? = null
 ) {
     val downloadMode: DownloadMode
         get() = when {

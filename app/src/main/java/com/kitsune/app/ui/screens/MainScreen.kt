@@ -47,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import com.kitsune.app.core.model.DownloadConfig
 import com.kitsune.app.core.model.DownloadedMediaFile
 import com.kitsune.app.core.model.DownloadState
@@ -55,6 +57,7 @@ import com.kitsune.app.ui.components.atoms.MascotType
 import com.kitsune.app.ui.components.molecules.CobaltModeSelector
 import com.kitsune.app.ui.components.molecules.UrlInputBar
 import com.kitsune.app.ui.components.organisms.ActiveDownloadCard
+import com.kitsune.app.ui.components.organisms.CobaltMediaPlayerDialog
 import com.kitsune.app.ui.components.organisms.DownloadSettingsSheet
 import com.kitsune.app.ui.components.organisms.DownloadsHistorySheet
 import com.kitsune.app.ui.components.organisms.SupportedServicesDialog
@@ -66,16 +69,23 @@ import com.kitsune.app.ui.theme.KitsuneTheme
 fun MainScreen(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(),
-    initialSharedUrl: String? = null
+    initialSharedUrl: String? = null,
+    onClearSharedUrl: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.initEngineVersion(context)
+    }
+
+    LaunchedEffect(initialSharedUrl) {
         if (!initialSharedUrl.isNullOrBlank()) {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             viewModel.onUrlChanged(initialSharedUrl)
-        } else {
+            onClearSharedUrl()
+        } else if (uiState.url.isBlank()) {
             viewModel.checkClipboardForMediaUrl(context)
         }
     }
@@ -87,24 +97,59 @@ fun MainScreen(
         }
     }
 
+    LaunchedEffect(uiState.downloadState) {
+        when (uiState.downloadState) {
+            is DownloadState.Completed -> {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            }
+            is DownloadState.Error -> {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            }
+            else -> {}
+        }
+    }
+
     MainScreenContent(
         uiState = uiState,
         onUrlChange = viewModel::onUrlChanged,
-        onDownloadClick = { viewModel.startDownload(context) },
-        onCancelDownload = { viewModel.cancelDownload(context) },
+        onDownloadClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            viewModel.startDownload(context)
+        },
+        onCancelDownload = {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            viewModel.cancelDownload(context)
+        },
         onDismissError = viewModel::dismissError,
-        onModeSelect = viewModel::setDownloadMode,
-        onOpenSupportedServices = { viewModel.toggleSupportedServices(true) },
+        onModeSelect = {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            viewModel.setDownloadMode(it)
+        },
+        onOpenSupportedServices = {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            viewModel.toggleSupportedServices(true)
+        },
         onDismissSupportedServices = { viewModel.toggleSupportedServices(false) },
-        onOpenHistory = { viewModel.toggleHistory(true) },
+        onOpenHistory = {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            viewModel.toggleHistory(true)
+        },
         onDismissHistory = { viewModel.toggleHistory(false) },
-        onOpenSettings = { viewModel.toggleSettingsSheet(true) },
+        onOpenSettings = {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            viewModel.toggleSettingsSheet(true)
+        },
         onDismissSettings = { viewModel.toggleSettingsSheet(false) },
-        onOpenTerms = { viewModel.toggleTerms(true) },
+        onOpenTerms = {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            viewModel.toggleTerms(true)
+        },
         onDismissTerms = { viewModel.toggleTerms(false) },
         onConfigChange = viewModel::onConfigChanged,
         onCheckEngineUpdate = { viewModel.checkEngineUpdate(context) },
-        onPlayFile = { viewModel.playDownloadedFile(context, it) },
+        onPlayFile = viewModel::playDownloadedFile,
+        onCloseMediaPlayer = viewModel::closeMediaPlayer,
+        onPlayExternal = { viewModel.playFileExternal(context, it) },
         onDeleteFile = viewModel::confirmDeleteFile,
         onRenameFile = { file, newName -> viewModel.confirmRenameFile(file, newName) },
         modifier = modifier
@@ -131,6 +176,8 @@ fun MainScreenContent(
     onConfigChange: (DownloadConfig) -> Unit,
     onCheckEngineUpdate: () -> Unit,
     onPlayFile: (DownloadedMediaFile) -> Unit,
+    onCloseMediaPlayer: () -> Unit,
+    onPlayExternal: (DownloadedMediaFile) -> Unit,
     onDeleteFile: (DownloadedMediaFile) -> Unit,
     onRenameFile: (DownloadedMediaFile, String) -> Unit,
     modifier: Modifier = Modifier
@@ -436,6 +483,14 @@ fun MainScreenContent(
         if (uiState.isTermsOpen) {
             TermsDialog(onDismiss = onDismissTerms)
         }
+
+        uiState.playingFile?.let { file ->
+            CobaltMediaPlayerDialog(
+                file = file,
+                onDismiss = onCloseMediaPlayer,
+                onOpenExternal = { onPlayExternal(file) }
+            )
+        }
     }
 }
 
@@ -465,6 +520,8 @@ fun MainScreenPreview() {
             onConfigChange = {},
             onCheckEngineUpdate = {},
             onPlayFile = {},
+            onCloseMediaPlayer = {},
+            onPlayExternal = {},
             onDeleteFile = {},
             onRenameFile = { _, _ -> }
         )

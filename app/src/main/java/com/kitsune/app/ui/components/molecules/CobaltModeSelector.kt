@@ -111,12 +111,17 @@ private fun ModeSegment(
         label = "segmentIcon"
     )
 
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+
     Box(
         modifier = modifier
             .height(44.dp)
             .clip(CircleShape)
             .background(bgAnim)
-            .clickable(onClick = onClick),
+            .clickable(onClick = {
+                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                onClick()
+            }),
         contentAlignment = Alignment.Center
     ) {
         Row(

@@ -51,6 +51,7 @@ fun UrlInputBar(
     placeholder: String = "cole o link aqui"
 ) {
     val clipboardManager = LocalClipboardManager.current
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
 
     Box(
         modifier = modifier
@@ -106,7 +107,10 @@ fun UrlInputBar(
                         imeAction = ImeAction.Go
                     ),
                     keyboardActions = KeyboardActions(
-                        onGo = { onDownloadClick() }
+                        onGo = {
+                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                            onDownloadClick()
+                        }
                     )
                 )
             }
@@ -124,7 +128,10 @@ fun UrlInputBar(
                         .size(28.dp)
                         .clip(CircleShape)
                         .background(Color(0xFF1E2435))
-                        .clickable { onUrlChange("") }
+                        .clickable {
+                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                            onUrlChange("")
+                        }
                         .padding(end = 4.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -149,8 +156,10 @@ fun UrlInputBar(
                     .border(BorderStroke(1.dp, Color(0xFF2D354D)), RoundedCornerShape(14.dp))
                     .clickable {
                         if (isActionDownload) {
+                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                             onDownloadClick()
                         } else {
+                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                             val clipText = clipboardManager.getText()?.text
                             if (!clipText.isNullOrBlank()) {
                                 onUrlChange(clipText.trim())

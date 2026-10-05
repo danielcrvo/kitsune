@@ -179,7 +179,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun playDownloadedFile(context: Context, item: DownloadedMediaFile) {
+    fun playDownloadedFile(item: DownloadedMediaFile) {
+        _uiState.update { it.copy(playingFile = item) }
+    }
+
+    fun closeMediaPlayer() {
+        _uiState.update { it.copy(playingFile = null) }
+    }
+
+    fun playFileExternal(context: Context, item: DownloadedMediaFile) {
         DownloadedFilesRepository.playFile(context, item)
     }
 
