@@ -20,6 +20,8 @@ android {
         ndk {
             abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
         }
+
+        manifestPlaceholders["appName"] = "Kitsune"
     }
 
     buildTypes {
@@ -31,9 +33,12 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
+            manifestPlaceholders["appName"] = "Kitsune"
         }
         debug {
             applicationIdSuffix = ".debug"
+            versionNameSuffix = "-nightly"
+            manifestPlaceholders["appName"] = "Kitsune Nightly"
         }
     }
 

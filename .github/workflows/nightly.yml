@@ -1,0 +1,78 @@
+name: Nightly Dev Build
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish-nightly:
+    name: Build & Publish Nightly Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
+
+      - name: Build Debug APKs (Splits & Universal)
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Upload Artifacts as Backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: kitsune-nightly-apks
+          path: app/build/outputs/apk/debug/Kitsune-*.apk
+          if-no-files-found: warn
+
+      - name: Publish Nightly GitHub Pre-Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly
+          name: "🌙 Kitsune Nightly (Dev Build)"
+          body: |
+            ## 🌙 Kitsune Nightly (Build de Desenvolvimento)
+            
+            Esta é a versão mais recente em desenvolvimento (**Nightly / Dev Build**), gerada automaticamente a partir do commit `${{ github.sha }}` na branch `main`.
+
+            > [!TIP]
+            > - **Instalação lado a lado**: Possui ID de pacote `com.kitsune.app.debug`, então você pode manter a versão oficial de produção e esta versão de testes instaladas juntas no mesmo celular.
+            > - **Nome no aparelho**: `Kitsune Nightly`
+            > - **Assinatura**: Assinado com chave de depuração padrão (Debug Keystore). Habilite a instalação de fontes desconhecidas no Android se solicitado.
+
+            ### 📦 Downloads Disponíveis
+            - 🚀 **[ARM64 (Recomendado)]**: `Kitsune-*-arm64-v8a-debug.apk` (para a maioria dos celulares modernos)
+            - 🌐 **[Universal]**: `Kitsune-*-universal-debug.apk` (compatível com qualquer aparelho)
+            - 📱 **[ARM 32-bit]**: `Kitsune-*-armeabi-v7a-debug.apk`
+            - 💻 **[Emuladores / x86]**: `Kitsune-*-x86_64-debug.apk`
+          prerelease: true
+          draft: false
+          make_latest: false
+          target_commitish: ${{ github.sha }}
+          files: |
+            app/build/outputs/apk/debug/Kitsune-*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
