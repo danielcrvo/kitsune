@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MainViewModel(
+class MainViewModel @JvmOverloads constructor(
     application: Application,
     private val preferencesRepository: UserPreferencesRepository = UserPreferencesRepository(application)
 ) : AndroidViewModel(application) {
