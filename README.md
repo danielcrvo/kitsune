@@ -12,6 +12,9 @@
   <a href="https://github.com/danielcrvo/kitsune/actions/workflows/ci.yml">
     <img src="https://github.com/danielcrvo/kitsune/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
   </a>
+  <a href="https://github.com/danielcrvo/kitsune/releases/tag/nightly">
+    <img src="https://img.shields.io/badge/Nightly-Dev%20Build-blueviolet.svg" alt="Nightly Build" />
+  </a>
   <a href="https://github.com/danielcrvo/kitsune/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL-3.0" />
   </a>
@@ -27,7 +30,23 @@
 
 **Kitsune** is a modern Android application designed for seamless media downloading and audio conversion directly on your device. Powered by native on-device builds of [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [FFmpeg](https://ffmpeg.org/), Kitsune does not rely on third-party backend servers or cloud conversion APIs. All extraction, downloading, and audio/video muxing happens strictly locally on your Android device.
 
-Built from the ground up with **Kotlin 2.1.10** and **Jetpack Compose** following **Atomic Design** principles, Kitsune provides a fluid, edge-to-edge dark interface with rich micro-animations, comprehensive media controls, and zero ads or trackers.
+Built from the ground up with **Kotlin 2.1.10** and **Jetpack Compose** following **Atomic Design** principles, Kitsune provides a fluid, edge-to-edge dark interface with rich micro-animations, comprehensive media controls, pure AMOLED dark mode, and zero ads or trackers.
+
+---
+
+## 📦 Downloads
+
+Choose the build that best fits your device:
+
+| Version | Download Link | Target Device | Notes |
+| :--- | :--- | :--- | :--- |
+| **Nightly (ARM64)** | [Kitsune-arm64-v8a-debug.apk](https://github.com/danielcrvo/kitsune/releases/tag/nightly) | 🚀 Celulares modernos (64 bits) | **Recomendado** (~37 MB) |
+| **Nightly (Universal)** | [Kitsune-universal-debug.apk](https://github.com/danielcrvo/kitsune/releases/tag/nightly) | 🌐 Qualquer celular Android | Contém todas as arquiteturas |
+| **Nightly (ARM 32-bit)** | [Kitsune-armeabi-v7a-debug.apk](https://github.com/danielcrvo/kitsune/releases/tag/nightly) | 📱 Celulares mais antigos | Arquitetura de 32 bits |
+| **Releases Oficiais** | [GitHub Releases](https://github.com/danielcrvo/kitsune/releases) | 🏷️ Versões de Produção Estáveis | Assinadas e otimizadas |
+
+> [!TIP]
+> A versão **Nightly** possui o ID de pacote `com.kitsune.app.debug` e ícones exclusivos noturnos em preto puro AMOLED, permitindo que você a instale lado a lado com a versão oficial de produção sem conflitos.
 
 ---
 
@@ -36,6 +55,8 @@ Built from the ground up with **Kotlin 2.1.10** and **Jetpack Compose** followin
 - **100% On-Device Processing**: Downloads and media conversions are executed natively using bundled yt-dlp and FFmpeg NDK binaries—no external servers, no tracking, complete privacy.
 - **Universal Multi-Platform Support**: Works with YouTube, TikTok, Instagram, X (Twitter), Reddit, Bilibili, SoundCloud, Pinterest, and hundreds of generic media hosts.
 - **Privacy URL Sanitization**: Automatically strips tracking query parameters (`utm_*`, `si`, `igsh`, `fbclid`, `share_id`, etc.) from pasted links.
+- **Pure AMOLED Black Theme**: High-contrast, battery-saving true black mode (`#000000`) for OLED and AMOLED displays.
+- **In-App Media Player & Direct Sharing**: Integrated Media3 ExoPlayer with animated audio visualizer, playback speed controls, and one-tap Android Share Sheet to WhatsApp, Telegram, or Google Drive.
 - **Smart Android Integration**:
   - **Android Share Sheet**: Share links directly to Kitsune from any browser or social media app.
   - **Clipboard Auto-Detection**: Instant detection and suggestion of valid media URLs from your clipboard upon opening.
@@ -75,9 +96,9 @@ UI Layer (Jetpack Compose)
   ├── Tokens (KitsuneTheme: KitsuneColorTokens, KitsuneSpacingTokens, KitsuneShapeTokens)
   ├── Atoms (KitsuneButton, KitsuneIconButton, KitsuneBadge, KitsuneTextField, MascotSvg)
   ├── Molecules (UrlInputBar, MediaPreviewCard, KitsuneModeSelector, DownloadStatusDisplay)
-  ├── Organisms (MainInputCard, ActiveDownloadCard, DownloadSettingsSheet, DownloadsHistorySheet)
+  ├── Organisms (MainInputCard, ActiveDownloadCard, DownloadSettingsSheet, DownloadsHistorySheet, KitsuneMediaPlayerDialog)
   ├── Templates (KitsuneScreenTemplate)
-  └── Screens (MainScreen + MainViewModel + MainUiState)
+  └── Screens (MainScreen + MainViewModel + MainUiState + MainUiAction)
           │
           ▼
 Core Architecture
@@ -96,11 +117,12 @@ For an in-depth breakdown of the component hierarchy, threading model, and Scope
 - **UI Framework:** [Jetpack Compose](https://developer.android.com/jetpack/compose) (Compose BOM `2025.02.00`)
 - **Design System:** Material 3 with custom Kitsune Design Tokens (`CompositionLocalProvider`)
 - **Native Engine:** [youtubedl-android](https://github.com/junkfood02/youtubedl-android) (v0.18.1 bundling yt-dlp and FFmpeg)
+- **Media Playback:** [AndroidX Media3 ExoPlayer](https://developer.android.com/media/media3) (v1.5.1)
 - **Animations & Micro-interactions:** [Lottie Compose](https://airbnb.io/lottie/#/android-compose) (v6.6.2)
 - **Image & Vector Loading:** [Coil Compose](https://coil-kt.github.io/coil/) (with SVG decoder)
 - **Local Persistence:** [Jetpack DataStore Preferences](https://developer.android.com/topic/libraries/architecture/datastore) (v1.1.3)
 - **Asynchronous & Streams:** Kotlin Coroutines & StateFlow (v1.10.1)
-- **Build System:** Gradle 8.11.1 with Android Gradle Plugin 8.8.2
+- **Build System:** Gradle 8.11.1 with Android Gradle Plugin 8.8.2 and Kotlin Compose Compiler plugin
 
 ---
 
@@ -109,7 +131,7 @@ For an in-depth breakdown of the component hierarchy, threading model, and Scope
 ### Prerequisites
 - **JDK 17** or higher
 - **Android SDK** with Platform `API 35` and Build-Tools installed
-- Supported NDK ABIs: `arm64-v8a`, `armeabi-v7a`, `x86_64`
+- Supported NDK ABIs: `arm64-v8a`, `armeabi-v7a`, `x86`, `x86_64`
 
 ### Clone the Repository
 ```bash
@@ -117,15 +139,24 @@ git clone https://github.com/danielcrvo/kitsune.git
 cd kitsune
 ```
 
-### Build Debug APK
+### Build Debug APKs
 ```bash
 ./gradlew assembleDebug
 ```
-The compiled APK will be generated at `app/build/outputs/apk/debug/app-debug.apk`.
+The compiled APKs will be generated in `app/build/outputs/apk/debug/`:
+- `Kitsune-v1.0.1-nightly-arm64-v8a-debug.apk`
+- `Kitsune-v1.0.1-nightly-universal-debug.apk`
+- `Kitsune-v1.0.1-nightly-armeabi-v7a-debug.apk`
+- `Kitsune-v1.0.1-nightly-x86_64-debug.apk`
 
 ### Run Unit Tests
 ```bash
 ./gradlew testDebugUnitTest
+```
+
+### Run Android Lint
+```bash
+./gradlew lintDebug
 ```
 
 ---

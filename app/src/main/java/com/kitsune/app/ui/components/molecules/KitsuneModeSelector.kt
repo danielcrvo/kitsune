@@ -69,7 +69,7 @@ fun KitsuneModeSelector(
             ModeSegment(
                 label = "áudio",
                 icon = Icons.Default.MusicNote,
-                activeColor = Color(0xFFC084FC),
+                activeColor = KitsuneTheme.colors.accentPurple,
                 isSelected = selectedMode == DownloadMode.AUDIO,
                 onClick = { onModeSelect(DownloadMode.AUDIO) },
                 modifier = Modifier.weight(1f)
@@ -147,3 +147,15 @@ private fun ModeSegment(
         }
     }
 }
+
+@com.kitsune.app.ui.theme.ThemePreviews
+@Composable
+private fun KitsuneModeSelectorPreview() {
+    KitsuneTheme {
+        KitsuneModeSelector(
+            selectedMode = DownloadMode.AUTO,
+            onModeSelect = {}
+        )
+    }
+}
+

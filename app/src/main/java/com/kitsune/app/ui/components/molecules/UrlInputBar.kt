@@ -191,3 +191,16 @@ fun UrlInputBar(
         }
     }
 }
+
+@com.kitsune.app.ui.theme.ThemePreviews
+@Composable
+private fun UrlInputBarPreview() {
+    KitsuneTheme {
+        UrlInputBar(
+            url = "",
+            onUrlChange = {},
+            onDownloadClick = {}
+        )
+    }
+}
+

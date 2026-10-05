@@ -75,6 +75,7 @@ import com.kitsune.app.ui.components.atoms.KitsuneIconButton
 import com.kitsune.app.ui.theme.KitsuneTheme
 import kotlinx.coroutines.delay
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
 fun KitsuneMediaPlayerDialog(
     file: DownloadedMediaFile,
@@ -418,5 +419,5 @@ private fun formatTime(millis: Long): String {
     val totalSeconds = (millis / 1000).coerceAtLeast(0)
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60
-    return String.format("%02d:%02d", minutes, seconds)
+    return String.format(java.util.Locale.US, "%02d:%02d", minutes, seconds)
 }

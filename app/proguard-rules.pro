@@ -24,3 +24,10 @@
 -keep class coil.** { *; }
 
 -keepclassmembers class androidx.compose.ui.platform.InspectableValue { *; }
+
+-keep class androidx.media3.** { *; }
+-dontwarn androidx.media3.**
+
+-keep class com.airbnb.lottie.** { *; }
+-dontwarn com.airbnb.lottie.**
+

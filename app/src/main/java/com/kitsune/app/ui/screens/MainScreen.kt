@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FileDownload
@@ -37,32 +38,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
-import com.kitsune.app.core.model.DownloadConfig
-import com.kitsune.app.core.model.DownloadedMediaFile
 import com.kitsune.app.core.model.DownloadState
 import com.kitsune.app.ui.components.atoms.MascotSvg
 import com.kitsune.app.ui.components.atoms.MascotType
 import com.kitsune.app.ui.components.molecules.KitsuneModeSelector
+import com.kitsune.app.ui.components.molecules.MediaPreviewCard
 import com.kitsune.app.ui.components.molecules.UrlInputBar
 import com.kitsune.app.ui.components.organisms.ActiveDownloadCard
-import com.kitsune.app.ui.components.organisms.KitsuneMediaPlayerDialog
 import com.kitsune.app.ui.components.organisms.DownloadSettingsSheet
 import com.kitsune.app.ui.components.organisms.DownloadsHistorySheet
+import com.kitsune.app.ui.components.organisms.KitsuneMediaPlayerDialog
 import com.kitsune.app.ui.components.organisms.SupportedServicesDialog
 import com.kitsune.app.ui.components.organisms.TermsDialog
 import com.kitsune.app.ui.theme.KitsuneTheme
+import com.kitsune.app.ui.theme.ThemePreviews
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,57 +104,29 @@ fun MainScreen(
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
             }
             is DownloadState.Error -> {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             }
-            else -> {}
+            else -> Unit
         }
     }
 
     MainScreenContent(
         uiState = uiState,
-        onUrlChange = viewModel::onUrlChanged,
-        onDownloadClick = {
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            viewModel.startDownload(context)
+        onAction = { action ->
+            when (action) {
+                is MainUiAction.StartDownload -> haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                is MainUiAction.CancelDownload,
+                is MainUiAction.SetDownloadMode,
+                is MainUiAction.ToggleSupportedServices,
+                is MainUiAction.ToggleHistory,
+                is MainUiAction.ToggleSettings,
+                is MainUiAction.ToggleTerms,
+                is MainUiAction.PlayFile,
+                is MainUiAction.CloseMediaPlayer -> haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                else -> Unit
+            }
+            viewModel.onAction(action, context)
         },
-        onCancelDownload = {
-            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            viewModel.cancelDownload(context)
-        },
-        onDismissError = viewModel::dismissError,
-        onModeSelect = {
-            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            viewModel.setDownloadMode(it)
-        },
-        onOpenSupportedServices = {
-            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            viewModel.toggleSupportedServices(true)
-        },
-        onDismissSupportedServices = { viewModel.toggleSupportedServices(false) },
-        onOpenHistory = {
-            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            viewModel.toggleHistory(true)
-        },
-        onDismissHistory = { viewModel.toggleHistory(false) },
-        onOpenSettings = {
-            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            viewModel.toggleSettingsSheet(true)
-        },
-        onDismissSettings = { viewModel.toggleSettingsSheet(false) },
-        onOpenTerms = {
-            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            viewModel.toggleTerms(true)
-        },
-        onDismissTerms = { viewModel.toggleTerms(false) },
-        onConfigChange = viewModel::onConfigChanged,
-        onCheckEngineUpdate = { viewModel.checkEngineUpdate(context) },
-        onPlayFile = viewModel::playDownloadedFile,
-        onCloseMediaPlayer = viewModel::closeMediaPlayer,
-        onPlayExternal = { viewModel.playFileExternal(context, it) },
-        onDeleteFile = viewModel::confirmDeleteFile,
-        onRenameFile = { file, newName -> viewModel.confirmRenameFile(file, newName) },
-        isAmoledTheme = uiState.isAmoledTheme,
-        onToggleAmoledTheme = viewModel::toggleAmoledTheme,
         modifier = modifier
     )
 }
@@ -162,28 +135,7 @@ fun MainScreen(
 @Composable
 fun MainScreenContent(
     uiState: MainUiState,
-    onUrlChange: (String) -> Unit,
-    onDownloadClick: () -> Unit,
-    onCancelDownload: () -> Unit,
-    onDismissError: () -> Unit,
-    onModeSelect: (DownloadMode) -> Unit,
-    onOpenSupportedServices: () -> Unit,
-    onDismissSupportedServices: () -> Unit,
-    onOpenHistory: () -> Unit,
-    onDismissHistory: () -> Unit,
-    onOpenSettings: () -> Unit,
-    onDismissSettings: () -> Unit,
-    onOpenTerms: () -> Unit,
-    onDismissTerms: () -> Unit,
-    onConfigChange: (DownloadConfig) -> Unit,
-    onCheckEngineUpdate: () -> Unit,
-    onPlayFile: (DownloadedMediaFile) -> Unit,
-    onCloseMediaPlayer: () -> Unit,
-    onPlayExternal: (DownloadedMediaFile) -> Unit,
-    onDeleteFile: (DownloadedMediaFile) -> Unit,
-    onRenameFile: (DownloadedMediaFile, String) -> Unit,
-    isAmoledTheme: Boolean = false,
-    onToggleAmoledTheme: (Boolean) -> Unit = {},
+    onAction: (MainUiAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -202,7 +154,6 @@ fun MainScreenContent(
                 .padding(horizontal = 20.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -210,14 +161,13 @@ fun MainScreenContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Box(
                     modifier = Modifier
                         .height(38.dp)
                         .clip(CircleShape)
                         .background(KitsuneTheme.colors.surfaceVariant)
                         .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), CircleShape)
-                        .clickable(onClick = onOpenSupportedServices)
+                        .clickable(onClick = { onAction(MainUiAction.ToggleSupportedServices(true)) })
                         .padding(horizontal = 14.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -240,19 +190,17 @@ fun MainScreenContent(
                     }
                 }
 
-
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Box(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(CircleShape)
                             .background(KitsuneTheme.colors.surfaceVariant)
                             .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), CircleShape)
-                            .clickable(onClick = onOpenHistory),
+                            .clickable(onClick = { onAction(MainUiAction.ToggleHistory(true)) }),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -263,14 +211,13 @@ fun MainScreenContent(
                         )
                     }
 
-
                     Box(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(CircleShape)
                             .background(KitsuneTheme.colors.surfaceVariant)
                             .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), CircleShape)
-                            .clickable(onClick = onOpenSettings),
+                            .clickable(onClick = { onAction(MainUiAction.ToggleSettings(true)) }),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -285,31 +232,27 @@ fun MainScreenContent(
 
             Spacer(modifier = Modifier.height(28.dp))
 
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Box(
                     modifier = Modifier.size(200.dp),
                     contentAlignment = Alignment.Center
                 ) {
-
                     Box(
                         modifier = Modifier
                             .size(190.dp)
                             .background(
                                 brush = Brush.radialGradient(
                                     colors = listOf(
-                                        Color(0xFFE27C2A).copy(alpha = 0.24f),
-                                        Color(0xFFE27C2A).copy(alpha = 0.08f),
+                                        KitsuneTheme.colors.accentOrange.copy(alpha = 0.24f),
+                                        KitsuneTheme.colors.accentOrange.copy(alpha = 0.08f),
                                         Color.Transparent
                                     )
                                 ),
                                 shape = CircleShape
                             )
                     )
-
 
                     val currentMascot = when (uiState.downloadState) {
                         is DownloadState.Downloading, is DownloadState.Muxing -> MascotType.DOWNLOADING
@@ -327,7 +270,6 @@ fun MainScreenContent(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-
                 Text(
                     text = "kitsune.tools",
                     color = KitsuneTheme.colors.textPrimary,
@@ -338,7 +280,6 @@ fun MainScreenContent(
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
-
 
                 Text(
                     text = "o downloader mais fofo e rápido da\nweb!",
@@ -352,27 +293,24 @@ fun MainScreenContent(
 
             Spacer(modifier = Modifier.height(34.dp))
 
-
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-
                 UrlInputBar(
                     url = uiState.url,
-                    onUrlChange = onUrlChange,
-                    onDownloadClick = onDownloadClick
+                    onUrlChange = { onAction(MainUiAction.ChangeUrl(it)) },
+                    onDownloadClick = { onAction(MainUiAction.StartDownload) }
                 )
-
 
                 if (uiState.detectedClipboardUrl != null) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(12.dp))
                             .background(KitsuneTheme.colors.surfaceVariant)
-                            .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
-                            .clickable { onUrlChange(uiState.detectedClipboardUrl) }
+                            .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), RoundedCornerShape(12.dp))
+                            .clickable { onAction(MainUiAction.ChangeUrl(uiState.detectedClipboardUrl)) }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         Row(
@@ -392,7 +330,7 @@ fun MainScreenContent(
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 12.sp,
                                     maxLines = 1,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                             Text(
@@ -407,34 +345,30 @@ fun MainScreenContent(
                     }
                 }
 
-
-                com.kitsune.app.ui.components.molecules.MediaPreviewCard(
+                MediaPreviewCard(
                     mediaInfo = uiState.mediaInfo,
                     isLoading = uiState.isLoadingMetadata,
                     modifier = Modifier.fillMaxWidth()
                 )
 
-
                 KitsuneModeSelector(
                     selectedMode = uiState.downloadMode,
-                    onModeSelect = onModeSelect
+                    onModeSelect = { onAction(MainUiAction.SetDownloadMode(it)) }
                 )
             }
-
 
             if (uiState.downloadState !is DownloadState.Idle) {
                 Spacer(modifier = Modifier.height(20.dp))
                 ActiveDownloadCard(
                     downloadState = uiState.downloadState,
-                    onCancel = onCancelDownload,
-                    onDismissError = onDismissError,
+                    onCancel = { onAction(MainUiAction.CancelDownload) },
+                    onDismissError = { onAction(MainUiAction.DismissError) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             Spacer(modifier = Modifier.weight(1f, fill = false))
             Spacer(modifier = Modifier.height(48.dp))
-
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -453,24 +387,23 @@ fun MainScreenContent(
                     fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable(onClick = onOpenTerms)
+                    modifier = Modifier.clickable(onClick = { onAction(MainUiAction.ToggleTerms(true)) })
                 )
             }
         }
 
-
         if (uiState.isSupportedServicesOpen) {
-            SupportedServicesDialog(onDismiss = onDismissSupportedServices)
+            SupportedServicesDialog(onDismiss = { onAction(MainUiAction.ToggleSupportedServices(false)) })
         }
 
         if (uiState.isHistoryOpen) {
             DownloadsHistorySheet(
                 files = uiState.downloadedFiles,
                 isLoading = uiState.isLoadingDownloadedFiles,
-                onPlayFile = onPlayFile,
-                onDeleteFile = onDeleteFile,
-                onRenameFile = onRenameFile,
-                onDismiss = onDismissHistory
+                onPlayFile = { onAction(MainUiAction.PlayFile(it)) },
+                onDeleteFile = { onAction(MainUiAction.DeleteFile(it)) },
+                onRenameFile = { file, newName -> onAction(MainUiAction.RenameFile(file, newName)) },
+                onDismiss = { onAction(MainUiAction.ToggleHistory(false)) }
             )
         }
 
@@ -478,58 +411,38 @@ fun MainScreenContent(
             DownloadSettingsSheet(
                 config = uiState.downloadConfig,
                 engineVersion = uiState.engineVersion,
-                isAmoledTheme = isAmoledTheme,
-                onConfigChange = onConfigChange,
-                onToggleAmoledTheme = onToggleAmoledTheme,
-                onCheckEngineUpdate = onCheckEngineUpdate,
-                onDismiss = onDismissSettings
+                isAmoledTheme = uiState.isAmoledTheme,
+                onConfigChange = { onAction(MainUiAction.ChangeConfig(it)) },
+                onToggleAmoledTheme = { onAction(MainUiAction.ToggleAmoledTheme(it)) },
+                onCheckEngineUpdate = { onAction(MainUiAction.CheckEngineUpdate) },
+                onDismiss = { onAction(MainUiAction.ToggleSettings(false)) }
             )
         }
 
         if (uiState.isTermsOpen) {
-            TermsDialog(onDismiss = onDismissTerms)
+            TermsDialog(onDismiss = { onAction(MainUiAction.ToggleTerms(false)) })
         }
 
         uiState.playingFile?.let { file ->
             KitsuneMediaPlayerDialog(
                 file = file,
-                onDismiss = onCloseMediaPlayer,
-                onOpenExternal = { onPlayExternal(file) }
+                onDismiss = { onAction(MainUiAction.CloseMediaPlayer) },
+                onOpenExternal = { onAction(MainUiAction.PlayExternal(file)) }
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, backgroundColor = 0xFF090A0F)
+@ThemePreviews
 @Composable
-fun MainScreenPreview() {
+private fun MainScreenPreview() {
     KitsuneTheme {
         MainScreenContent(
             uiState = MainUiState(
                 url = "",
                 isUrlValid = false
             ),
-            onUrlChange = {},
-            onDownloadClick = {},
-            onCancelDownload = {},
-            onDismissError = {},
-            onModeSelect = {},
-            onOpenSupportedServices = {},
-            onDismissSupportedServices = {},
-            onOpenHistory = {},
-            onDismissHistory = {},
-            onOpenSettings = {},
-            onDismissSettings = {},
-            onOpenTerms = {},
-            onDismissTerms = {},
-            onConfigChange = {},
-            onCheckEngineUpdate = {},
-            onPlayFile = {},
-            onCloseMediaPlayer = {},
-            onPlayExternal = {},
-            onDeleteFile = {},
-            onRenameFile = { _, _ -> }
+            onAction = {}
         )
     }
 }

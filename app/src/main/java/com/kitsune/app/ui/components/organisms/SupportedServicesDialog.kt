@@ -20,26 +20,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.ui.theme.KitsuneTheme
+import com.kitsune.app.ui.theme.ThemePreviews
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SupportedServicesDialog(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     BasicAlertDialog(
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(Color(0xFF0F121C))
-                .border(BorderStroke(1.dp, Color(0xFF222738)), RoundedCornerShape(24.dp))
+                .clip(RoundedCornerShape(KitsuneTheme.shapes.cardRadius))
+                .background(KitsuneTheme.colors.surface)
+                .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), RoundedCornerShape(KitsuneTheme.shapes.cardRadius))
                 .padding(22.dp)
         ) {
             Column(
@@ -47,7 +50,7 @@ fun SupportedServicesDialog(
             ) {
                 Text(
                     text = "serviços suportados",
-                    color = Color.White,
+                    color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -55,7 +58,7 @@ fun SupportedServicesDialog(
 
                 Text(
                     text = "O Kitsune suporta download direto e privado das seguintes plataformas:",
-                    color = Color(0xFFCBD5E1),
+                    color = KitsuneTheme.colors.textSecondary,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 13.sp,
                     lineHeight = 18.sp
@@ -76,7 +79,7 @@ fun SupportedServicesDialog(
 
                 Text(
                     text = "Todos os downloads ocorrem 100% no seu aparelho sem proxy ou servidores intermediários.",
-                    color = Color(0xFF64748B),
+                    color = KitsuneTheme.colors.textMuted,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
                     lineHeight = 15.sp
@@ -89,7 +92,7 @@ fun SupportedServicesDialog(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = "fechar",
-                            color = Color(0xFFF97316),
+                            color = KitsuneTheme.colors.accentOrange,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
@@ -108,24 +111,32 @@ private fun ServiceItem(name: String, desc: String) {
     ) {
         Text(
             text = "• ",
-            color = Color(0xFFF97316),
+            color = KitsuneTheme.colors.accentOrange,
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.Bold,
             fontSize = 13.sp
         )
         Text(
             text = "$name: ",
-            color = Color.White,
+            color = KitsuneTheme.colors.textPrimary,
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.Bold,
             fontSize = 13.sp
         )
         Text(
             text = desc,
-            color = Color(0xFF94A3B8),
+            color = KitsuneTheme.colors.textMuted,
             fontFamily = FontFamily.Monospace,
             fontSize = 12.sp,
             lineHeight = 16.sp
         )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun SupportedServicesDialogPreview() {
+    KitsuneTheme {
+        SupportedServicesDialog(onDismiss = {})
     }
 }

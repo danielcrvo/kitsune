@@ -16,45 +16,44 @@ Please review this guide before submitting issues or pull requests.
 
 ### Cloning and Building
 ```bash
-# Clone the repository
 git clone https://github.com/danielcrvo/kitsune.git
 cd kitsune
 
-# Build the debug APK
 ./gradlew assembleDebug
 
-# Run unit tests
 ./gradlew testDebugUnitTest
+
+./gradlew lintDebug
 ```
 
 ---
 
 ## 2. Architecture & Jetpack Compose Coding Guidelines
 
-Kitsune follows strict **Unidirectional Data Flow (MVI/MVVM)** and Brad Frost's **Atomic Design System** mapped to Jetpack Compose. Please adhere to these principles:
+Kitsune follows strict **Unidirectional Data Flow (MVI/MVVM)** and Brad Frost's **Atomic Design System** mapped to Jetpack Compose primitives.
 
 ### 2.1 Atomic Design Hierarchy
 Components must be placed in their respective packages under `com.kitsune.app.ui.components`:
 - **`tokens`**: Design tokens (colors, spacing, shapes). Accessed via `KitsuneTheme.colors`, `KitsuneTheme.spacing`, `KitsuneTheme.shapes`.
 - **`atoms`**: Single-responsibility primitives (`KitsuneButton`, `KitsuneTextField`, `KitsuneBadge`). They must not depend on molecules or organisms.
 - **`molecules`**: Functional combinations of 2+ atoms (`UrlInputBar`, `KitsuneModeSelector`, `MediaPreviewCard`).
-- **`organisms`**: Discrete screen regions and dialogs (`MainInputCard`, `ActiveDownloadCard`, `DownloadSettingsSheet`).
+- **`organisms`**: Discrete screen regions and dialogs (`MainInputCard`, `ActiveDownloadCard`, `DownloadSettingsSheet`, `KitsuneMediaPlayerDialog`).
 - **`templates`**: Layout wrappers handling safe insets and scroll behavior without hardcoded domain data (`KitsuneScreenTemplate`).
-- **`screens`**: Top-level coordinators connecting ViewModels to templates.
+- **`screens`**: Top-level coordinators connecting ViewModels to templates using `MainUiAction`.
 
-### 2.2 Compose Stability & Performance
+### 2.2 Compose-Expert Quality Checklist
+- **Strict Design Tokens**: Never hardcode colors (`Color(0x...)`) or raw numbers directly in composable bodies. Always use `KitsuneTheme.colors`, `KitsuneTheme.spacing`, and `KitsuneTheme.shapes`.
+- **Self-Documenting Code (Zero Comments)**: Do not add redundant or noisy inline comments. Write clean, self-explanatory code with expressive naming.
 - **Immutable State Contracts**: All UI state classes and domain models must be annotated with `@Immutable` (e.g., `MainUiState`, `DownloadConfig`).
-- **State Hoisting**: Pass state downward and events upward via lambdas. Avoid instantiating ViewModels inside atoms, molecules, or organisms.
-- **Modifier Guidelines**:
+- **State Hoisting & MVI**: Pass state down and actions up using sealed interface actions (e.g. `MainUiAction`). Avoid passing raw ViewModels down into reusable UI components.
+- **Modifier Ordering**:
   - Every reusable composable must accept `modifier: Modifier = Modifier` as the first optional parameter.
-  - The passed `modifier` must be applied to the root layout node of the composable.
-  - Avoid duplicate or unchained modifiers.
-- **Lifecycle-Aware State Collection**: When collecting `StateFlow` inside `@Composable` functions, always use `collectAsStateWithLifecycle()` to prevent unnecessary background processing.
-- **Previews**: All atoms, molecules, and organisms should provide a `@Preview` composable wrapped in `KitsuneTheme`.
-
-### 2.3 Theming & Design Tokens
-- Never hardcode color values or raw dimension numbers (`dp`/`sp`) directly inside composables.
-- Always retrieve spacing via `KitsuneTheme.spacing.<size>`, corner radiuses via `KitsuneTheme.shapes.<type>`, and palette colors via `KitsuneTheme.colors.<token>`.
+  - Apply the modifier to the root layout node.
+  - Follow the canonical modifier ordering: sizing/layout -> background/border -> clipping -> clickable/semantics -> inner padding.
+- **Accessibility & Touch Targets**:
+  - Interactive elements must maintain a minimum touch target size of 48x48dp.
+  - All icons and images must provide a localized `contentDescription` for TalkBack, or `null` if decorative.
+- **Previews**: All new UI components must include a private preview annotated with `@ThemePreviews` to test rendering in both Dark and AMOLED modes.
 
 ---
 
@@ -86,14 +85,8 @@ Kitsune follows the **Conventional Commits** specification:
 - `refactor`: Code changes that neither fix a bug nor add a feature
 - `perf`: Performance improvements
 - `test`: Adding or correcting tests
-- `chore`: Gradle, build config, or dependency updates
-
-**Examples:**
-```bash
-git commit -m "feat(ui): add support for Instagram story downloads"
-git commit -m "fix(engine): handle query sanitization for short YouTube URLs"
-git commit -m "docs(readme): add troubleshooting section for Android 15"
-```
+- `ci`: CI/CD workflows, Gradle build, or GitHub Actions
+- `chore`: Maintenance, dependencies, or configuration updates
 
 ---
 
@@ -102,11 +95,14 @@ git commit -m "docs(readme): add troubleshooting section for Android 15"
 Before submitting your pull request, please verify the following:
 1. [ ] The project compiles successfully: `./gradlew assembleDebug`.
 2. [ ] All unit tests pass: `./gradlew testDebugUnitTest`.
-3. [ ] Code follows the Atomic Design package structure.
-4. [ ] UI components do not hardcode colors, shapes, or spacing values.
-5. [ ] Any new state models are marked with `@Immutable`.
-6. [ ] Edge-to-edge system insets are properly respected.
-7. [ ] All documentation, commit messages, and PR descriptions are written in **English**.
+3. [ ] Android Lint passes without fatal errors: `./gradlew lintDebug`.
+4. [ ] Code follows the Atomic Design package structure.
+5. [ ] No hardcoded colors or raw dimensions; 100% token usage.
+6. [ ] Zero code comments (self-documenting clean code).
+7. [ ] New composables provide `@ThemePreviews`.
+8. [ ] Any new state models are marked with `@Immutable`.
+9. [ ] Touch targets are at least 48x48dp with semantic accessibility descriptions.
+10. [ ] Commit messages follow the Conventional Commits format.
 
 ---
 

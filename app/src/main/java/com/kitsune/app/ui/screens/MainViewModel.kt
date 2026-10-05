@@ -23,9 +23,11 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(
+    application: Application,
+    private val preferencesRepository: UserPreferencesRepository = UserPreferencesRepository(application)
+) : AndroidViewModel(application) {
 
-    private val preferencesRepository = UserPreferencesRepository(application)
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
@@ -62,6 +64,28 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         loadDownloadedFiles()
+    }
+
+    fun onAction(action: MainUiAction, context: Context? = null) {
+        when (action) {
+            is MainUiAction.ChangeUrl -> onUrlChanged(action.url)
+            is MainUiAction.StartDownload -> context?.let { startDownload(it) }
+            is MainUiAction.CancelDownload -> context?.let { cancelDownload(it) }
+            is MainUiAction.DismissError -> dismissError()
+            is MainUiAction.SetDownloadMode -> setDownloadMode(action.mode)
+            is MainUiAction.ChangeConfig -> onConfigChanged(action.config)
+            is MainUiAction.ToggleSettings -> toggleSettingsSheet(action.open)
+            is MainUiAction.ToggleHistory -> toggleHistory(action.open)
+            is MainUiAction.ToggleSupportedServices -> toggleSupportedServices(action.open)
+            is MainUiAction.ToggleTerms -> toggleTerms(action.open)
+            is MainUiAction.ToggleAmoledTheme -> toggleAmoledTheme(action.enabled)
+            is MainUiAction.CheckEngineUpdate -> context?.let { checkEngineUpdate(it) }
+            is MainUiAction.PlayFile -> playDownloadedFile(action.file)
+            is MainUiAction.CloseMediaPlayer -> closeMediaPlayer()
+            is MainUiAction.PlayExternal -> context?.let { playFileExternal(it, action.file) }
+            is MainUiAction.DeleteFile -> confirmDeleteFile(action.file)
+            is MainUiAction.RenameFile -> confirmRenameFile(action.file, action.newName)
+        }
     }
 
     fun initEngineVersion(context: Context) {

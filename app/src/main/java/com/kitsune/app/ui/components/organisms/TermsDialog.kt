@@ -20,26 +20,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.ui.theme.KitsuneTheme
+import com.kitsune.app.ui.theme.ThemePreviews
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TermsDialog(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     BasicAlertDialog(
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(Color(0xFF0F121C))
-                .border(BorderStroke(1.dp, Color(0xFF222738)), RoundedCornerShape(24.dp))
+                .clip(RoundedCornerShape(KitsuneTheme.shapes.cardRadius))
+                .background(KitsuneTheme.colors.surface)
+                .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), RoundedCornerShape(KitsuneTheme.shapes.cardRadius))
                 .padding(24.dp)
         ) {
             Column(
@@ -47,7 +50,7 @@ fun TermsDialog(
             ) {
                 Text(
                     text = "termos e ética de uso",
-                    color = Color.White,
+                    color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -55,7 +58,7 @@ fun TermsDialog(
 
                 Text(
                     text = "O kitsune.tools é uma ferramenta open-source desenvolvida exclusivamente para uso pessoal, backup privado e estudo.",
-                    color = Color(0xFFCBD5E1),
+                    color = KitsuneTheme.colors.textSecondary,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 13.sp,
                     lineHeight = 18.sp
@@ -65,7 +68,7 @@ fun TermsDialog(
                     text = "• Respeite os direitos dos criadores originais e o direito autoral de cada mídia.\n" +
                             "• Não utilize arquivos baixados para distribuição comercial ou violação de direitos.\n" +
                             "• O processamento ocorre 100% no seu próprio dispositivo sem intermediação de servidores de terceiros.",
-                    color = Color(0xFF94A3B8),
+                    color = KitsuneTheme.colors.textMuted,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 12.sp,
                     lineHeight = 17.sp
@@ -80,7 +83,7 @@ fun TermsDialog(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = "entendido",
-                            color = Color(0xFFF97316),
+                            color = KitsuneTheme.colors.accentOrange,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
@@ -89,5 +92,13 @@ fun TermsDialog(
                 }
             }
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun TermsDialogPreview() {
+    KitsuneTheme {
+        TermsDialog(onDismiss = {})
     }
 }

@@ -161,3 +161,23 @@ fun MediaPreviewCard(
         }
     }
 }
+
+@com.kitsune.app.ui.theme.ThemePreviews
+@Composable
+private fun MediaPreviewCardPreview() {
+    KitsuneTheme {
+        MediaPreviewCard(
+            mediaInfo = MediaInfo(
+                id = "1",
+                title = "Vídeo demonstrativo Kitsune",
+                uploader = "Kitsune Team",
+                durationSeconds = 245,
+                thumbnailUrl = null,
+                platform = com.kitsune.app.core.model.PlatformType.YOUTUBE,
+                originalUrl = "https://youtube.com/watch?v=demo"
+            ),
+            isLoading = false
+        )
+    }
+}
+

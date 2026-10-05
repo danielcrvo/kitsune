@@ -187,3 +187,21 @@ fun ActiveDownloadCard(
         }
     }
 }
+
+@com.kitsune.app.ui.theme.ThemePreviews
+@Composable
+private fun ActiveDownloadCardPreview() {
+    KitsuneTheme {
+        ActiveDownloadCard(
+            downloadState = DownloadState.Downloading(
+                progress = 68f,
+                speed = "4.2 MB/s",
+                eta = "00:15",
+                stage = com.kitsune.app.core.model.DownloadStage.VIDEO_STREAM
+            ),
+            onCancel = {},
+            onDismissError = {}
+        )
+    }
+}
+

@@ -15,6 +15,7 @@ data class KitsuneColorTokens(
     val accentCyan: Color = Color(0xFF00F2FE),
     val accentIndigo: Color = Color(0xFF4FACFE),
     val accentOrange: Color = Color(0xFFF97316),
+    val accentPurple: Color = Color(0xFFC084FC),
     val textPrimary: Color = Color(0xFFFFFFFF),
     val textSecondary: Color = Color(0xFFCBD5E1),
     val textMuted: Color = Color(0xFF94A3B8),
