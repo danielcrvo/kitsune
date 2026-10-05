@@ -77,7 +77,7 @@ jobs:
           EOF
 
       - name: Publish Nightly release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: nightly
           name: "Kitsune Nightly (Development Build)"
