@@ -47,82 +47,82 @@ enum class MascotType(
         endFrame = 239
     ),
     SLEEPING(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_sleeping.svg",
         startFrame = 240,
         endFrame = 299
     ),
     WAVING(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_waving.svg",
         startFrame = 300,
         endFrame = 359
     ),
     SEARCHING(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_searching.svg",
         startFrame = 360,
         endFrame = 419
     ),
     PAUSED(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_paused.svg",
         startFrame = 420,
         endFrame = 479
     ),
     WAITING_FOR_WIFI(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_waiting_for_wifi.svg",
         startFrame = 480,
         endFrame = 539
     ),
     DANCING(
-        assetPath = "file:///android_asset/mascot/mascot_downloading.svg",
+        assetPath = "file:///android_asset/mascot/mascot_dancing.svg",
         startFrame = 540,
         endFrame = 599
     ),
     THINKING(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_thinking.svg",
         startFrame = 600,
         endFrame = 659
     ),
     SURPRISED(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_surprised.svg",
         startFrame = 660,
         endFrame = 719
     ),
     LOVE(
-        assetPath = "file:///android_asset/mascot/mascot_completed.svg",
+        assetPath = "file:///android_asset/mascot/mascot_love.svg",
         startFrame = 720,
         endFrame = 779
     ),
     EATING(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_eating.svg",
         startFrame = 780,
         endFrame = 839
     ),
     QUEUE(
-        assetPath = "file:///android_asset/mascot/mascot_downloading.svg",
+        assetPath = "file:///android_asset/mascot/mascot_queue.svg",
         startFrame = 840,
         endFrame = 899
     ),
     MUXING(
-        assetPath = "file:///android_asset/mascot/mascot_downloading.svg",
+        assetPath = "file:///android_asset/mascot/mascot_muxing.svg",
         startFrame = 900,
         endFrame = 959
     ),
     COOL(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_cool.svg",
         startFrame = 960,
         endFrame = 1019
     ),
     ROCKET(
-        assetPath = "file:///android_asset/mascot/mascot_downloading.svg",
+        assetPath = "file:///android_asset/mascot/mascot_rocket.svg",
         startFrame = 1020,
         endFrame = 1079
     ),
     TALKING(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/mascot/mascot_talking.svg",
         startFrame = 1080,
         endFrame = 1139
     ),
     SINGING(
-        assetPath = "file:///android_asset/mascot/mascot_downloading.svg",
+        assetPath = "file:///android_asset/mascot/mascot_singing.svg",
         startFrame = 1140,
         endFrame = 1199
     )
