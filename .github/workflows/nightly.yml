@@ -52,27 +52,36 @@ jobs:
           path: app/build/outputs/apk/debug/Kitsune-*.apk
           if-no-files-found: warn
 
+      - name: Generate Nightly release notes
+        run: |
+          COMMITS=$(git log --pretty=format:"- %s (%h)" -n 10)
+          cat <<EOF > /tmp/nightly_release_notes.md
+          ## Kitsune Nightly (Development Build)
+
+          This is an automated development build generated from commit ${{ github.sha }} on branch main.
+
+          ### Recent Changes
+          $COMMITS
+
+          ### Installation Notes
+          - Package ID: com.kitsune.app.debug (can be installed alongside the production release)
+          - App Name: Kitsune Nightly
+          - Signing: Signed with standard Android debug keystore
+
+          ### Available Downloads
+          - ARM64 (Recommended): Kitsune-*-arm64-v8a-debug.apk (modern 64-bit devices)
+          - Universal: Kitsune-*-universal-debug.apk (all architectures included)
+          - ARM 32-bit: Kitsune-*-armeabi-v7a-debug.apk (legacy 32-bit devices)
+          - x86_64: Kitsune-*-x86_64-debug.apk (emulators and Chromebooks)
+          - x86: Kitsune-*-x86-debug.apk (32-bit emulators)
+          EOF
+
       - name: Publish Nightly release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly
           name: "Kitsune Nightly (Development Build)"
-          body: |
-            ## Kitsune Nightly (Development Build)
-
-            This is an automated development build generated from commit ${{ github.sha }} on branch main.
-
-            ### Installation Notes
-            - Package ID: com.kitsune.app.debug (can be installed alongside the production release)
-            - App Name: Kitsune Nightly
-            - Signing: Signed with standard Android debug keystore
-
-            ### Available Downloads
-            - ARM64 (Recommended): Kitsune-*-arm64-v8a-debug.apk (modern 64-bit devices)
-            - Universal: Kitsune-*-universal-debug.apk (all architectures included)
-            - ARM 32-bit: Kitsune-*-armeabi-v7a-debug.apk (legacy 32-bit devices)
-            - x86_64: Kitsune-*-x86_64-debug.apk (emulators and Chromebooks)
-            - x86: Kitsune-*-x86-debug.apk (32-bit emulators)
+          body_path: /tmp/nightly_release_notes.md
           prerelease: true
           draft: false
           make_latest: false
