@@ -5,6 +5,31 @@ All notable changes to the Kitsune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-10-05
+
+### Added
+- Full internationalization (i18n) framework with English (`en`) as the default global locale and Brazilian Portuguese (`pt-BR`) localized dictionaries.
+- Android 13+ Per-App Language Preferences support via `locales_config.xml` and manifest integration.
+- Modern AGP resource filtering (`androidResources.localeFilters`) to optimize APK packaging sizes for supported languages.
+- Type-safe `UiText` wrapper abstraction (`DynamicString` and `StringResource`) decoupling UI text resolution from ViewModels and domain models.
+- Type-safe string resource annotation (`@StringRes val labelRes: Int`) in `DownloadStage` domain model.
+- Fully localized background download notifications and Android system notification channel configurations.
+- Standalone `.editorconfig` and `.gitattributes` files enforcing LF line endings and consistent indent rules across IDEs.
+- Automated release notes extraction and curated changelog integration in `.github/release.yml`.
+
+### Changed
+- Refactored all Jetpack Compose screens, dialogs, organisms, molecules, and atoms to use `stringResource(R.string.xxx)` instead of hardcoded strings.
+- Redesigned `README.md` into a minimal, assertive, and direct documentation layout inspired by Cobalt.
+- Replaced literal text glyphs with official vector icons (`Icons.Outlined.ContentPaste` and `Icons.Default.PlayArrow`).
+- Standardized all GitHub Actions workflows (`ci.yml`, `nightly.yml`, `release.yml`, and `dependabot.yml`) without emojis and with clean step names.
+
+### Fixed
+- Resolved string resource parity across locales, maintaining 100% parity across all 113 string resource keys.
+- Modernized deprecated `resourceConfigurations` DSL in `build.gradle.kts` to `androidResources.localeFilters`.
+
+### Removed
+- Removed all inline code comments and emoji symbols across the entire repository to uphold total clean-code consistency.
+
 ## [1.0.1] - 2026-10-05
 
 ### Added

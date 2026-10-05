@@ -62,6 +62,7 @@ All media extraction, network requests, and audio/video muxing run strictly loca
   - Scoped storage: Automatic indexing into public `Movies/Kitsune` and `Music/Kitsune` folders.
 - **In-App Engine Updates**: Self-updater checks for and applies yt-dlp binary patches independently of app releases.
 - **Media Library**: In-app management of downloaded files with playback, renaming, sharing, and deletion.
+- **Full Internationalization (i18n)**: Bilingual support for English (default global) and Brazilian Portuguese (pt-BR), with Android 13+ Per-App Language Preferences.
 
 ---
 
