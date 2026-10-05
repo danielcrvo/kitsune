@@ -76,8 +76,21 @@ jobs:
           - x86: Kitsune-*-x86-debug.apk (32-bit emulators)
           EOF
 
+      - name: Clean up previous Nightly release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view nightly > /dev/null 2>&1; then
+            for asset in $(gh release view nightly --json assets --jq '.assets[].name'); do
+              if [ -n "$asset" ]; then
+                gh release delete-asset nightly "$asset" -y || true
+              fi
+            done
+          fi
+
       - name: Publish Nightly release
         uses: softprops/action-gh-release@v2
+
         with:
           tag_name: nightly
           name: "Kitsune Nightly (Development Build)"
