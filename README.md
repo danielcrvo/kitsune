@@ -60,6 +60,10 @@ All media extraction, network requests, and audio/video muxing run strictly loca
   - Automatic clipboard detection: Instant detection of media URLs upon opening the app.
   - Foreground service: Dependable background downloads with progress notifications and cancel controls.
   - Scoped storage: Automatic indexing into public `Movies/Kitsune` and `Music/Kitsune` folders.
+- **Download Queue & Playlist Batch Processing**: Queue multiple media tasks seamlessly and select items from YouTube and SoundCloud playlists with dedicated selection dialogs.
+- **Wi-Fi Only Mode**: Enforce cellular data savings by restricting heavy media downloads to Wi-Fi networks with automatic waiting states.
+- **Dynamic Theming (Material You)**: Runtime system wallpaper accent extraction on Android 12+ (API 31+) with fallback to dark theme.
+- **Dynamic 20-State Mascot**: Fully reactive Lottie vector mascot animation system with dedicated static SVG fallbacks across all core application states and interactive touch response.
 - **In-App Engine Updates**: Self-updater checks for and applies yt-dlp binary patches independently of app releases.
 - **Media Library**: In-app management of downloaded files with playback, renaming, sharing, and deletion.
 - **Full Internationalization (i18n)**: Bilingual support for English (default global) and Brazilian Portuguese (pt-BR), with Android 13+ Per-App Language Preferences.

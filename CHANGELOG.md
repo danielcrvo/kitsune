@@ -5,6 +5,25 @@ All notable changes to the Kitsune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-10-05
+
+### Added
+- Sequential **Download Queue** system processing queued items in background with pending count indicator and queue management.
+- Multi-item **Playlist Support** with metadata pre-fetching, individual track selection dialog (`PlaylistSelectionDialog`), duration calculation, and batch queue dispatch.
+- **Wi-Fi Only Mode** toggle backed by persistent DataStore preferences and dynamic `NetworkMonitor` connectivity state observation.
+- Dynamic Theming (**Material You**) support on Android 12+ (API 31+) with runtime system wallpaper color scheme extraction and smooth fallback to dark theme.
+- Complete **20-State Mascot System** integrating full Lottie animation sequences (1200 frames at 30 FPS) with interactive touch feedback (waving gesture with haptic feedback) and dynamic state resolution across main screen, active downloads, dialogs, audio player, and history empty states.
+- 16 new dedicated high-fidelity static SVG mascot assets in `assets/mascot/` providing complete 1:1 fallback coverage across all 20 mascot states.
+
+### Changed
+- Upgraded `KitsuneMediaPlayerDialog` audio visualization to display dynamic `SINGING` and `PAUSED` mascot animations.
+- Refactored `ActiveDownloadCard` to display stateful mascots for Wi-Fi waiting, media muxing, and download queue headers.
+- Enhanced `DownloadsHistorySheet` empty state to differentiate between empty history (`SLEEPING`) and unmatched search filters (`SEARCHING`).
+- Integrated thematic mascot avatars into header dialogs for playlists (`SURPRISED`), legal terms (`TALKING`), and supported platforms (`LOVE`).
+
+### Fixed
+- Fixed ProGuard and R8 reflection optimization rules for `MainViewModel` constructor dependency injection.
+
 ## [1.1.0] - 2026-10-05
 
 ### Added
