@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
-fun CobaltTextField(
+fun KitsuneTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -88,11 +88,11 @@ fun CobaltTextField(
     )
 }
 
-@Preview(name = "CobaltTextField Preview")
+@Preview(name = "KitsuneTextField Preview")
 @Composable
-private fun CobaltTextFieldPreview() {
+private fun KitsuneTextFieldPreview() {
     KitsuneTheme {
-        CobaltTextField(
+        KitsuneTextField(
             value = "",
             onValueChange = {},
             placeholder = "Cole o link aqui..."

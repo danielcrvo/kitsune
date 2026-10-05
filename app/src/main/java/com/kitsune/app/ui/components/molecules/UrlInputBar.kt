@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
 fun UrlInputBar(
@@ -58,8 +59,8 @@ fun UrlInputBar(
             .fillMaxWidth()
             .height(54.dp)
             .clip(RoundedCornerShape(27.dp))
-            .background(Color(0xFF0F121C))
-            .border(BorderStroke(1.dp, Color(0xFF222738)), RoundedCornerShape(27.dp))
+            .background(KitsuneTheme.colors.surface)
+            .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), RoundedCornerShape(27.dp))
             .padding(horizontal = 14.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -71,7 +72,7 @@ fun UrlInputBar(
             Icon(
                 imageVector = Icons.Default.Link,
                 contentDescription = null,
-                tint = Color(0xFF94A3B8),
+                tint = KitsuneTheme.colors.textMuted,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -85,7 +86,7 @@ fun UrlInputBar(
                 if (url.isEmpty()) {
                     Text(
                         text = placeholder,
-                        color = Color(0xFF94A3B8),
+                        color = KitsuneTheme.colors.textMuted,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 14.sp
                     )
@@ -96,12 +97,12 @@ fun UrlInputBar(
                     onValueChange = onUrlChange,
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = TextStyle(
-                        color = Color.White,
+                        color = KitsuneTheme.colors.textPrimary,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 14.sp
                     ),
                     singleLine = true,
-                    cursorBrush = SolidColor(Color(0xFFF97316)),
+                    cursorBrush = SolidColor(KitsuneTheme.colors.accentPrimary),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Uri,
                         imeAction = ImeAction.Go
@@ -127,7 +128,7 @@ fun UrlInputBar(
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF1E2435))
+                        .background(KitsuneTheme.colors.surfaceVariant)
                         .clickable {
                             haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                             onUrlChange("")
@@ -138,7 +139,7 @@ fun UrlInputBar(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Limpar",
-                        tint = Color(0xFF94A3B8),
+                        tint = KitsuneTheme.colors.textMuted,
                         modifier = Modifier.size(14.dp)
                     )
                 }
@@ -152,8 +153,8 @@ fun UrlInputBar(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFF1E2435))
-                    .border(BorderStroke(1.dp, Color(0xFF2D354D)), RoundedCornerShape(14.dp))
+                    .background(KitsuneTheme.colors.surfaceVariant)
+                    .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), RoundedCornerShape(14.dp))
                     .clickable {
                         if (isActionDownload) {
                             haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
@@ -174,13 +175,13 @@ fun UrlInputBar(
                     Icon(
                         imageVector = if (isActionDownload) Icons.Outlined.Download else Icons.Outlined.ContentPaste,
                         contentDescription = null,
-                        tint = Color(0xFFF97316),
+                        tint = KitsuneTheme.colors.accentPrimary,
                         modifier = Modifier.size(15.dp)
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
                         text = if (isActionDownload) "Baixar" else "Colar",
-                        color = Color(0xFFF1F5F9),
+                        color = KitsuneTheme.colors.textPrimary,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Medium,
                         fontSize = 13.sp

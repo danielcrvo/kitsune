@@ -28,7 +28,20 @@ class UserPreferencesRepository(private val context: Context) {
         val DOWNLOAD_MODE = stringPreferencesKey("pref_download_mode")
         val EMBED_SUBTITLES = booleanPreferencesKey("pref_embed_subtitles")
         val AUTO_CLIPBOARD = booleanPreferencesKey("pref_auto_clipboard")
+        val AMOLED_THEME = booleanPreferencesKey("pref_amoled_theme")
     }
+
+    val isAmoledThemeFlow: Flow<Boolean> = context.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(androidx.datastore.preferences.core.emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.AMOLED_THEME] ?: false
+        }
 
     val userConfigFlow: Flow<DownloadConfig> = context.dataStore.data
         .catch { exception ->
@@ -83,6 +96,12 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun saveDownloadMode(mode: DownloadMode) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.DOWNLOAD_MODE] = mode.name
+        }
+    }
+
+    suspend fun saveAmoledTheme(isAmoled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.AMOLED_THEME] = isAmoled
         }
     }
 }

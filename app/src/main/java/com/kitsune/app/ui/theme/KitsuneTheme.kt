@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -12,46 +11,52 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.kitsune.app.ui.theme.tokens.CobaltColorTokens
-import com.kitsune.app.ui.theme.tokens.CobaltShapeTokens
-import com.kitsune.app.ui.theme.tokens.CobaltSpacingTokens
-import com.kitsune.app.ui.theme.tokens.LocalCobaltColors
-import com.kitsune.app.ui.theme.tokens.LocalCobaltShapes
-import com.kitsune.app.ui.theme.tokens.LocalCobaltSpacing
+import com.kitsune.app.ui.theme.tokens.KitsuneColorTokens
+import com.kitsune.app.ui.theme.tokens.KitsuneShapeTokens
+import com.kitsune.app.ui.theme.tokens.KitsuneSpacingTokens
+import com.kitsune.app.ui.theme.tokens.LocalKitsuneColors
+import com.kitsune.app.ui.theme.tokens.LocalKitsuneShapes
+import com.kitsune.app.ui.theme.tokens.LocalKitsuneSpacing
 
-private val DarkColorScheme = darkColorScheme(
-    primary = CobaltColorTokens().accentCyan,
-    onPrimary = CobaltColorTokens().background,
-    primaryContainer = CobaltColorTokens().surfaceElevated,
-    onPrimaryContainer = CobaltColorTokens().accentCyan,
-    secondary = CobaltColorTokens().accentIndigo,
-    onSecondary = CobaltColorTokens().textPrimary,
-    background = CobaltColorTokens().background,
-    onBackground = CobaltColorTokens().textPrimary,
-    surface = CobaltColorTokens().surface,
-    onSurface = CobaltColorTokens().textPrimary,
-    surfaceVariant = CobaltColorTokens().surfaceVariant,
-    onSurfaceVariant = CobaltColorTokens().textSecondary,
-    error = CobaltColorTokens().error,
-    onError = CobaltColorTokens().textPrimary
+private fun buildDarkColorScheme(tokens: KitsuneColorTokens) = darkColorScheme(
+    primary = tokens.accentCyan,
+    onPrimary = tokens.background,
+    primaryContainer = tokens.surfaceElevated,
+    onPrimaryContainer = tokens.accentCyan,
+    secondary = tokens.accentIndigo,
+    onSecondary = tokens.textPrimary,
+    background = tokens.background,
+    onBackground = tokens.textPrimary,
+    surface = tokens.surface,
+    onSurface = tokens.textPrimary,
+    surfaceVariant = tokens.surfaceVariant,
+    onSurfaceVariant = tokens.textSecondary,
+    error = tokens.error,
+    onError = tokens.textPrimary
 )
 
 @Composable
 fun KitsuneTheme(
     darkTheme: Boolean = true,
     dynamicColor: Boolean = false,
+    isAmoled: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
+    val kitsuneColors = if (isAmoled) {
+        KitsuneColorTokens.amoledDark()
+    } else {
+        KitsuneColorTokens.defaultDark()
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             dynamicDarkColorScheme(context)
         }
-        else -> DarkColorScheme
+        else -> buildDarkColorScheme(kitsuneColors)
     }
 
     val view = LocalView.current
@@ -66,14 +71,13 @@ fun KitsuneTheme(
         }
     }
 
-    val cobaltColors = CobaltColorTokens()
-    val cobaltSpacing = CobaltSpacingTokens()
-    val cobaltShapes = CobaltShapeTokens()
+    val kitsuneSpacing = KitsuneSpacingTokens()
+    val kitsuneShapes = KitsuneShapeTokens()
 
     CompositionLocalProvider(
-        LocalCobaltColors provides cobaltColors,
-        LocalCobaltSpacing provides cobaltSpacing,
-        LocalCobaltShapes provides cobaltShapes
+        LocalKitsuneColors provides kitsuneColors,
+        LocalKitsuneSpacing provides kitsuneSpacing,
+        LocalKitsuneShapes provides kitsuneShapes
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
@@ -84,20 +88,20 @@ fun KitsuneTheme(
 }
 
 object KitsuneTheme {
-    val colors: CobaltColorTokens
+    val colors: KitsuneColorTokens
         @Composable
         @ReadOnlyComposable
-        get() = LocalCobaltColors.current
+        get() = LocalKitsuneColors.current
 
-    val spacing: CobaltSpacingTokens
+    val spacing: KitsuneSpacingTokens
         @Composable
         @ReadOnlyComposable
-        get() = LocalCobaltSpacing.current
+        get() = LocalKitsuneSpacing.current
 
-    val shapes: CobaltShapeTokens
+    val shapes: KitsuneShapeTokens
         @Composable
         @ReadOnlyComposable
-        get() = LocalCobaltShapes.current
+        get() = LocalKitsuneShapes.current
 
     val typography: androidx.compose.material3.Typography
         @Composable

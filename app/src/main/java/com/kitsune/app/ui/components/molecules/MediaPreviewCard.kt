@@ -51,8 +51,8 @@ fun MediaPreviewCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF10131E))
-                .border(BorderStroke(1.dp, Color(0xFF22283A)), RoundedCornerShape(16.dp))
+                .background(KitsuneTheme.colors.surface)
+                .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), RoundedCornerShape(16.dp))
                 .padding(12.dp)
         ) {
             if (isLoading && mediaInfo == null) {
@@ -71,7 +71,7 @@ fun MediaPreviewCard(
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = "detectando detalhes da mídia...",
-                        color = Color(0xFF94A3B8),
+                        color = KitsuneTheme.colors.textMuted,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp
                     )
@@ -90,19 +90,19 @@ fun MediaPreviewCard(
                             modifier = Modifier
                                 .size(width = 84.dp, height = 56.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF1E2235))
+                                .background(KitsuneTheme.colors.surfaceVariant)
                         )
                     } else {
                         Box(
                             modifier = Modifier
                                 .size(width = 84.dp, height = 56.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF1E2235)),
+                                .background(KitsuneTheme.colors.surfaceVariant),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "▶",
-                                color = Color(0xFF64748B),
+                                color = KitsuneTheme.colors.textMuted,
                                 fontSize = 18.sp
                             )
                         }
@@ -110,14 +110,13 @@ fun MediaPreviewCard(
 
                     Spacer(modifier = Modifier.width(12.dp))
 
-
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = mediaInfo.title,
-                            color = Color.White,
+                            color = KitsuneTheme.colors.textPrimary,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 13.sp,
@@ -139,7 +138,7 @@ fun MediaPreviewCard(
                                 val formattedDuration = "%02d:%02d".format(minutes, seconds)
                                 Text(
                                     text = formattedDuration,
-                                    color = Color(0xFF94A3B8),
+                                    color = KitsuneTheme.colors.textSecondary,
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 11.sp
                                 )
@@ -148,7 +147,7 @@ fun MediaPreviewCard(
                             if (mediaInfo.uploader.isNotBlank() && mediaInfo.uploader != "Desconhecido") {
                                 Text(
                                     text = "• ${mediaInfo.uploader}",
-                                    color = Color(0xFF64748B),
+                                    color = KitsuneTheme.colors.textMuted,
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 11.sp,
                                     maxLines = 1,

@@ -16,7 +16,7 @@ import com.kitsune.app.core.model.PlatformType
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
-fun CobaltBadge(
+fun KitsuneBadge(
     label: String,
     modifier: Modifier = Modifier,
     badgeColor: Color = KitsuneTheme.colors.accentCyan,
@@ -51,16 +51,16 @@ fun PlatformBadge(
     modifier: Modifier = Modifier
 ) {
     val color = Color(platform.brandHexColor)
-    CobaltBadge(
+    KitsuneBadge(
         label = platform.displayName,
         modifier = modifier,
         badgeColor = color
     )
 }
 
-@Preview(name = "CobaltBadge Preview")
+@Preview(name = "KitsuneBadge Preview")
 @Composable
-private fun CobaltBadgePreview() {
+private fun KitsuneBadgePreview() {
     KitsuneTheme {
         PlatformBadge(platform = PlatformType.YOUTUBE)
     }

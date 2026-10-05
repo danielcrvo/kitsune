@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.core.model.DownloadState
-import com.kitsune.app.ui.components.atoms.CobaltIconButton
+import com.kitsune.app.ui.components.atoms.KitsuneIconButton
 import com.kitsune.app.ui.components.molecules.DownloadStatusDisplay
 import com.kitsune.app.ui.theme.KitsuneTheme
 
@@ -76,7 +76,7 @@ fun ActiveDownloadCard(
                                 color = KitsuneTheme.colors.textPrimary
                             )
                         }
-                        CobaltIconButton(
+                        KitsuneIconButton(
                             onClick = onCancel,
                             size = 32.dp,
                             containerColor = KitsuneTheme.colors.surfaceElevated
@@ -168,7 +168,7 @@ fun ActiveDownloadCard(
                                 color = KitsuneTheme.colors.textSecondary
                             )
                         }
-                        CobaltIconButton(
+                        KitsuneIconButton(
                             onClick = onDismissError,
                             size = 32.dp,
                             containerColor = KitsuneTheme.colors.surfaceElevated

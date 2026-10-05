@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.core.model.DownloadStage
-import com.kitsune.app.ui.components.atoms.CobaltBadge
-import com.kitsune.app.ui.components.atoms.CobaltLinearGauge
+import com.kitsune.app.ui.components.atoms.KitsuneBadge
+import com.kitsune.app.ui.components.atoms.KitsuneLinearGauge
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
@@ -43,7 +43,7 @@ fun DownloadStatusDisplay(
             )
         }
 
-        CobaltLinearGauge(
+        KitsuneLinearGauge(
             progress = progress,
             modifier = Modifier.padding(vertical = KitsuneTheme.spacing.sm)
         )
@@ -54,7 +54,7 @@ fun DownloadStatusDisplay(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (speed.isNotEmpty()) {
-                CobaltBadge(
+                KitsuneBadge(
                     label = speed,
                     badgeColor = KitsuneTheme.colors.accentIndigo
                 )

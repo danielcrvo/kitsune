@@ -54,10 +54,10 @@ import com.kitsune.app.core.model.DownloadedMediaFile
 import com.kitsune.app.core.model.DownloadState
 import com.kitsune.app.ui.components.atoms.MascotSvg
 import com.kitsune.app.ui.components.atoms.MascotType
-import com.kitsune.app.ui.components.molecules.CobaltModeSelector
+import com.kitsune.app.ui.components.molecules.KitsuneModeSelector
 import com.kitsune.app.ui.components.molecules.UrlInputBar
 import com.kitsune.app.ui.components.organisms.ActiveDownloadCard
-import com.kitsune.app.ui.components.organisms.CobaltMediaPlayerDialog
+import com.kitsune.app.ui.components.organisms.KitsuneMediaPlayerDialog
 import com.kitsune.app.ui.components.organisms.DownloadSettingsSheet
 import com.kitsune.app.ui.components.organisms.DownloadsHistorySheet
 import com.kitsune.app.ui.components.organisms.SupportedServicesDialog
@@ -152,6 +152,8 @@ fun MainScreen(
         onPlayExternal = { viewModel.playFileExternal(context, it) },
         onDeleteFile = viewModel::confirmDeleteFile,
         onRenameFile = { file, newName -> viewModel.confirmRenameFile(file, newName) },
+        isAmoledTheme = uiState.isAmoledTheme,
+        onToggleAmoledTheme = viewModel::toggleAmoledTheme,
         modifier = modifier
     )
 }
@@ -180,6 +182,8 @@ fun MainScreenContent(
     onPlayExternal: (DownloadedMediaFile) -> Unit,
     onDeleteFile: (DownloadedMediaFile) -> Unit,
     onRenameFile: (DownloadedMediaFile, String) -> Unit,
+    isAmoledTheme: Boolean = false,
+    onToggleAmoledTheme: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -187,7 +191,7 @@ fun MainScreenContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF090A0F))
+            .background(KitsuneTheme.colors.background)
             .windowInsetsPadding(WindowInsets.statusBars)
             .windowInsetsPadding(WindowInsets.navigationBars)
     ) {
@@ -211,8 +215,8 @@ fun MainScreenContent(
                     modifier = Modifier
                         .height(38.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF131622))
-                        .border(BorderStroke(1.dp, Color(0xFF232738)), CircleShape)
+                        .background(KitsuneTheme.colors.surfaceVariant)
+                        .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), CircleShape)
                         .clickable(onClick = onOpenSupportedServices)
                         .padding(horizontal = 14.dp),
                     contentAlignment = Alignment.Center
@@ -220,7 +224,7 @@ fun MainScreenContent(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "+",
-                            color = Color(0xFFF97316),
+                            color = KitsuneTheme.colors.accentPrimary,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
@@ -228,7 +232,7 @@ fun MainScreenContent(
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "serviços suportados",
-                            color = Color(0xFFCBD5E1),
+                            color = KitsuneTheme.colors.textSecondary,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Medium,
                             fontSize = 12.sp
@@ -246,15 +250,15 @@ fun MainScreenContent(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF131622))
-                            .border(BorderStroke(1.dp, Color(0xFF232738)), CircleShape)
+                            .background(KitsuneTheme.colors.surfaceVariant)
+                            .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), CircleShape)
                             .clickable(onClick = onOpenHistory),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.FileDownload,
                             contentDescription = "Downloads",
-                            tint = Color(0xFF94A3B8),
+                            tint = KitsuneTheme.colors.textMuted,
                             modifier = Modifier.size(19.dp)
                         )
                     }
@@ -264,15 +268,15 @@ fun MainScreenContent(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF131622))
-                            .border(BorderStroke(1.dp, Color(0xFF232738)), CircleShape)
+                            .background(KitsuneTheme.colors.surfaceVariant)
+                            .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), CircleShape)
                             .clickable(onClick = onOpenSettings),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = "Configurações",
-                            tint = Color(0xFF94A3B8),
+                            tint = KitsuneTheme.colors.textMuted,
                             modifier = Modifier.size(19.dp)
                         )
                     }
@@ -326,7 +330,7 @@ fun MainScreenContent(
 
                 Text(
                     text = "kitsune.tools",
-                    color = Color.White,
+                    color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                     fontSize = 26.sp,
@@ -338,7 +342,7 @@ fun MainScreenContent(
 
                 Text(
                     text = "o downloader mais fofo e rápido da\nweb!",
-                    color = Color(0xFF94A3B8),
+                    color = KitsuneTheme.colors.textMuted,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Center,
@@ -366,8 +370,8 @@ fun MainScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
-                            .background(Color(0xFF161A29))
-                            .border(BorderStroke(1.dp, Color(0xFF283048)), androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                            .background(KitsuneTheme.colors.surfaceVariant)
+                            .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
                             .clickable { onUrlChange(uiState.detectedClipboardUrl) }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
@@ -384,7 +388,7 @@ fun MainScreenContent(
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "Copiar link detectado?",
-                                    color = Color(0xFFCBD5E1),
+                                    color = KitsuneTheme.colors.textSecondary,
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 12.sp,
                                     maxLines = 1,
@@ -411,7 +415,7 @@ fun MainScreenContent(
                 )
 
 
-                CobaltModeSelector(
+                KitsuneModeSelector(
                     selectedMode = uiState.downloadMode,
                     onModeSelect = onModeSelect
                 )
@@ -438,14 +442,14 @@ fun MainScreenContent(
             ) {
                 Text(
                     text = "ao continuar, você concorda com os",
-                    color = Color(0xFF64748B),
+                    color = KitsuneTheme.colors.textMuted,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = "termos e ética de uso",
-                    color = Color(0xFF94A3B8),
+                    color = KitsuneTheme.colors.textSecondary,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
                     textDecoration = TextDecoration.Underline,
@@ -474,7 +478,9 @@ fun MainScreenContent(
             DownloadSettingsSheet(
                 config = uiState.downloadConfig,
                 engineVersion = uiState.engineVersion,
+                isAmoledTheme = isAmoledTheme,
                 onConfigChange = onConfigChange,
+                onToggleAmoledTheme = onToggleAmoledTheme,
                 onCheckEngineUpdate = onCheckEngineUpdate,
                 onDismiss = onDismissSettings
             )
@@ -485,7 +491,7 @@ fun MainScreenContent(
         }
 
         uiState.playingFile?.let { file ->
-            CobaltMediaPlayerDialog(
+            KitsuneMediaPlayerDialog(
                 file = file,
                 onDismiss = onCloseMediaPlayer,
                 onOpenExternal = { onPlayExternal(file) }

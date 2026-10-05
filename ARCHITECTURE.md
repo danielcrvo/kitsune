@@ -19,11 +19,11 @@ flowchart TD
         Activity["MainActivity"]
         Screen["MainScreen"]
         ViewModel["MainViewModel"]
-        Template["CobaltScreenTemplate"]
+        Template["KitsuneScreenTemplate"]
         Organisms["Organisms\n(MainInputCard, ActiveDownloadCard, Sheets)"]
         Molecules["Molecules\n(UrlInputBar, MediaPreviewCard, ModeSelector)"]
-        Atoms["Atoms\n(CobaltButton, CobaltBadge, MascotSvg)"]
-        Tokens["Tokens\n(CobaltColorTokens, CobaltSpacingTokens, CobaltShapeTokens)"]
+        Atoms["Atoms\n(KitsuneButton, KitsuneBadge, MascotSvg)"]
+        Tokens["Tokens\n(KitsuneColorTokens, KitsuneSpacingTokens, KitsuneShapeTokens)"]
     end
 
     subgraph Service_Layer["Service & Engine Layer"]
@@ -77,24 +77,24 @@ Template
 
 ### 2.1 Design Tokens (`ui/theme/tokens`)
 Tokens are the atomic values defining color, typography, spacing, and shapes:
-- **`CobaltColorTokens`**: Defines brand accents (`accentCyan`, `accentIndigo`), dark backgrounds (`background`, `surface`, `surfaceElevated`), and semantic states (`success`, `error`).
-- **`CobaltSpacingTokens`**: Strict spacing scale (`xxs: 2.dp` up to `xxl: 48.dp`).
-- **`CobaltShapeTokens`**: Corner radiuses (`pill: 999.dp`, `cardRadius: 24.dp`, `inputRadius: 16.dp`, `sheetRadius: 28.dp`).
-- **Access Pattern**: Provided via `CompositionLocalProvider` (`LocalCobaltColors`, `LocalCobaltSpacing`, `LocalCobaltShapes`) and queried using `KitsuneTheme.colors`, `KitsuneTheme.spacing`, and `KitsuneTheme.shapes`. All getters are annotated with `@ReadOnlyComposable` to skip recomposition registration.
+- **`KitsuneColorTokens`**: Defines brand accents (`accentCyan`, `accentIndigo`), dark backgrounds (`background`, `surface`, `surfaceElevated`), and semantic states (`success`, `error`), with full support for pure OLED black (AMOLED).
+- **`KitsuneSpacingTokens`**: Strict spacing scale (`xxs: 2.dp` up to `xxl: 48.dp`).
+- **`KitsuneShapeTokens`**: Corner radiuses (`pill: 999.dp`, `cardRadius: 24.dp`, `inputRadius: 16.dp`, `sheetRadius: 28.dp`).
+- **Access Pattern**: Provided via `CompositionLocalProvider` (`LocalKitsuneColors`, `LocalKitsuneSpacing`, `LocalKitsuneShapes`) and queried using `KitsuneTheme.colors`, `KitsuneTheme.spacing`, and `KitsuneTheme.shapes`. All getters are annotated with `@ReadOnlyComposable` to skip recomposition registration.
 
 ### 2.2 Atoms (`ui/components/atoms`)
 Single-purpose, highly reusable composables with slot APIs:
-- **`CobaltButton`**: Button component supporting `PRIMARY`, `SECONDARY`, and `ACCENT` visual variants, loading spinners, and pill shapes.
-- **`CobaltIconButton`**: Circular icon buttons with pressed/hover ripple states.
-- **`CobaltBadge`**: Compact pill badges displaying extraction status or platform tags.
-- **`CobaltTextField`**: Custom styled input field supporting prefix icons, clear actions, and edge-to-edge keyboard padding.
-- **`CobaltLinearGauge`**: Smoothly animated progress indicator utilizing `animateFloatAsState`.
+- **`KitsuneButton`**: Button component supporting `PRIMARY`, `SECONDARY`, and `ACCENT` visual variants, loading spinners, and pill shapes.
+- **`KitsuneIconButton`**: Circular icon buttons with pressed/hover ripple states.
+- **`KitsuneBadge`**: Compact pill badges displaying extraction status or platform tags.
+- **`KitsuneTextField`**: Custom styled input field supporting prefix icons, clear actions, and edge-to-edge keyboard padding.
+- **`KitsuneLinearGauge`**: Smoothly animated progress indicator utilizing `animateFloatAsState`.
 - **`MascotSvg` / `MascotAnimation`**: Reactive mascot rendering dynamic emotional states (`IDLE`, `DOWNLOADING`, `COMPLETED`, `ERROR`) using Lottie Compose with seamless marker/frame loop clipping and SVG fallback.
 
 ### 2.3 Molecules (`ui/components/molecules`)
 Composites of two or more atoms forming functional units:
-- **`UrlInputBar`**: Combines `CobaltTextField`, clipboard paste button, clear button, and submit action.
-- **`CobaltModeSelector`**: Segmented selector for `AUTO` (Video), `AUDIO`, and `MUTE` extraction modes.
+- **`UrlInputBar`**: Combines `KitsuneTextField`, clipboard paste button, clear button, and submit action.
+- **`KitsuneModeSelector`**: Segmented selector for `AUTO` (Video), `AUDIO`, and `MUTE` extraction modes.
 - **`MediaPreviewCard`**: Media item preview showing remote thumbnail, title, uploader, and duration.
 - **`DownloadStatusDisplay`**: Displays active download stage, percentage, download speed, and estimated time remaining (ETA).
 - **`QualityOptionTile`**: Selectable resolution or audio bitrate tile.
@@ -103,13 +103,13 @@ Composites of two or more atoms forming functional units:
 Discrete screen regions handling complex domain tasks:
 - **`MainInputCard`**: Core hero card housing the mode selector, input bar, detected platform badge, media preview, and trigger button.
 - **`ActiveDownloadCard`**: Real-time progress monitor card appearing during active downloads.
-- **`DownloadSettingsSheet`**: Modal bottom sheet configuring resolution, audio codecs (MP3, Opus, M4A), bitrate, subtitles, and yt-dlp version status.
+- **`DownloadSettingsSheet`**: Modal bottom sheet configuring resolution, audio codecs (MP3, Opus, M4A), bitrate, subtitles, AMOLED pure black theme, and yt-dlp version status.
 - **`DownloadsHistorySheet`**: Modal bottom sheet listing downloaded files with options to open, share, rename, or delete.
 - **`SupportedServicesDialog`**: Information modal listing supported content providers.
 - **`TermsDialog`**: Legal disclaimer and fair-use policy modal.
 
 ### 2.5 Templates & Screen (`ui/components/templates`, `ui/screens`)
-- **`CobaltScreenTemplate`**: Pure structural scaffold managing status/navigation bar insets (`WindowInsets.statusBars`, `WindowInsets.navigationBars`), vertical scrolling, header placement, and floating sheet anchors.
+- **`KitsuneScreenTemplate`**: Pure structural scaffold managing status/navigation bar insets (`WindowInsets.statusBars`, `WindowInsets.navigationBars`), vertical scrolling, header placement, and floating sheet anchors.
 - **`MainScreen`**: Integrates `MainViewModel`, collecting state via `collectAsStateWithLifecycle()` and dispatching user events to the ViewModel.
 - **`MainUiState`**: An immutable (`@Immutable`) data class holding all presentation state, ensuring strict Compose compiler stability.
 

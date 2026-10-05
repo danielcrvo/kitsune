@@ -10,24 +10,23 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.ui.theme.KitsuneTheme
 
-enum class CobaltButtonVariant {
+enum class KitsuneButtonVariant {
     PRIMARY,
     SECONDARY,
     ACCENT
 }
 
 @Composable
-fun CobaltButton(
+fun KitsuneButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     loading: Boolean = false,
-    variant: CobaltButtonVariant = CobaltButtonVariant.PRIMARY,
+    variant: KitsuneButtonVariant = KitsuneButtonVariant.PRIMARY,
     contentPadding: PaddingValues = PaddingValues(
         horizontal = KitsuneTheme.spacing.lg,
         vertical = KitsuneTheme.spacing.md
@@ -35,15 +34,15 @@ fun CobaltButton(
     content: @Composable RowScope.() -> Unit
 ) {
     val containerColor = when (variant) {
-        CobaltButtonVariant.PRIMARY -> KitsuneTheme.colors.accentCyan
-        CobaltButtonVariant.SECONDARY -> KitsuneTheme.colors.surfaceElevated
-        CobaltButtonVariant.ACCENT -> KitsuneTheme.colors.accentIndigo
+        KitsuneButtonVariant.PRIMARY -> KitsuneTheme.colors.accentCyan
+        KitsuneButtonVariant.SECONDARY -> KitsuneTheme.colors.surfaceElevated
+        KitsuneButtonVariant.ACCENT -> KitsuneTheme.colors.accentIndigo
     }
 
     val contentColor = when (variant) {
-        CobaltButtonVariant.PRIMARY -> KitsuneTheme.colors.background
-        CobaltButtonVariant.SECONDARY -> KitsuneTheme.colors.textPrimary
-        CobaltButtonVariant.ACCENT -> Color.White
+        KitsuneButtonVariant.PRIMARY -> KitsuneTheme.colors.background
+        KitsuneButtonVariant.SECONDARY -> KitsuneTheme.colors.textPrimary
+        KitsuneButtonVariant.ACCENT -> KitsuneTheme.colors.textPrimary
     }
 
     Button(
@@ -71,11 +70,11 @@ fun CobaltButton(
     }
 }
 
-@Preview(name = "CobaltButton Preview")
+@Preview(name = "KitsuneButton Preview")
 @Composable
-private fun CobaltButtonPreview() {
+private fun KitsuneButtonPreview() {
     KitsuneTheme {
-        CobaltButton(onClick = {}) {
+        KitsuneButton(onClick = {}) {
             Text("Baixar Vídeo")
         }
     }

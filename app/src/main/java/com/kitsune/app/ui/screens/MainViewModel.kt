@@ -55,6 +55,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
 
+        viewModelScope.launch {
+            preferencesRepository.isAmoledThemeFlow.collect { amoled ->
+                _uiState.update { it.copy(isAmoledTheme = amoled) }
+            }
+        }
+
         loadDownloadedFiles()
     }
 
@@ -278,5 +284,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearToastMessage() {
         _uiState.update { it.copy(toastMessage = null) }
+    }
+
+    fun toggleAmoledTheme(enabled: Boolean) {
+        _uiState.update { it.copy(isAmoledTheme = enabled) }
+        viewModelScope.launch {
+            preferencesRepository.saveAmoledTheme(enabled)
+        }
     }
 }

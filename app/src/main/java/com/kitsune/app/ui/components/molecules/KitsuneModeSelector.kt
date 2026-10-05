@@ -29,14 +29,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kitsune.app.ui.screens.DownloadMode
+import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
-fun CobaltModeSelector(
+fun KitsuneModeSelector(
     selectedMode: DownloadMode,
     onModeSelect: (DownloadMode) -> Unit,
     modifier: Modifier = Modifier
@@ -46,8 +49,8 @@ fun CobaltModeSelector(
             .fillMaxWidth()
             .height(52.dp)
             .clip(RoundedCornerShape(26.dp))
-            .background(Color(0xFF0F121C))
-            .border(BorderStroke(1.dp, Color(0xFF222738)), RoundedCornerShape(26.dp))
+            .background(KitsuneTheme.colors.surface)
+            .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), RoundedCornerShape(26.dp))
             .padding(4.dp)
     ) {
         Row(
@@ -57,7 +60,7 @@ fun CobaltModeSelector(
             ModeSegment(
                 label = "auto",
                 icon = Icons.Default.Star,
-                activeColor = Color(0xFFF97316),
+                activeColor = KitsuneTheme.colors.accentOrange,
                 isSelected = selectedMode == DownloadMode.AUTO,
                 onClick = { onModeSelect(DownloadMode.AUTO) },
                 modifier = Modifier.weight(1f)
@@ -75,7 +78,7 @@ fun CobaltModeSelector(
             ModeSegment(
                 label = "mudo",
                 icon = Icons.AutoMirrored.Filled.VolumeOff,
-                activeColor = Color(0xFFF87171),
+                activeColor = KitsuneTheme.colors.error,
                 isSelected = selectedMode == DownloadMode.MUTE,
                 onClick = { onModeSelect(DownloadMode.MUTE) },
                 modifier = Modifier.weight(1f)
@@ -94,13 +97,13 @@ private fun ModeSegment(
     modifier: Modifier = Modifier
 ) {
     val bgAnim by animateColorAsState(
-        targetValue = if (isSelected) Color(0xFFF1F5F9) else Color.Transparent,
+        targetValue = if (isSelected) KitsuneTheme.colors.textPrimary else Color.Transparent,
         animationSpec = tween(durationMillis = 200),
         label = "segmentBg"
     )
 
     val textColorAnim by animateColorAsState(
-        targetValue = if (isSelected) Color(0xFF090A0F) else Color(0xFF94A3B8),
+        targetValue = if (isSelected) KitsuneTheme.colors.background else KitsuneTheme.colors.textMuted,
         animationSpec = tween(durationMillis = 200),
         label = "segmentText"
     )
@@ -111,7 +114,7 @@ private fun ModeSegment(
         label = "segmentIcon"
     )
 
-    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+    val haptic = LocalHapticFeedback.current
 
     Box(
         modifier = modifier
@@ -119,7 +122,7 @@ private fun ModeSegment(
             .clip(CircleShape)
             .background(bgAnim)
             .clickable(onClick = {
-                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 onClick()
             }),
         contentAlignment = Alignment.Center

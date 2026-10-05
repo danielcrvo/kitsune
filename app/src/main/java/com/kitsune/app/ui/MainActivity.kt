@@ -13,7 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kitsune.app.ui.screens.MainScreen
+import com.kitsune.app.ui.screens.MainViewModel
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 class MainActivity : ComponentActivity() {
@@ -36,9 +39,13 @@ class MainActivity : ComponentActivity() {
         runCatching { checkNotificationPermission() }
 
         setContent {
-            KitsuneTheme {
+            val viewModel: MainViewModel = viewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+            KitsuneTheme(isAmoled = uiState.isAmoledTheme) {
                 val currentSharedUrl by sharedUrlState
                 MainScreen(
+                    viewModel = viewModel,
                     initialSharedUrl = currentSharedUrl,
                     onClearSharedUrl = { sharedUrlState.value = null }
                 )

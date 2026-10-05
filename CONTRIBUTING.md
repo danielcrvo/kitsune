@@ -36,10 +36,10 @@ Kitsune follows strict **Unidirectional Data Flow (MVI/MVVM)** and Brad Frost's 
 ### 2.1 Atomic Design Hierarchy
 Components must be placed in their respective packages under `com.kitsune.app.ui.components`:
 - **`tokens`**: Design tokens (colors, spacing, shapes). Accessed via `KitsuneTheme.colors`, `KitsuneTheme.spacing`, `KitsuneTheme.shapes`.
-- **`atoms`**: Single-responsibility primitives (`CobaltButton`, `CobaltTextField`, `CobaltBadge`). They must not depend on molecules or organisms.
-- **`molecules`**: Functional combinations of 2+ atoms (`UrlInputBar`, `CobaltModeSelector`, `MediaPreviewCard`).
+- **`atoms`**: Single-responsibility primitives (`KitsuneButton`, `KitsuneTextField`, `KitsuneBadge`). They must not depend on molecules or organisms.
+- **`molecules`**: Functional combinations of 2+ atoms (`UrlInputBar`, `KitsuneModeSelector`, `MediaPreviewCard`).
 - **`organisms`**: Discrete screen regions and dialogs (`MainInputCard`, `ActiveDownloadCard`, `DownloadSettingsSheet`).
-- **`templates`**: Layout wrappers handling safe insets and scroll behavior without hardcoded domain data (`CobaltScreenTemplate`).
+- **`templates`**: Layout wrappers handling safe insets and scroll behavior without hardcoded domain data (`KitsuneScreenTemplate`).
 - **`screens`**: Top-level coordinators connecting ViewModels to templates.
 
 ### 2.2 Compose Stability & Performance

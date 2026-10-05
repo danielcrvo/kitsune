@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.core.model.VideoQuality
-import com.kitsune.app.ui.components.atoms.CobaltBadge
+import com.kitsune.app.ui.components.atoms.KitsuneBadge
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
@@ -81,7 +81,7 @@ fun QualityOptionTile(
         }
 
         if (quality == VideoQuality.AUTO || quality == VideoQuality.Q_2160P) {
-            CobaltBadge(
+            KitsuneBadge(
                 label = if (quality == VideoQuality.Q_2160P) "4K UHD" else "RECOMENDADO",
                 badgeColor = KitsuneTheme.colors.accentCyan
             )

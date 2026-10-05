@@ -34,7 +34,8 @@ data class MainUiState(
     val isLoadingDownloadedFiles: Boolean = false,
     val renamingFile: DownloadedMediaFile? = null,
     val deletingFile: DownloadedMediaFile? = null,
-    val playingFile: DownloadedMediaFile? = null
+    val playingFile: DownloadedMediaFile? = null,
+    val isAmoledTheme: Boolean = false
 ) {
     val downloadMode: DownloadMode
         get() = when {

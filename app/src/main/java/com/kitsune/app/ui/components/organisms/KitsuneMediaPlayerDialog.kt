@@ -1,5 +1,6 @@
 package com.kitsune.app.ui.components.organisms
 
+import android.content.Intent
 import android.view.ViewGroup
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -24,13 +25,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Forward10
 import androidx.compose.material.icons.filled.Headphones
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay10
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
@@ -66,15 +68,15 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.kitsune.app.core.model.DownloadedMediaFile
-import com.kitsune.app.ui.components.atoms.CobaltBadge
-import com.kitsune.app.ui.components.atoms.CobaltButton
-import com.kitsune.app.ui.components.atoms.CobaltButtonVariant
-import com.kitsune.app.ui.components.atoms.CobaltIconButton
+import com.kitsune.app.ui.components.atoms.KitsuneBadge
+import com.kitsune.app.ui.components.atoms.KitsuneButton
+import com.kitsune.app.ui.components.atoms.KitsuneButtonVariant
+import com.kitsune.app.ui.components.atoms.KitsuneIconButton
 import com.kitsune.app.ui.theme.KitsuneTheme
 import kotlinx.coroutines.delay
 
 @Composable
-fun CobaltMediaPlayerDialog(
+fun KitsuneMediaPlayerDialog(
     file: DownloadedMediaFile,
     onDismiss: () -> Unit,
     onOpenExternal: () -> Unit,
@@ -130,9 +132,9 @@ fun CobaltMediaPlayerDialog(
         Box(
             modifier = modifier
                 .fillMaxWidth(0.92f)
-                .clip(RoundedCornerShape(24.dp))
-                .background(Color(0xFF0F121C))
-                .border(BorderStroke(1.dp, Color(0xFF222738)), RoundedCornerShape(24.dp))
+                .clip(RoundedCornerShape(KitsuneTheme.shapes.cardRadius))
+                .background(KitsuneTheme.colors.surface)
+                .border(BorderStroke(1.dp, KitsuneTheme.colors.borderSubtle), RoundedCornerShape(KitsuneTheme.shapes.cardRadius))
                 .padding(20.dp)
         ) {
             Column(
@@ -153,13 +155,13 @@ fun CobaltMediaPlayerDialog(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(if (file.isVideo) Color(0xFF00F2FE).copy(alpha = 0.15f) else Color(0xFFF97316).copy(alpha = 0.15f)),
+                                .background(if (file.isVideo) KitsuneTheme.colors.accentCyan.copy(alpha = 0.15f) else KitsuneTheme.colors.accentOrange.copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = if (file.isVideo) Icons.Default.Videocam else Icons.Default.Headphones,
                                 contentDescription = null,
-                                tint = if (file.isVideo) Color(0xFF00F2FE) else Color(0xFFF97316),
+                                tint = if (file.isVideo) KitsuneTheme.colors.accentCyan else KitsuneTheme.colors.accentOrange,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -173,7 +175,7 @@ fun CobaltMediaPlayerDialog(
                         Column {
                             Text(
                                 text = file.title,
-                                color = Color.White,
+                                color = KitsuneTheme.colors.textPrimary,
                                 style = KitsuneTheme.typography.titleMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -182,10 +184,10 @@ fun CobaltMediaPlayerDialog(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                CobaltBadge(label = fileExtension)
+                                KitsuneBadge(label = fileExtension)
                                 Text(
                                     text = file.sizeFormatted,
-                                    color = Color(0xFF94A3B8),
+                                    color = KitsuneTheme.colors.textMuted,
                                     fontSize = 11.sp,
                                     fontFamily = FontFamily.Monospace
                                 )
@@ -193,18 +195,18 @@ fun CobaltMediaPlayerDialog(
                         }
                     }
 
-                    CobaltIconButton(
+                    KitsuneIconButton(
                         onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             onDismiss()
                         },
-                        containerColor = Color(0xFF1E2435),
+                        containerColor = KitsuneTheme.colors.surfaceElevated,
                         size = 36.dp
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Fechar player",
-                            tint = Color.White,
+                            tint = KitsuneTheme.colors.textPrimary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -253,19 +255,19 @@ fun CobaltMediaPlayerDialog(
                             .background(
                                 Brush.radialGradient(
                                     colors = listOf(
-                                        Color(0xFFF97316).copy(alpha = 0.25f),
-                                        Color(0xFF00F2FE).copy(alpha = 0.08f),
+                                        KitsuneTheme.colors.accentOrange.copy(alpha = 0.25f),
+                                        KitsuneTheme.colors.accentCyan.copy(alpha = 0.08f),
                                         Color.Transparent
                                     )
                                 )
                             )
-                            .border(BorderStroke(2.dp, Color(0xFFF97316).copy(alpha = 0.6f)), CircleShape),
+                            .border(BorderStroke(2.dp, KitsuneTheme.colors.accentOrange.copy(alpha = 0.6f)), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Headphones,
                             contentDescription = null,
-                            tint = Color(0xFFF97316),
+                            tint = KitsuneTheme.colors.accentOrange,
                             modifier = Modifier.size(46.dp)
                         )
                     }
@@ -282,9 +284,9 @@ fun CobaltMediaPlayerDialog(
                             currentPosition = target
                         },
                         colors = SliderDefaults.colors(
-                            thumbColor = Color(0xFF00F2FE),
-                            activeTrackColor = Color(0xFF00F2FE),
-                            inactiveTrackColor = Color(0xFF222738)
+                            thumbColor = KitsuneTheme.colors.accentCyan,
+                            activeTrackColor = KitsuneTheme.colors.accentCyan,
+                            inactiveTrackColor = KitsuneTheme.colors.borderSubtle
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -295,13 +297,13 @@ fun CobaltMediaPlayerDialog(
                     ) {
                         Text(
                             text = formatTime(currentPosition),
-                            color = Color(0xFF94A3B8),
+                            color = KitsuneTheme.colors.textMuted,
                             fontFamily = FontFamily.Monospace,
                             fontSize = 12.sp
                         )
                         Text(
                             text = formatTime(duration),
-                            color = Color(0xFF94A3B8),
+                            color = KitsuneTheme.colors.textMuted,
                             fontFamily = FontFamily.Monospace,
                             fontSize = 12.sp
                         )
@@ -314,22 +316,22 @@ fun CobaltMediaPlayerDialog(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        CobaltIconButton(
+                        KitsuneIconButton(
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 exoPlayer.seekTo((exoPlayer.currentPosition - 10000).coerceAtLeast(0))
                             },
-                            containerColor = Color(0xFF131722),
+                            containerColor = KitsuneTheme.colors.surfaceElevated,
                             size = 44.dp
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Replay10,
                                 contentDescription = "Voltar 10 segundos",
-                                tint = Color.White
+                                tint = KitsuneTheme.colors.textPrimary
                             )
                         }
 
-                        CobaltIconButton(
+                        KitsuneIconButton(
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 if (exoPlayer.isPlaying) {
@@ -338,29 +340,29 @@ fun CobaltMediaPlayerDialog(
                                     exoPlayer.play()
                                 }
                             },
-                            containerColor = Color(0xFF00F2FE),
+                            containerColor = KitsuneTheme.colors.accentCyan,
                             size = 56.dp
                         ) {
                             Icon(
                                 imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = if (isPlaying) "Pausar" else "Reproduzir",
-                                tint = Color(0xFF090A0F),
+                                tint = KitsuneTheme.colors.background,
                                 modifier = Modifier.size(30.dp)
                             )
                         }
 
-                        CobaltIconButton(
+                        KitsuneIconButton(
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 exoPlayer.seekTo((exoPlayer.currentPosition + 10000).coerceAtMost(duration))
                             },
-                            containerColor = Color(0xFF131722),
+                            containerColor = KitsuneTheme.colors.surfaceElevated,
                             size = 44.dp
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Forward10,
                                 contentDescription = "Avançar 10 segundos",
-                                tint = Color.White
+                                tint = KitsuneTheme.colors.textPrimary
                             )
                         }
                     }
@@ -368,23 +370,50 @@ fun CobaltMediaPlayerDialog(
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                // Botão de abrir no player externo do sistema
-                CobaltButton(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        exoPlayer.pause()
-                        onOpenExternal()
-                    },
-                    variant = CobaltButtonVariant.SECONDARY,
-                    modifier = Modifier.fillMaxWidth()
+                // Linha de Ações: Compartilhar Mídia e Abrir Externamente
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.OpenInNew,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Abrir no Player Externo")
+                    KitsuneButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                type = file.mimeType
+                                putExtra(Intent.EXTRA_STREAM, file.uri)
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            context.startActivity(Intent.createChooser(shareIntent, "Compartilhar com"))
+                        },
+                        variant = KitsuneButtonVariant.SECONDARY,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Compartilhar")
+                    }
+
+                    KitsuneButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            exoPlayer.pause()
+                            onOpenExternal()
+                        },
+                        variant = KitsuneButtonVariant.SECONDARY,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Player Externo")
+                    }
                 }
             }
         }

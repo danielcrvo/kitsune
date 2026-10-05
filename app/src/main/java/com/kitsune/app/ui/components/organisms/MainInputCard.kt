@@ -21,8 +21,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.core.model.PlatformType
 import com.kitsune.app.core.model.VideoQuality
-import com.kitsune.app.ui.components.atoms.CobaltButton
-import com.kitsune.app.ui.components.atoms.CobaltIconButton
+import com.kitsune.app.ui.components.atoms.KitsuneButton
+import com.kitsune.app.ui.components.atoms.KitsuneIconButton
 import com.kitsune.app.ui.components.molecules.UrlInputBar
 import com.kitsune.app.ui.theme.KitsuneTheme
 
@@ -60,7 +60,7 @@ fun MainInputCard(
             horizontalArrangement = Arrangement.spacedBy(KitsuneTheme.spacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CobaltIconButton(
+            KitsuneIconButton(
                 onClick = onOpenSettingsClick,
                 size = 48.dp,
                 containerColor = KitsuneTheme.colors.surfaceVariant
@@ -73,7 +73,7 @@ fun MainInputCard(
                 )
             }
 
-            CobaltButton(
+            KitsuneButton(
                 onClick = onDownloadClick,
                 modifier = Modifier.weight(1f),
                 enabled = url.isNotBlank() && !isDownloading,

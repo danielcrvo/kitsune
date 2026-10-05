@@ -51,8 +51,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kitsune.app.core.model.DownloadedMediaFile
-import com.kitsune.app.ui.components.atoms.CobaltIconButton
-import com.kitsune.app.ui.components.atoms.CobaltTextField
+import com.kitsune.app.ui.components.atoms.KitsuneIconButton
+import com.kitsune.app.ui.components.atoms.KitsuneTextField
 import com.kitsune.app.ui.components.atoms.MascotSvg
 import com.kitsune.app.ui.components.atoms.MascotType
 import com.kitsune.app.ui.theme.KitsuneTheme
@@ -95,7 +95,7 @@ fun DownloadsHistorySheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color(0xFF0F121C),
+        containerColor = KitsuneTheme.colors.surfaceElevated,
         dragHandle = null,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     ) {
@@ -114,29 +114,29 @@ fun DownloadsHistorySheet(
                     Text(
                         text = "Arquivos Baixados",
                         style = KitsuneTheme.typography.titleLarge,
-                        color = Color.White,
+                        color = KitsuneTheme.colors.textPrimary,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "${files.size} itens salvos no dispositivo",
-                        color = Color(0xFF94A3B8),
+                        color = KitsuneTheme.colors.textSecondary,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp
                     )
                 }
 
-                CobaltIconButton(
+                KitsuneIconButton(
                     onClick = {
                         haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                         onDismiss()
                     },
-                    containerColor = Color(0xFF1E2435)
+                    containerColor = KitsuneTheme.colors.surfaceVariant
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Fechar",
-                        tint = Color.White
+                        tint = KitsuneTheme.colors.textPrimary
                     )
                 }
             }
@@ -182,7 +182,7 @@ fun DownloadsHistorySheet(
                         .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Color(0xFFF97316))
+                    CircularProgressIndicator(color = KitsuneTheme.colors.accentPrimary)
                 }
             } else if (filteredFiles.isEmpty()) {
                 Box(
@@ -202,14 +202,14 @@ fun DownloadsHistorySheet(
                         )
                         Text(
                             text = "Nenhum arquivo encontrado",
-                            color = Color.White,
+                            color = KitsuneTheme.colors.textPrimary,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp
                         )
                         Text(
                             text = "Os vídeos e áudios que você baixar aparecerão aqui.",
-                            color = Color(0xFF64748B),
+                            color = KitsuneTheme.colors.textMuted,
                             fontFamily = FontFamily.Monospace,
                             fontSize = 12.sp
                         )
@@ -241,11 +241,11 @@ fun DownloadsHistorySheet(
     fileToRename?.let { item ->
         AlertDialog(
             onDismissRequest = { fileToRename = null },
-            containerColor = Color(0xFF131722),
+            containerColor = KitsuneTheme.colors.surfaceCard,
             title = {
                 Text(
                     text = "Renomear Arquivo",
-                    color = Color.White,
+                    color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -255,11 +255,11 @@ fun DownloadsHistorySheet(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = "Digite o novo nome para a mídia:",
-                        color = Color(0xFF94A3B8),
+                        color = KitsuneTheme.colors.textSecondary,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp
                     )
-                    CobaltTextField(
+                    KitsuneTextField(
                         value = renameInputText,
                         onValueChange = { renameInputText = it },
                         placeholder = "Nome do arquivo",
@@ -280,7 +280,7 @@ fun DownloadsHistorySheet(
                 ) {
                     Text(
                         text = "Salvar",
-                        color = Color(0xFF00F2FE),
+                        color = KitsuneTheme.colors.accentSecondary,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold
                     )
@@ -290,7 +290,7 @@ fun DownloadsHistorySheet(
                 TextButton(onClick = { fileToRename = null }) {
                     Text(
                         text = "Cancelar",
-                        color = Color(0xFF64748B),
+                        color = KitsuneTheme.colors.textMuted,
                         fontFamily = FontFamily.Monospace
                     )
                 }
@@ -301,11 +301,11 @@ fun DownloadsHistorySheet(
     fileToDelete?.let { item ->
         AlertDialog(
             onDismissRequest = { fileToDelete = null },
-            containerColor = Color(0xFF131722),
+            containerColor = KitsuneTheme.colors.surfaceCard,
             title = {
                 Text(
                     text = "Excluir Arquivo",
-                    color = Color.White,
+                    color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -314,7 +314,7 @@ fun DownloadsHistorySheet(
             text = {
                 Text(
                     text = "Tem certeza de que deseja remover permanentemente \"${item.fileName}\" do dispositivo?",
-                    color = Color(0xFFCBD5E1),
+                    color = KitsuneTheme.colors.textSecondary,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 13.sp,
                     lineHeight = 18.sp
@@ -330,7 +330,7 @@ fun DownloadsHistorySheet(
                 ) {
                     Text(
                         text = "Excluir",
-                        color = Color(0xFFFF4500),
+                        color = KitsuneTheme.colors.error,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold
                     )
@@ -340,7 +340,7 @@ fun DownloadsHistorySheet(
                 TextButton(onClick = { fileToDelete = null }) {
                     Text(
                         text = "Cancelar",
-                        color = Color(0xFF64748B),
+                        color = KitsuneTheme.colors.textMuted,
                         fontFamily = FontFamily.Monospace
                     )
                 }
@@ -358,9 +358,9 @@ private fun FilterChipItem(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(if (isSelected) Color(0xFFF97316) else Color(0xFF161A26))
+            .background(if (isSelected) KitsuneTheme.colors.accentPrimary else KitsuneTheme.colors.surfaceElevated)
             .border(
-                BorderStroke(1.dp, if (isSelected) Color(0xFFF97316) else Color(0xFF222738)),
+                BorderStroke(1.dp, if (isSelected) KitsuneTheme.colors.accentPrimary else KitsuneTheme.colors.borderMuted),
                 RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
@@ -368,7 +368,7 @@ private fun FilterChipItem(
     ) {
         Text(
             text = label,
-            color = if (isSelected) Color.White else Color(0xFF94A3B8),
+            color = if (isSelected) KitsuneTheme.colors.textPrimary else KitsuneTheme.colors.textSecondary,
             fontFamily = FontFamily.Monospace,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             fontSize = 12.sp
@@ -393,8 +393,8 @@ private fun DownloadedFileCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF131722))
-            .border(BorderStroke(1.dp, Color(0xFF202638)), RoundedCornerShape(16.dp))
+            .background(KitsuneTheme.colors.surfaceCard)
+            .border(BorderStroke(1.dp, KitsuneTheme.colors.borderMuted), RoundedCornerShape(16.dp))
             .clickable {
                 haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                 onPlay()
@@ -409,13 +409,13 @@ private fun DownloadedFileCard(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(CircleShape)
-                    .background(if (file.isVideo) Color(0xFFF97316).copy(alpha = 0.18f) else Color(0xFF00F2FE).copy(alpha = 0.18f)),
+                    .background(if (file.isVideo) KitsuneTheme.colors.accentPrimary.copy(alpha = 0.18f) else KitsuneTheme.colors.accentSecondary.copy(alpha = 0.18f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = if (file.isVideo) Icons.Default.Movie else Icons.Default.MusicNote,
                     contentDescription = null,
-                    tint = if (file.isVideo) Color(0xFFF97316) else Color(0xFF00F2FE),
+                    tint = if (file.isVideo) KitsuneTheme.colors.accentPrimary else KitsuneTheme.colors.accentSecondary,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -425,7 +425,7 @@ private fun DownloadedFileCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = file.title,
-                    color = Color.White,
+                    color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,
@@ -439,19 +439,19 @@ private fun DownloadedFileCard(
                 ) {
                     Text(
                         text = file.sizeFormatted,
-                        color = Color(0xFF00F2FE),
+                        color = KitsuneTheme.colors.accentSecondary,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
                         text = "•",
-                        color = Color(0xFF475569),
+                        color = KitsuneTheme.colors.textMuted,
                         fontSize = 11.sp
                     )
                     Text(
                         text = dateString,
-                        color = Color(0xFF64748B),
+                        color = KitsuneTheme.colors.textMuted,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 10.sp
                     )
@@ -461,50 +461,50 @@ private fun DownloadedFileCard(
             Spacer(modifier = Modifier.width(8.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                CobaltIconButton(
+                KitsuneIconButton(
                     onClick = {
                         haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                         onPlay()
                     },
-                    containerColor = Color(0xFF1E2435),
+                    containerColor = KitsuneTheme.colors.surfaceVariant,
                     modifier = Modifier.size(34.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = "Reproduzir",
-                        tint = Color(0xFF22C55E),
+                        tint = KitsuneTheme.colors.success,
                         modifier = Modifier.size(16.dp)
                     )
                 }
 
-                CobaltIconButton(
+                KitsuneIconButton(
                     onClick = {
                         haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                         onRename()
                     },
-                    containerColor = Color(0xFF1E2435),
+                    containerColor = KitsuneTheme.colors.surfaceVariant,
                     modifier = Modifier.size(34.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Renomear",
-                        tint = Color(0xFF94A3B8),
+                        tint = KitsuneTheme.colors.textSecondary,
                         modifier = Modifier.size(14.dp)
                     )
                 }
 
-                CobaltIconButton(
+                KitsuneIconButton(
                     onClick = {
                         haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                         onDelete()
                     },
-                    containerColor = Color(0xFF1E2435),
+                    containerColor = KitsuneTheme.colors.surfaceVariant,
                     modifier = Modifier.size(34.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Excluir",
-                        tint = Color(0xFFFF5252),
+                        tint = KitsuneTheme.colors.error,
                         modifier = Modifier.size(14.dp)
                     )
                 }

@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
-fun CobaltLinearGauge(
+fun KitsuneLinearGauge(
     progress: Float,
     modifier: Modifier = Modifier,
     height: Dp = 6.dp
@@ -56,10 +56,10 @@ fun CobaltLinearGauge(
     }
 }
 
-@Preview(name = "CobaltLinearGauge Preview")
+@Preview(name = "KitsuneLinearGauge Preview")
 @Composable
-private fun CobaltLinearGaugePreview() {
+private fun KitsuneLinearGaugePreview() {
     KitsuneTheme {
-        CobaltLinearGauge(progress = 0.65f)
+        KitsuneLinearGauge(progress = 0.65f)
     }
 }

@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
-fun CobaltIconButton(
+fun KitsuneIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     size: Dp = 40.dp,
@@ -39,11 +39,11 @@ fun CobaltIconButton(
     }
 }
 
-@Preview(name = "CobaltIconButton Preview")
+@Preview(name = "KitsuneIconButton Preview")
 @Composable
-private fun CobaltIconButtonPreview() {
+private fun KitsuneIconButtonPreview() {
     KitsuneTheme {
-        CobaltIconButton(onClick = {}) {
+        KitsuneIconButton(onClick = {}) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = null,

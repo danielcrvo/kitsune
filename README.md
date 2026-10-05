@@ -72,11 +72,11 @@ Kitsune follows **Unidirectional Data Flow (MVI/MVVM)** and Brad Frost's **Atomi
 
 ```
 UI Layer (Jetpack Compose)
-  ├── Tokens (KitsuneTheme: CobaltColorTokens, CobaltSpacingTokens, CobaltShapeTokens)
-  ├── Atoms (CobaltButton, CobaltIconButton, CobaltBadge, CobaltTextField, MascotSvg)
-  ├── Molecules (UrlInputBar, MediaPreviewCard, CobaltModeSelector, DownloadStatusDisplay)
+  ├── Tokens (KitsuneTheme: KitsuneColorTokens, KitsuneSpacingTokens, KitsuneShapeTokens)
+  ├── Atoms (KitsuneButton, KitsuneIconButton, KitsuneBadge, KitsuneTextField, MascotSvg)
+  ├── Molecules (UrlInputBar, MediaPreviewCard, KitsuneModeSelector, DownloadStatusDisplay)
   ├── Organisms (MainInputCard, ActiveDownloadCard, DownloadSettingsSheet, DownloadsHistorySheet)
-  ├── Templates (CobaltScreenTemplate)
+  ├── Templates (KitsuneScreenTemplate)
   └── Screens (MainScreen + MainViewModel + MainUiState)
           │
           ▼
@@ -94,7 +94,7 @@ For an in-depth breakdown of the component hierarchy, threading model, and Scope
 
 - **Language:** [Kotlin 2.1.10](https://kotlinlang.org/)
 - **UI Framework:** [Jetpack Compose](https://developer.android.com/jetpack/compose) (Compose BOM `2025.02.00`)
-- **Design System:** Material 3 with custom Cobalt Design Tokens (`CompositionLocalProvider`)
+- **Design System:** Material 3 with custom Kitsune Design Tokens (`CompositionLocalProvider`)
 - **Native Engine:** [youtubedl-android](https://github.com/junkfood02/youtubedl-android) (v0.18.1 bundling yt-dlp and FFmpeg)
 - **Animations & Micro-interactions:** [Lottie Compose](https://airbnb.io/lottie/#/android-compose) (v6.6.2)
 - **Image & Vector Loading:** [Coil Compose](https://coil-kt.github.io/coil/) (with SVG decoder)
@@ -154,4 +154,4 @@ Kitsune is designed for personal backup, offline viewing of authorized content, 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) for their extraordinary command-line media extraction tool.
 - [FFmpeg](https://ffmpeg.org/) for media format transcoding and multiplexing.
 - [youtubedl-android](https://github.com/junkfood02/youtubedl-android) for the Android NDK runtime ports.
-- Inspired by the clean, minimalist aesthetics of the [Cobalt](https://cobalt.tools/) project.
+- Inspired by clean, privacy-focused open source utility tools.

@@ -17,11 +17,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
-fun CobaltScreenTemplate(
+fun KitsuneScreenTemplate(
     header: @Composable () -> Unit,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -47,16 +46,13 @@ fun CobaltScreenTemplate(
         ) {
             Spacer(modifier = Modifier.height(KitsuneTheme.spacing.xl))
 
-
             header()
 
             Spacer(modifier = Modifier.height(KitsuneTheme.spacing.xl))
 
-
             Box(modifier = Modifier.fillMaxWidth()) {
                 content()
             }
-
 
             if (activeDownloadSection != null) {
                 Spacer(modifier = Modifier.height(KitsuneTheme.spacing.lg))
@@ -65,7 +61,6 @@ fun CobaltScreenTemplate(
                 }
             }
         }
-
 
         settingsSheet?.invoke()
     }
