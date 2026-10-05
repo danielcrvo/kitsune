@@ -1,0 +1,165 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <group
+        android:pivotX="100"
+        android:pivotY="105"
+        android:scaleX="0.68"
+        android:scaleY="0.68">
+        
+        <!-- Tail: Midnight Indigo with Starlight Tip -->
+        <path
+            android:fillColor="#3730A3"
+            android:pathData="M 120 168 C 168 184 200 150 186 108 C 181 92 166 88 160 98 C 155 106 160 118 152 130 C 145 141 132 147 118 150 Z" />
+
+        <group>
+            <clip-path android:pathData="M 120 168 C 168 184 200 150 186 108 C 181 92 166 88 160 98 C 155 106 160 118 152 130 C 145 141 132 147 118 150 Z" />
+            <path
+                android:fillColor="#E0E7FF"
+                android:pathData="M 136 60 L 212 60 L 212 118 Q 204 128 194 120 Q 186 130 176 121 Q 166 130 158 120 Q 148 124 142 114 Z" />
+        </group>
+
+        <!-- Left Ear: Indigo with Luminous Violet Inner and Deep Obsidian Tip -->
+        <path
+            android:fillColor="#3730A3"
+            android:pathData="M 46 84 Q 38 52 50 37 Q 59 28 70 34 Q 90 46 99 70 Z" />
+        <path
+            android:fillColor="#A78BFA"
+            android:fillAlpha="0.75"
+            android:pathData="M 57 76 Q 52 54 59 45 Q 64 41 68 45 Q 82 54 90 71 Z" />
+        <group>
+            <clip-path android:pathData="M 46 84 Q 38 52 50 37 Q 59 28 70 34 Q 90 46 99 70 Z" />
+            <path
+                android:fillColor="#111322"
+                android:pathData="M 0 0 h 120 v 44 h -120 Z" />
+        </group>
+
+        <!-- Right Ear (Mirrored) -->
+        <group
+            android:pivotX="100"
+            android:pivotY="100"
+            android:scaleX="-1">
+            <path
+                android:fillColor="#3730A3"
+                android:pathData="M 46 84 Q 38 52 50 37 Q 59 28 70 34 Q 90 46 99 70 Z" />
+            <path
+                android:fillColor="#A78BFA"
+                android:fillAlpha="0.75"
+                android:pathData="M 57 76 Q 52 54 59 45 Q 64 41 68 45 Q 82 54 90 71 Z" />
+            <group>
+                <clip-path android:pathData="M 46 84 Q 38 52 50 37 Q 59 28 70 34 Q 90 46 99 70 Z" />
+                <path
+                    android:fillColor="#111322"
+                    android:pathData="M 0 0 h 120 v 44 h -120 Z" />
+            </group>
+        </group>
+
+        <!-- Body & Belly -->
+        <path
+            android:fillColor="#3730A3"
+            android:pathData="M 100 136 a 25 21 0 1 0 0.1 0 Z" />
+
+        <path
+            android:fillColor="#E0E7FF"
+            android:pathData="M 100 150 a 14 12 0 1 0 0.1 0 Z" />
+
+        <!-- Paws -->
+        <path
+            android:fillColor="#111322"
+            android:pathData="M 87 172 a 8 5 0 1 0 0.1 0 Z" />
+        <path
+            android:fillColor="#111322"
+            android:pathData="M 113 172 a 8 5 0 1 0 0.1 0 Z" />
+
+        <!-- Cheeks Fluff -->
+        <path
+            android:fillColor="#E0E7FF"
+            android:pathData="M 60 104 L 34 124 L 56 130 Z" />
+        <path
+            android:fillColor="#E0E7FF"
+            android:pathData="M 140 104 L 166 124 L 144 130 Z" />
+
+        <!-- Head -->
+        <path
+            android:fillColor="#3730A3"
+            android:pathData="M 100 53 a 58 47 0 1 0 0.1 0 Z" />
+
+        <!-- Face Mask/Muzzle: Pale Starlight White -->
+        <group>
+            <clip-path android:pathData="M 100 53 a 58 47 0 1 0 0.1 0 Z" />
+            <path
+                android:fillColor="#E0E7FF"
+                android:pathData="M 0 128 Q 64 112 100 128 Q 136 112 200 128 L 200 200 L 0 200 Z" />
+        </group>
+
+        <!-- Left Eye: Nocturnal Dark with Electric Cyan Reflex -->
+        <path
+            android:fillColor="#111322"
+            android:pathData="M 70 93 a 9.5 11 0 1 0 0.1 0 Z" />
+        <path
+            android:fillColor="#00F2FE"
+            android:pathData="M 67 96 a 4 4 0 1 0 0.1 0 Z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 73.5 106.5 a 2 2 0 1 0 0.1 0 Z" />
+
+        <!-- Right Eye: Nocturnal Dark with Electric Cyan Reflex -->
+        <path
+            android:fillColor="#111322"
+            android:pathData="M 130 93 a 9.5 11 0 1 0 0.1 0 Z" />
+        <path
+            android:fillColor="#00F2FE"
+            android:pathData="M 127 96 a 4 4 0 1 0 0.1 0 Z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 133.5 106.5 a 2 2 0 1 0 0.1 0 Z" />
+
+        <!-- Cute Nose -->
+        <path
+            android:fillColor="#111322"
+            android:pathData="M 100 113.8 a 4.4 3.2 0 1 0 0.1 0 Z" />
+
+        <!-- Cute Smile -->
+        <path
+            android:strokeColor="#111322"
+            android:strokeWidth="2.4"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M 92 124 Q 96 130 100 124 Q 104 130 108 124" />
+
+        <!-- Soft Luminous Cheeks Blush -->
+        <path
+            android:fillColor="#818CF8"
+            android:fillAlpha="0.65"
+            android:pathData="M 52 113.5 a 9 5.5 0 1 0 0.1 0 Z" />
+        <path
+            android:fillColor="#818CF8"
+            android:fillAlpha="0.65"
+            android:pathData="M 148 113.5 a 9 5.5 0 1 0 0.1 0 Z" />
+
+        <!-- Nightly Accessory: Glowing Golden Crescent Moon 🌙 -->
+        <group
+            android:translateX="166"
+            android:translateY="56"
+            android:rotation="15"
+            android:scaleX="1.35"
+            android:scaleY="1.35">
+            <path
+                android:fillColor="#FDE047"
+                android:pathData="M 0 -8 C 4 -8 7 -5 7 0 C 7 5 3 8 -2 8 C 1 6 3 3 3 0 C 3 -3 2 -6 0 -8 Z" />
+        </group>
+
+        <!-- Sparkling Cyan Starlight ✦ -->
+        <group
+            android:translateX="38"
+            android:translateY="70"
+            android:scaleX="0.75"
+            android:scaleY="0.75">
+            <path
+                android:fillColor="#00F2FE"
+                android:pathData="M 0 -9 Q 1.5 -1.5 9 0 Q 1.5 1.5 0 9 Q -1.5 1.5 -9 0 Q -1.5 -1.5 0 -9 Z" />
+        </group>
+    </group>
+</vector>
