@@ -17,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kitsune.app.R
 import com.kitsune.app.core.model.VideoQuality
 import com.kitsune.app.ui.components.atoms.KitsuneBadge
 import com.kitsune.app.ui.theme.KitsuneTheme
@@ -73,7 +75,7 @@ fun QualityOptionTile(
             )
             if (quality.maxResolution > 0) {
                 Text(
-                    text = "Resolução máxima: ${quality.maxResolution}p",
+                    text = stringResource(R.string.quality_max_res, quality.maxResolution),
                     style = KitsuneTheme.typography.labelSmall,
                     color = KitsuneTheme.colors.textMuted
                 )
@@ -82,7 +84,7 @@ fun QualityOptionTile(
 
         if (quality == VideoQuality.AUTO || quality == VideoQuality.Q_2160P) {
             KitsuneBadge(
-                label = if (quality == VideoQuality.Q_2160P) "4K UHD" else "RECOMENDADO",
+                label = if (quality == VideoQuality.Q_2160P) "4K UHD" else stringResource(R.string.badge_recommended),
                 badgeColor = KitsuneTheme.colors.accentCyan
             )
         }

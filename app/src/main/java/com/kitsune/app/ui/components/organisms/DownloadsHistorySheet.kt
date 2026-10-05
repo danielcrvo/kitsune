@@ -45,11 +45,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.R
 import com.kitsune.app.core.model.DownloadedMediaFile
 import com.kitsune.app.ui.components.atoms.KitsuneIconButton
 import com.kitsune.app.ui.components.atoms.KitsuneTextField
@@ -112,14 +114,14 @@ fun DownloadsHistorySheet(
             ) {
                 Column {
                     Text(
-                        text = "Arquivos Baixados",
+                        text = stringResource(R.string.history_title),
                         style = KitsuneTheme.typography.titleLarge,
                         color = KitsuneTheme.colors.textPrimary,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "${files.size} itens salvos no dispositivo",
+                        text = stringResource(R.string.history_subtitle, files.size),
                         color = KitsuneTheme.colors.textSecondary,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp
@@ -135,7 +137,7 @@ fun DownloadsHistorySheet(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Fechar",
+                        contentDescription = stringResource(R.string.btn_close),
                         tint = KitsuneTheme.colors.textPrimary
                     )
                 }
@@ -148,7 +150,7 @@ fun DownloadsHistorySheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 FilterChipItem(
-                    label = "Todos (${files.size})",
+                    label = "${stringResource(R.string.history_filter_all)} (${files.size})",
                     isSelected = selectedFilter == MediaFilter.ALL,
                     onClick = {
                         haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
@@ -156,7 +158,7 @@ fun DownloadsHistorySheet(
                     }
                 )
                 FilterChipItem(
-                    label = "Vídeos (${files.count { it.isVideo }})",
+                    label = "${stringResource(R.string.history_filter_videos)} (${files.count { it.isVideo }})",
                     isSelected = selectedFilter == MediaFilter.VIDEOS,
                     onClick = {
                         haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
@@ -164,7 +166,7 @@ fun DownloadsHistorySheet(
                     }
                 )
                 FilterChipItem(
-                    label = "Áudios (${files.count { !it.isVideo }})",
+                    label = "${stringResource(R.string.history_filter_audios)} (${files.count { !it.isVideo }})",
                     isSelected = selectedFilter == MediaFilter.AUDIOS,
                     onClick = {
                         haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
@@ -201,14 +203,14 @@ fun DownloadsHistorySheet(
                             size = 80.dp
                         )
                         Text(
-                            text = "Nenhum arquivo encontrado",
+                            text = stringResource(R.string.history_empty_title),
                             color = KitsuneTheme.colors.textPrimary,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp
                         )
                         Text(
-                            text = "Os vídeos e áudios que você baixar aparecerão aqui.",
+                            text = stringResource(R.string.history_empty_desc),
                             color = KitsuneTheme.colors.textMuted,
                             fontFamily = FontFamily.Monospace,
                             fontSize = 12.sp
@@ -244,7 +246,7 @@ fun DownloadsHistorySheet(
             containerColor = KitsuneTheme.colors.surfaceCard,
             title = {
                 Text(
-                    text = "Renomear Arquivo",
+                    text = stringResource(R.string.history_dialog_rename_title),
                     color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
@@ -254,7 +256,7 @@ fun DownloadsHistorySheet(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        text = "Digite o novo nome para a mídia:",
+                        text = stringResource(R.string.history_dialog_rename_prompt),
                         color = KitsuneTheme.colors.textSecondary,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp
@@ -262,7 +264,7 @@ fun DownloadsHistorySheet(
                     KitsuneTextField(
                         value = renameInputText,
                         onValueChange = { renameInputText = it },
-                        placeholder = "Nome do arquivo",
+                        placeholder = stringResource(R.string.hint_rename_file),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -279,7 +281,7 @@ fun DownloadsHistorySheet(
                     }
                 ) {
                     Text(
-                        text = "Salvar",
+                        text = stringResource(R.string.btn_save),
                         color = KitsuneTheme.colors.accentSecondary,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold
@@ -289,7 +291,7 @@ fun DownloadsHistorySheet(
             dismissButton = {
                 TextButton(onClick = { fileToRename = null }) {
                     Text(
-                        text = "Cancelar",
+                        text = stringResource(R.string.btn_cancel),
                         color = KitsuneTheme.colors.textMuted,
                         fontFamily = FontFamily.Monospace
                     )
@@ -304,7 +306,7 @@ fun DownloadsHistorySheet(
             containerColor = KitsuneTheme.colors.surfaceCard,
             title = {
                 Text(
-                    text = "Excluir Arquivo",
+                    text = stringResource(R.string.history_dialog_delete_title),
                     color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
@@ -313,7 +315,7 @@ fun DownloadsHistorySheet(
             },
             text = {
                 Text(
-                    text = "Tem certeza de que deseja remover permanentemente \"${item.fileName}\" do dispositivo?",
+                    text = stringResource(R.string.history_dialog_delete_message, item.fileName),
                     color = KitsuneTheme.colors.textSecondary,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 13.sp,
@@ -329,7 +331,7 @@ fun DownloadsHistorySheet(
                     }
                 ) {
                     Text(
-                        text = "Excluir",
+                        text = stringResource(R.string.btn_delete),
                         color = KitsuneTheme.colors.error,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold
@@ -339,7 +341,7 @@ fun DownloadsHistorySheet(
             dismissButton = {
                 TextButton(onClick = { fileToDelete = null }) {
                     Text(
-                        text = "Cancelar",
+                        text = stringResource(R.string.btn_cancel),
                         color = KitsuneTheme.colors.textMuted,
                         fontFamily = FontFamily.Monospace
                     )
@@ -471,7 +473,7 @@ private fun DownloadedFileCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Reproduzir",
+                        contentDescription = stringResource(R.string.btn_play),
                         tint = KitsuneTheme.colors.success,
                         modifier = Modifier.size(16.dp)
                     )
@@ -487,7 +489,7 @@ private fun DownloadedFileCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Renomear",
+                        contentDescription = stringResource(R.string.btn_rename),
                         tint = KitsuneTheme.colors.textSecondary,
                         modifier = Modifier.size(14.dp)
                     )
@@ -503,7 +505,7 @@ private fun DownloadedFileCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Excluir",
+                        contentDescription = stringResource(R.string.btn_delete),
                         tint = KitsuneTheme.colors.error,
                         modifier = Modifier.size(14.dp)
                     )

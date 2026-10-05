@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.ServiceCompat
+import com.kitsune.app.R
 import com.kitsune.app.core.engine.YtDlpEngine
 import com.kitsune.app.core.model.AudioCodec
 import com.kitsune.app.core.model.DownloadConfig
@@ -118,8 +119,8 @@ class DownloadForegroundService : Service() {
 
         val initialNotif = DownloadNotificationHelper.buildProgressNotification(
             context = this,
-            title = "Kitsune",
-            statusText = "Iniciando download...",
+            title = getString(R.string.app_name),
+            statusText = getString(R.string.stage_initializing),
             progressPercent = 0,
             isIndeterminate = true
         )
@@ -158,8 +159,8 @@ class DownloadForegroundService : Service() {
                 val progressInt = (progress * 100).toInt().coerceIn(0, 100)
                 val notif = DownloadNotificationHelper.buildProgressNotification(
                     context = this@DownloadForegroundService,
-                    title = "Kitsune: Baixando mídia",
-                    statusText = "${stage.description} $speed $eta",
+                    title = "${getString(R.string.app_name)}: ${getString(R.string.notif_downloading_media)}",
+                    statusText = "${getString(stage.labelRes)} $speed $eta".trim(),
                     progressPercent = progressInt,
                     isIndeterminate = progressInt <= 0
                 )
@@ -169,7 +170,7 @@ class DownloadForegroundService : Service() {
 
             result.fold(
                 onSuccess = { downloadedFile ->
-                    _currentDownloadState.value = DownloadState.Muxing("Salvando na Galeria...")
+                    _currentDownloadState.value = DownloadState.Muxing(getString(R.string.stage_finalizing))
                     val exportResult = MediaStoreExporter.exportToGallery(
                         context = this@DownloadForegroundService,
                         sourceFile = downloadedFile,
@@ -195,7 +196,7 @@ class DownloadForegroundService : Service() {
                             val completedNotif = DownloadNotificationHelper.buildCompletedNotification(
                                 context = this@DownloadForegroundService,
                                 title = downloadedFile.nameWithoutExtension,
-                                subtext = "Mídia salva com sucesso na galeria.",
+                                subtext = getString(R.string.status_saved_gallery),
                                 targetUri = exportResult.getOrNull(),
                                 isAudioOnly = config.audioOnly
                             )

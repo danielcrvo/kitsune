@@ -24,7 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kitsune.app.R
 import com.kitsune.app.core.model.DownloadState
 import com.kitsune.app.ui.components.atoms.KitsuneIconButton
 import com.kitsune.app.ui.components.molecules.DownloadStatusDisplay
@@ -67,11 +69,11 @@ fun ActiveDownloadCard(
                         ) {
                             com.kitsune.app.ui.components.atoms.MascotSvg(
                                 type = com.kitsune.app.ui.components.atoms.MascotType.DOWNLOADING,
-                                contentDescription = "Mascote Baixando",
+                                contentDescription = stringResource(R.string.cd_mascot_downloading),
                                 size = 48.dp
                             )
                             Text(
-                                text = "Download Ativo",
+                                text = stringResource(R.string.status_download_active),
                                 style = KitsuneTheme.typography.titleMedium,
                                 color = KitsuneTheme.colors.textPrimary
                             )
@@ -83,7 +85,7 @@ fun ActiveDownloadCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Cancelar Download",
+                                contentDescription = stringResource(R.string.btn_cancel),
                                 tint = KitsuneTheme.colors.textSecondary,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -101,12 +103,12 @@ fun ActiveDownloadCard(
 
                 is DownloadState.Muxing -> {
                     Text(
-                        text = "Unindo Áudio e Vídeo...",
+                        text = stringResource(R.string.status_muxing_title),
                         style = KitsuneTheme.typography.titleMedium,
                         color = KitsuneTheme.colors.accentCyan
                     )
                     Text(
-                        text = "Processando arquivo final em alta resolução com FFmpeg local.",
+                        text = stringResource(R.string.status_muxing_desc),
                         style = KitsuneTheme.typography.bodyMedium,
                         color = KitsuneTheme.colors.textSecondary,
                         modifier = Modifier.padding(top = KitsuneTheme.spacing.xs)
@@ -120,7 +122,7 @@ fun ActiveDownloadCard(
                     ) {
                         com.kitsune.app.ui.components.atoms.MascotSvg(
                             type = com.kitsune.app.ui.components.atoms.MascotType.COMPLETED,
-                            contentDescription = "Mascote Comemorando",
+                            contentDescription = stringResource(R.string.cd_mascot_completed),
                             size = 64.dp
                         )
                         Column(
@@ -129,7 +131,7 @@ fun ActiveDownloadCard(
                                 .padding(horizontal = KitsuneTheme.spacing.md)
                         ) {
                             Text(
-                                text = "Salvo na Galeria!",
+                                text = stringResource(R.string.status_saved_gallery),
                                 style = KitsuneTheme.typography.titleMedium,
                                 color = KitsuneTheme.colors.success
                             )
@@ -149,7 +151,7 @@ fun ActiveDownloadCard(
                     ) {
                         com.kitsune.app.ui.components.atoms.MascotSvg(
                             type = com.kitsune.app.ui.components.atoms.MascotType.ERROR,
-                            contentDescription = "Mascote com Erro",
+                            contentDescription = stringResource(R.string.cd_mascot_error),
                             size = 64.dp
                         )
                         Column(
@@ -158,7 +160,7 @@ fun ActiveDownloadCard(
                                 .padding(horizontal = KitsuneTheme.spacing.md)
                         ) {
                             Text(
-                                text = "Falha no Download",
+                                text = stringResource(R.string.status_download_failed),
                                 style = KitsuneTheme.typography.titleMedium,
                                 color = KitsuneTheme.colors.error
                             )
@@ -175,7 +177,7 @@ fun ActiveDownloadCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Fechar erro",
+                                contentDescription = stringResource(R.string.btn_close),
                                 tint = KitsuneTheme.colors.textSecondary
                             )
                         }

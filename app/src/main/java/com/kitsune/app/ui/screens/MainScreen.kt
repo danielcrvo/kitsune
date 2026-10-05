@@ -42,8 +42,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import com.kitsune.app.R
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -182,7 +184,7 @@ fun MainScreenContent(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "serviços suportados",
+                            text = stringResource(R.string.services_dialog_title),
                             color = KitsuneTheme.colors.textSecondary,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Medium,
@@ -206,7 +208,7 @@ fun MainScreenContent(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.FileDownload,
-                            contentDescription = "Downloads",
+                            contentDescription = stringResource(R.string.cd_open_history),
                             tint = KitsuneTheme.colors.textMuted,
                             modifier = Modifier.size(19.dp)
                         )
@@ -223,7 +225,7 @@ fun MainScreenContent(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
-                            contentDescription = "Configurações",
+                            contentDescription = stringResource(R.string.cd_open_settings),
                             tint = KitsuneTheme.colors.textMuted,
                             modifier = Modifier.size(19.dp)
                         )
@@ -264,7 +266,7 @@ fun MainScreenContent(
 
                     MascotSvg(
                         type = currentMascot,
-                        contentDescription = "Kitsune Mascote",
+                        contentDescription = stringResource(R.string.cd_mascot_idle),
                         size = 165.dp
                     )
                 }
@@ -272,7 +274,7 @@ fun MainScreenContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "kitsune.tools",
+                    text = stringResource(R.string.app_name),
                     color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
@@ -283,7 +285,7 @@ fun MainScreenContent(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "o downloader mais fofo e rápido da\nweb!",
+                    text = stringResource(R.string.app_tagline),
                     color = KitsuneTheme.colors.textMuted,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 13.sp,
@@ -331,7 +333,7 @@ fun MainScreenContent(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Copiar link detectado?",
+                                    text = stringResource(R.string.prompt_clipboard_detected),
                                     color = KitsuneTheme.colors.textSecondary,
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 12.sp,
@@ -340,7 +342,7 @@ fun MainScreenContent(
                                 )
                             }
                             Text(
-                                text = "Colar",
+                                text = stringResource(R.string.btn_paste),
                                 color = KitsuneTheme.colors.accentCyan,
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold,
@@ -381,14 +383,14 @@ fun MainScreenContent(
                 modifier = Modifier.padding(bottom = 12.dp)
             ) {
                 Text(
-                    text = "ao continuar, você concorda com os",
+                    text = stringResource(R.string.terms_agreement_prefix),
                     color = KitsuneTheme.colors.textMuted,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = "termos e ética de uso",
+                    text = stringResource(R.string.terms_dialog_title),
                     color = KitsuneTheme.colors.textSecondary,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,

@@ -1,0 +1,126 @@
+<resources>
+    <string name="app_name">Kitsune</string>
+    <string name="app_tagline">Baixador de mídia e extrator de áudio rápido e privativo</string>
+
+    <string name="btn_download">Baixar</string>
+    <string name="btn_download_audio">Baixar Áudio</string>
+    <string name="btn_download_video_quality">Baixar (%s)</string>
+    <string name="btn_processing">Processando...</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_paste">Colar</string>
+    <string name="btn_clear">Limpar</string>
+    <string name="btn_share">Compartilhar</string>
+    <string name="btn_retry">Tentar Novamente</string>
+    <string name="btn_close">Fechar</string>
+    <string name="btn_delete">Excluir</string>
+    <string name="btn_save">Salvar</string>
+    <string name="btn_dismiss">Dispensar</string>
+    <string name="btn_play">Reproduzir</string>
+    <string name="btn_rename">Renomear</string>
+    <string name="btn_understood">Entendido</string>
+
+    <string name="hint_url_input">Cole ou digite a URL da mídia...</string>
+    <string name="prompt_clipboard_detected">Copiar link detectado?</string>
+    <string name="hint_rename_file">Novo nome do arquivo</string>
+    <string name="terms_agreement_prefix">Ao continuar, você concorda com os</string>
+    <string name="preview_detecting">Detectando detalhes da mídia...</string>
+
+    <string name="mode_auto">Auto</string>
+    <string name="mode_audio">Áudio</string>
+    <string name="mode_mute">Mudo</string>
+    <string name="mode_video_mp4">Vídeo (MP4)</string>
+    <string name="mode_audio_mp3">Áudio (MP3)</string>
+    <string name="mode_custom">Personalizado</string>
+    <string name="quality_best">Melhor Disponível</string>
+    <string name="quality_max_res">Resolução máxima: %dp</string>
+    <string name="badge_recommended">RECOMENDADO</string>
+
+    <string name="stage_initializing">Preparando download...</string>
+    <string name="stage_video_stream">Baixando stream de vídeo...</string>
+    <string name="stage_audio_stream">Baixando áudio...</string>
+    <string name="stage_ffmpeg_muxing">Unindo vídeo e áudio com FFmpeg...</string>
+    <string name="stage_finalizing">Salvando na Galeria do Android...</string>
+    <string name="status_download_active">Download Ativo</string>
+    <string name="status_muxing_title">Unindo Áudio e Vídeo...</string>
+    <string name="status_muxing_desc">Processando arquivo final em alta resolução com FFmpeg local.</string>
+    <string name="status_saved_gallery">Salvo na Galeria!</string>
+    <string name="status_download_failed">Falha no Download</string>
+    <string name="status_speed">Velocidade: %s</string>
+    <string name="status_eta">Tempo restante: %s</string>
+
+    <string name="settings_title">Opções de Download</string>
+    <string name="settings_subtitle">Configurações de áudio, vídeo, tema e engine</string>
+    <string name="settings_amoled_title">Tema AMOLED (Preto Puro)</string>
+    <string name="settings_amoled_desc">Fundo preto absoluto (#000000) para economizar bateria em telas OLED</string>
+    <string name="settings_audio_only">Apenas Áudio</string>
+    <string name="settings_audio_only_desc">Extrair apenas o som em MP3 ou formato selecionado</string>
+    <string name="settings_audio_format">Formato de Áudio</string>
+    <string name="settings_audio_quality">Qualidade de Áudio</string>
+    <string name="settings_embed_subtitles">Embutir Legendas</string>
+    <string name="settings_embed_subtitles_desc">Salvar legendas disponíveis dentro do MP4</string>
+    <string name="settings_video_quality">Qualidade de Vídeo</string>
+    <string name="settings_mute_video">Silenciar Vídeo</string>
+    <string name="settings_mute_video_desc">Baixar apenas vídeo sem áudio</string>
+    <string name="settings_engine_title">Engine de Extração</string>
+    <string name="settings_engine_version">Versão instalada: %s</string>
+    <string name="settings_engine_update_check">Verificar atualizações da engine</string>
+    <string name="settings_engine_updating">Atualizando engine...</string>
+    <string name="settings_engine_updated">Engine já está atualizada!</string>
+
+    <string name="history_title">Biblioteca de Downloads</string>
+    <string name="history_subtitle">%d arquivos salvos</string>
+    <string name="history_filter_all">Todos</string>
+    <string name="history_filter_videos">Vídeos</string>
+    <string name="history_filter_audios">Áudios</string>
+    <string name="history_empty_title">Nenhum arquivo baixado ainda</string>
+    <string name="history_empty_desc">Mídias baixadas aparecerão aqui para reprodução e gerenciamento offline.</string>
+    <string name="history_dialog_rename_title">Renomear Arquivo</string>
+    <string name="history_dialog_rename_prompt">Digite o novo nome para a mídia:</string>
+    <string name="history_dialog_delete_title">Excluir Arquivo</string>
+    <string name="history_dialog_delete_message">Tem certeza de que deseja excluir \"%s\"? Esta ação não pode ser desfeita.</string>
+    <string name="history_file_deleted">Arquivo excluído com sucesso</string>
+    <string name="history_file_renamed">Arquivo renomeado com sucesso</string>
+
+    <string name="player_title">Reprodutor de Mídia</string>
+    <string name="player_speed">Velocidade: %sx</string>
+    <string name="player_audio_track">Faixa de Áudio</string>
+    <string name="player_external">Player Externo</string>
+
+    <string name="services_dialog_title">Serviços Suportados</string>
+    <string name="services_dialog_desc">O Kitsune suporta download direto e privado das seguintes plataformas:</string>
+    <string name="services_youtube_desc">Áudio e Vídeo até 4K</string>
+    <string name="services_tiktok_desc">Vídeos e Fotos sem marca d\'água</string>
+    <string name="services_instagram_desc">Reels, Posts e Stories públicos</string>
+    <string name="services_twitter_desc">Vídeos e GIFs de tweets</string>
+    <string name="services_reddit_desc">Vídeos com áudio incorporado</string>
+    <string name="services_bilibili_desc">Vídeos de anime e clipes</string>
+    <string name="services_soundcloud_desc">Áudio em alta fidelidade</string>
+    <string name="services_pinterest_desc">Vídeos e Imagens</string>
+    <string name="services_generic_desc">Streams diretos de mídia</string>
+    <string name="services_privacy_note">Todos os downloads ocorrem 100% no seu aparelho sem proxy ou servidores intermediários.</string>
+
+    <string name="terms_dialog_title">Termos e Ética de Uso</string>
+    <string name="terms_dialog_body_1">O Kitsune é uma ferramenta open-source desenvolvida exclusivamente para uso pessoal, backup privado e estudo de mídias que você tenha direito de acesso.</string>
+    <string name="terms_dialog_body_2">Não encorajamos violação de direitos autorais ou redistribuição comercial. O usuário é responsável por respeitar os termos de cada plataforma.</string>
+
+    <string name="cd_mascot_idle">Mascote Kitsune descansando</string>
+    <string name="cd_mascot_downloading">Mascote Kitsune baixando</string>
+    <string name="cd_mascot_completed">Mascote Kitsune comemorando</string>
+    <string name="cd_mascot_error">Mascote Kitsune confuso</string>
+    <string name="cd_play_media">Reproduzir mídia</string>
+    <string name="cd_pause_media">Pausar mídia</string>
+    <string name="cd_forward_10">Avançar 10 segundos</string>
+    <string name="cd_replay_10">Voltar 10 segundos</string>
+    <string name="cd_close_dialog">Fechar diálogo</string>
+    <string name="cd_paste_url">Colar URL</string>
+    <string name="cd_clear_url">Limpar URL</string>
+    <string name="cd_open_settings">Abrir configurações</string>
+    <string name="cd_open_history">Abrir histórico de downloads</string>
+
+    <string name="download_channel_name">Downloads do Kitsune</string>
+    <string name="download_channel_desc">Notificações de progresso de download e muxing de vídeos</string>
+    <string name="notif_downloading_media">Baixando mídia...</string>
+    <string name="notif_download_complete">Download concluído</string>
+    <string name="notif_download_failed">Falha no download</string>
+    <string name="notif_cancel_action">Cancelar</string>
+</resources>

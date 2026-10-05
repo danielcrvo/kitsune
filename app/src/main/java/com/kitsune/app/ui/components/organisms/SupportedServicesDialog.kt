@@ -20,10 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.R
 import com.kitsune.app.ui.theme.KitsuneTheme
 import com.kitsune.app.ui.theme.ThemePreviews
 
@@ -49,7 +51,7 @@ fun SupportedServicesDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "serviços suportados",
+                    text = stringResource(R.string.services_dialog_title),
                     color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
@@ -57,7 +59,7 @@ fun SupportedServicesDialog(
                 )
 
                 Text(
-                    text = "O Kitsune suporta download direto e privado das seguintes plataformas:",
+                    text = stringResource(R.string.services_dialog_desc),
                     color = KitsuneTheme.colors.textSecondary,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 13.sp,
@@ -67,18 +69,20 @@ fun SupportedServicesDialog(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    ServiceItem("YouTube", "4K (2160p), 60fps, Shorts e áudios")
-                    ServiceItem("TikTok", "HD sem marca d'água e áudios")
-                    ServiceItem("Instagram", "Reels, posts e vídeos")
-                    ServiceItem("X (Twitter)", "Vídeos e GIFs em qualidade original")
-                    ServiceItem("Reddit", "Vídeos com áudio mesclado localmente")
-                    ServiceItem("Bilibili & Outros", "SoundCloud, Pinterest e centenas de sites")
+                    ServiceItem("YouTube", stringResource(R.string.services_youtube_desc))
+                    ServiceItem("TikTok", stringResource(R.string.services_tiktok_desc))
+                    ServiceItem("Instagram", stringResource(R.string.services_instagram_desc))
+                    ServiceItem("X (Twitter)", stringResource(R.string.services_twitter_desc))
+                    ServiceItem("Reddit", stringResource(R.string.services_reddit_desc))
+                    ServiceItem("SoundCloud", stringResource(R.string.services_soundcloud_desc))
+                    ServiceItem("Bilibili", stringResource(R.string.services_bilibili_desc))
+                    ServiceItem("Pinterest", stringResource(R.string.services_pinterest_desc))
                 }
 
                 Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
-                    text = "Todos os downloads ocorrem 100% no seu aparelho sem proxy ou servidores intermediários.",
+                    text = stringResource(R.string.services_privacy_note),
                     color = KitsuneTheme.colors.textMuted,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
@@ -91,7 +95,7 @@ fun SupportedServicesDialog(
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text(
-                            text = "fechar",
+                            text = stringResource(R.string.btn_close),
                             color = KitsuneTheme.colors.accentOrange,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,

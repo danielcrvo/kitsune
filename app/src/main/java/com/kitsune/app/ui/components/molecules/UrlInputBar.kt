@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +42,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.R
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
@@ -49,7 +51,7 @@ fun UrlInputBar(
     onUrlChange: (String) -> Unit,
     onDownloadClick: () -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "cole o link aqui"
+    placeholder: String = stringResource(R.string.hint_url_input)
 ) {
     val clipboardManager = LocalClipboardManager.current
     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
@@ -138,7 +140,7 @@ fun UrlInputBar(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Limpar",
+                        contentDescription = stringResource(R.string.btn_clear),
                         tint = KitsuneTheme.colors.textMuted,
                         modifier = Modifier.size(14.dp)
                     )
@@ -180,7 +182,7 @@ fun UrlInputBar(
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = if (isActionDownload) "Baixar" else "Colar",
+                        text = if (isActionDownload) stringResource(R.string.btn_download) else stringResource(R.string.btn_paste),
                         color = KitsuneTheme.colors.textPrimary,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Medium,

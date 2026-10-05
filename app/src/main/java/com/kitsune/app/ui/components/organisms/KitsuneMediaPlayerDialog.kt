@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -67,6 +68,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.kitsune.app.R
 import com.kitsune.app.core.model.DownloadedMediaFile
 import com.kitsune.app.ui.components.atoms.KitsuneBadge
 import com.kitsune.app.ui.components.atoms.KitsuneButton
@@ -205,7 +207,7 @@ fun KitsuneMediaPlayerDialog(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Fechar player",
+                            contentDescription = stringResource(R.string.cd_close_dialog),
                             tint = KitsuneTheme.colors.textPrimary,
                             modifier = Modifier.size(18.dp)
                         )
@@ -322,7 +324,7 @@ fun KitsuneMediaPlayerDialog(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Replay10,
-                                contentDescription = "Voltar 10 segundos",
+                                contentDescription = stringResource(R.string.cd_replay_10),
                                 tint = KitsuneTheme.colors.textPrimary
                             )
                         }
@@ -341,7 +343,7 @@ fun KitsuneMediaPlayerDialog(
                         ) {
                             Icon(
                                 imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                contentDescription = if (isPlaying) "Pausar" else "Reproduzir",
+                                contentDescription = stringResource(if (isPlaying) R.string.cd_pause_media else R.string.cd_play_media),
                                 tint = KitsuneTheme.colors.background,
                                 modifier = Modifier.size(30.dp)
                             )
@@ -357,7 +359,7 @@ fun KitsuneMediaPlayerDialog(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Forward10,
-                                contentDescription = "Avançar 10 segundos",
+                                contentDescription = stringResource(R.string.cd_forward_10),
                                 tint = KitsuneTheme.colors.textPrimary
                             )
                         }
@@ -370,6 +372,7 @@ fun KitsuneMediaPlayerDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    val sharePrompt = stringResource(R.string.btn_share)
                     KitsuneButton(
                         onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -378,7 +381,7 @@ fun KitsuneMediaPlayerDialog(
                                 putExtra(Intent.EXTRA_STREAM, file.uri)
                                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             }
-                            context.startActivity(Intent.createChooser(shareIntent, "Compartilhar com"))
+                            context.startActivity(Intent.createChooser(shareIntent, sharePrompt))
                         },
                         variant = KitsuneButtonVariant.SECONDARY,
                         modifier = Modifier.weight(1f)
@@ -389,7 +392,7 @@ fun KitsuneMediaPlayerDialog(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Compartilhar")
+                        Text(stringResource(R.string.btn_share))
                     }
 
                     KitsuneButton(
@@ -407,7 +410,7 @@ fun KitsuneMediaPlayerDialog(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Player Externo")
+                        Text(stringResource(R.string.player_external))
                     }
                 }
             }

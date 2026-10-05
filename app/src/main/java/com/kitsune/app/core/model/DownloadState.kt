@@ -1,14 +1,16 @@
 package com.kitsune.app.core.model
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.kitsune.app.R
 
 @Immutable
-enum class DownloadStage(val description: String) {
-    INITIALIZING("Preparando download..."),
-    VIDEO_STREAM("Baixando stream de vídeo..."),
-    AUDIO_STREAM("Baixando áudio..."),
-    FFMPEG_MUXING("Unindo vídeo e áudio com FFmpeg..."),
-    FINALIZING("Salvando na Galeria do Android...")
+enum class DownloadStage(@StringRes val labelRes: Int) {
+    INITIALIZING(R.string.stage_initializing),
+    VIDEO_STREAM(R.string.stage_video_stream),
+    AUDIO_STREAM(R.string.stage_audio_stream),
+    FFMPEG_MUXING(R.string.stage_ffmpeg_muxing),
+    FINALIZING(R.string.stage_finalizing)
 }
 
 @Immutable

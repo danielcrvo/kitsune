@@ -70,7 +70,7 @@ object DownloadNotificationHelper {
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setContentIntent(appPendingIntent)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Cancelar", cancelPendingIntent)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, context.getString(R.string.notif_cancel_action), cancelPendingIntent)
             .build()
     }
 
@@ -107,13 +107,13 @@ object DownloadNotificationHelper {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentTitle("Download Concluído: $title")
+            .setContentTitle("${context.getString(R.string.notif_download_complete)}: $title")
             .setContentText(subtext)
             .setAutoCancel(true)
             .setContentIntent(clickPendingIntent)
 
         if (targetUri != null) {
-            builder.addAction(android.R.drawable.ic_media_play, "Abrir Arquivo", clickPendingIntent)
+            builder.addAction(android.R.drawable.ic_media_play, context.getString(R.string.btn_play), clickPendingIntent)
         }
 
         return builder.build()

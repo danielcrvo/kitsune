@@ -18,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kitsune.app.R
 import com.kitsune.app.core.model.PlatformType
 import com.kitsune.app.core.model.VideoQuality
 import com.kitsune.app.ui.components.atoms.KitsuneButton
@@ -67,7 +69,7 @@ fun MainInputCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.Tune,
-                    contentDescription = "Configurações de Download",
+                    contentDescription = stringResource(R.string.settings_title),
                     tint = KitsuneTheme.colors.textPrimary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -88,7 +90,11 @@ fun MainInputCard(
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
-                    val label = if (audioOnly) "Baixar Áudio" else "Baixar (${selectedQuality.label.take(10)})"
+                    val label = if (audioOnly) {
+                        stringResource(R.string.btn_download_audio)
+                    } else {
+                        stringResource(R.string.btn_download_video_quality, selectedQuality.label.take(10))
+                    }
                     Text(text = label)
                 }
             }

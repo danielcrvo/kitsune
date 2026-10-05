@@ -37,10 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.R
 import com.kitsune.app.core.model.AudioCodec
 import com.kitsune.app.core.model.AudioQuality
 import com.kitsune.app.core.model.DownloadConfig
@@ -91,13 +93,13 @@ fun DownloadSettingsSheet(
             ) {
                 Column {
                     Text(
-                        text = "Opções de Download",
+                        text = stringResource(R.string.settings_title),
                         style = KitsuneTheme.typography.titleLarge,
                         color = KitsuneTheme.colors.textPrimary,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Configurações de áudio, vídeo, tema e engine",
+                        text = stringResource(R.string.settings_subtitle),
                         style = KitsuneTheme.typography.labelSmall,
                         color = KitsuneTheme.colors.textMuted
                     )
@@ -111,7 +113,7 @@ fun DownloadSettingsSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Fechar",
+                        contentDescription = stringResource(R.string.btn_close),
                         tint = KitsuneTheme.colors.textPrimary
                     )
                 }
@@ -138,12 +140,12 @@ fun DownloadSettingsSheet(
                             .padding(end = KitsuneTheme.spacing.md)
                     ) {
                         Text(
-                            text = "Tema AMOLED (Preto Puro)",
+                            text = stringResource(R.string.settings_amoled_title),
                             style = KitsuneTheme.typography.titleMedium,
                             color = KitsuneTheme.colors.textPrimary
                         )
                         Text(
-                            text = "Fundo 100% preto para economia de bateria em telas OLED",
+                            text = stringResource(R.string.settings_amoled_desc),
                             style = KitsuneTheme.typography.labelSmall,
                             color = KitsuneTheme.colors.textMuted
                         )
@@ -174,12 +176,12 @@ fun DownloadSettingsSheet(
                             .padding(end = KitsuneTheme.spacing.md)
                     ) {
                         Text(
-                            text = "Apenas Áudio",
+                            text = stringResource(R.string.settings_audio_only),
                             style = KitsuneTheme.typography.titleMedium,
                             color = KitsuneTheme.colors.textPrimary
                         )
                         Text(
-                            text = "Extrair apenas o som em MP3 ou formato selecionado",
+                            text = stringResource(R.string.settings_audio_only_desc),
                             style = KitsuneTheme.typography.labelSmall,
                             color = KitsuneTheme.colors.textMuted
                         )
@@ -200,7 +202,7 @@ fun DownloadSettingsSheet(
                 Spacer(modifier = Modifier.height(KitsuneTheme.spacing.md))
 
                 Text(
-                    text = "Formato de Áudio",
+                    text = stringResource(R.string.settings_audio_format),
                     style = KitsuneTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = KitsuneTheme.colors.textPrimary,
@@ -246,7 +248,7 @@ fun DownloadSettingsSheet(
                 Spacer(modifier = Modifier.height(KitsuneTheme.spacing.md))
 
                 Text(
-                    text = "Qualidade do Áudio",
+                    text = stringResource(R.string.settings_audio_quality),
                     style = KitsuneTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = KitsuneTheme.colors.textPrimary,
@@ -322,12 +324,12 @@ fun DownloadSettingsSheet(
                                 .padding(end = KitsuneTheme.spacing.md)
                         ) {
                             Text(
-                                text = "Embutir Legendas",
+                                text = stringResource(R.string.settings_embed_subtitles),
                                 style = KitsuneTheme.typography.titleMedium,
                                 color = KitsuneTheme.colors.textPrimary
                             )
                             Text(
-                                text = "Salvar legendas disponíveis dentro do MP4",
+                                text = stringResource(R.string.settings_embed_subtitles_desc),
                                 style = KitsuneTheme.typography.labelSmall,
                                 color = KitsuneTheme.colors.textMuted
                             )
@@ -348,7 +350,7 @@ fun DownloadSettingsSheet(
                     Spacer(modifier = Modifier.height(KitsuneTheme.spacing.md))
 
                     Text(
-                        text = "Resolução Máxima de Vídeo",
+                        text = stringResource(R.string.settings_video_quality),
                         style = KitsuneTheme.typography.titleMedium,
                         color = KitsuneTheme.colors.textPrimary,
                         modifier = Modifier.padding(bottom = KitsuneTheme.spacing.sm)
@@ -391,12 +393,12 @@ fun DownloadSettingsSheet(
                             .padding(end = KitsuneTheme.spacing.sm)
                     ) {
                         Text(
-                            text = "Engine Local (yt-dlp)",
+                            text = stringResource(R.string.settings_engine_title),
                             style = KitsuneTheme.typography.bodyMedium,
                             color = KitsuneTheme.colors.textPrimary
                         )
                         Text(
-                            text = "Versão: $engineVersion",
+                            text = stringResource(R.string.settings_engine_version, engineVersion),
                             style = KitsuneTheme.typography.labelSmall,
                             color = KitsuneTheme.colors.accentCyan
                         )
@@ -415,7 +417,7 @@ fun DownloadSettingsSheet(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Atualizar Engine", color = KitsuneTheme.colors.accentCyan)
+                        Text(stringResource(R.string.settings_engine_update_check), color = KitsuneTheme.colors.accentCyan)
                     }
                 }
 

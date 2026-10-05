@@ -28,12 +28,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.kitsune.app.R
 import com.kitsune.app.core.model.MediaInfo
 import com.kitsune.app.ui.components.atoms.PlatformBadge
 import com.kitsune.app.ui.theme.KitsuneTheme
@@ -73,7 +75,7 @@ fun MediaPreviewCard(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "detectando detalhes da mídia...",
+                        text = stringResource(R.string.preview_detecting),
                         color = KitsuneTheme.colors.textMuted,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp

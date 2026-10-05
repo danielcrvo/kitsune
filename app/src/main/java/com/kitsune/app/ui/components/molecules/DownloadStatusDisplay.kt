@@ -9,7 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kitsune.app.R
 import com.kitsune.app.core.model.DownloadStage
 import com.kitsune.app.ui.components.atoms.KitsuneBadge
 import com.kitsune.app.ui.components.atoms.KitsuneLinearGauge
@@ -32,7 +34,7 @@ fun DownloadStatusDisplay(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stage.description,
+                text = stringResource(stage.labelRes),
                 style = KitsuneTheme.typography.bodyMedium,
                 color = KitsuneTheme.colors.textPrimary
             )
@@ -61,7 +63,7 @@ fun DownloadStatusDisplay(
             }
             if (eta.isNotEmpty()) {
                 Text(
-                    text = "Restante: $eta",
+                    text = stringResource(R.string.status_eta, eta),
                     style = KitsuneTheme.typography.labelSmall,
                     color = KitsuneTheme.colors.textMuted
                 )

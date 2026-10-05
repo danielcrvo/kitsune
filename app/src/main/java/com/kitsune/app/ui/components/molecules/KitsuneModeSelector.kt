@@ -31,10 +31,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.R
 import com.kitsune.app.ui.screens.DownloadMode
 import com.kitsune.app.ui.theme.KitsuneTheme
 
@@ -58,7 +60,7 @@ fun KitsuneModeSelector(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ModeSegment(
-                label = "auto",
+                label = stringResource(R.string.mode_auto),
                 icon = Icons.Default.Star,
                 activeColor = KitsuneTheme.colors.accentOrange,
                 isSelected = selectedMode == DownloadMode.AUTO,
@@ -67,7 +69,7 @@ fun KitsuneModeSelector(
             )
 
             ModeSegment(
-                label = "áudio",
+                label = stringResource(R.string.mode_audio),
                 icon = Icons.Default.MusicNote,
                 activeColor = KitsuneTheme.colors.accentPurple,
                 isSelected = selectedMode == DownloadMode.AUDIO,
@@ -76,7 +78,7 @@ fun KitsuneModeSelector(
             )
 
             ModeSegment(
-                label = "mudo",
+                label = stringResource(R.string.mode_mute),
                 icon = Icons.AutoMirrored.Filled.VolumeOff,
                 activeColor = KitsuneTheme.colors.error,
                 isSelected = selectedMode == DownloadMode.MUTE,

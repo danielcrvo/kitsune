@@ -20,10 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.R
 import com.kitsune.app.ui.theme.KitsuneTheme
 import com.kitsune.app.ui.theme.ThemePreviews
 
@@ -49,7 +51,7 @@ fun TermsDialog(
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Text(
-                    text = "termos e ética de uso",
+                    text = stringResource(R.string.terms_dialog_title),
                     color = KitsuneTheme.colors.textPrimary,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
@@ -57,7 +59,7 @@ fun TermsDialog(
                 )
 
                 Text(
-                    text = "O kitsune.tools é uma ferramenta open-source desenvolvida exclusivamente para uso pessoal, backup privado e estudo.",
+                    text = stringResource(R.string.terms_dialog_body_1),
                     color = KitsuneTheme.colors.textSecondary,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 13.sp,
@@ -65,9 +67,7 @@ fun TermsDialog(
                 )
 
                 Text(
-                    text = "• Respeite os direitos dos criadores originais e o direito autoral de cada mídia.\n" +
-                            "• Não utilize arquivos baixados para distribuição comercial ou violação de direitos.\n" +
-                            "• O processamento ocorre 100% no seu próprio dispositivo sem intermediação de servidores de terceiros.",
+                    text = stringResource(R.string.terms_dialog_body_2),
                     color = KitsuneTheme.colors.textMuted,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 12.sp,
@@ -82,7 +82,7 @@ fun TermsDialog(
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text(
-                            text = "entendido",
+                            text = stringResource(R.string.btn_understood),
                             color = KitsuneTheme.colors.accentOrange,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,

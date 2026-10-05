@@ -55,6 +55,10 @@ android {
         compose = true
     }
 
+    androidResources {
+        localeFilters += listOf("en", "pt-rBR")
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
