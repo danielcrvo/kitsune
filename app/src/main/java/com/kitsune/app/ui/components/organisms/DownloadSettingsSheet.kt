@@ -81,7 +81,6 @@ fun DownloadSettingsSheet(
                 .fillMaxHeight(0.85f)
                 .navigationBarsPadding()
         ) {
-            // Header fixo no topo com título, subtítulo e botão de fechar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -118,7 +117,6 @@ fun DownloadSettingsSheet(
                 }
             }
 
-            // Corpo rolável suave com todas as opções
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -129,7 +127,6 @@ fun DownloadSettingsSheet(
             ) {
                 Spacer(modifier = Modifier.height(KitsuneTheme.spacing.sm))
 
-                // Tema AMOLED (Preto Puro)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -166,7 +163,6 @@ fun DownloadSettingsSheet(
 
                 Spacer(modifier = Modifier.height(KitsuneTheme.spacing.md))
 
-                // Switch Apenas Áudio
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -203,7 +199,6 @@ fun DownloadSettingsSheet(
 
                 Spacer(modifier = Modifier.height(KitsuneTheme.spacing.md))
 
-                // Formato de Áudio
                 Text(
                     text = "Formato de Áudio",
                     style = KitsuneTheme.typography.bodyMedium,
@@ -250,7 +245,6 @@ fun DownloadSettingsSheet(
 
                 Spacer(modifier = Modifier.height(KitsuneTheme.spacing.md))
 
-                // Qualidade do Áudio
                 Text(
                     text = "Qualidade do Áudio",
                     style = KitsuneTheme.typography.bodyMedium,
@@ -386,7 +380,6 @@ fun DownloadSettingsSheet(
 
                 Spacer(modifier = Modifier.height(KitsuneTheme.spacing.lg))
 
-                // Engine Local
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,

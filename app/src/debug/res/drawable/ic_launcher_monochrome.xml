@@ -33,7 +33,6 @@
             android:fillColor="#000000"
             android:pathData="M 100 53 a 58 47 0 1 0 0.1 0 Z" />
 
-        <!-- Crescent Moon for Nightly Monochrome -->
         <group
             android:translateX="166"
             android:translateY="56"

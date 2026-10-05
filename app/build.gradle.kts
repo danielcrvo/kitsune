@@ -95,7 +95,6 @@ android.applicationVariants.all {
             val abiPriority = abiVersionCodes[abiName] ?: 0
             output?.versionCodeOverride = baseCode * 10 + abiPriority
         } else {
-            // APK Universal (todas as arquiteturas juntas)
             output?.versionCodeOverride = baseCode * 10 + 0
         }
 
@@ -132,7 +131,6 @@ dependencies {
 
     implementation(libs.lottie.compose)
 
-    // Media3 ExoPlayer para reprodução in-app
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
 

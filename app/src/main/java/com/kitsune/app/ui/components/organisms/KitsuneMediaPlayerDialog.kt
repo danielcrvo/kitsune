@@ -141,7 +141,6 @@ fun KitsuneMediaPlayerDialog(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Header com título, badge e botão fechar
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -214,7 +213,6 @@ fun KitsuneMediaPlayerDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Área de reprodução de vídeo ou áudio
                 if (file.isVideo) {
                     AndroidView(
                         factory = { ctx ->
@@ -235,7 +233,6 @@ fun KitsuneMediaPlayerDialog(
                             .background(Color.Black)
                     )
                 } else {
-                    // Visualizador de Áudio animado e estilizado
                     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
                     val pulseScale by infiniteTransition.animateFloat(
                         initialValue = 1f,
@@ -274,7 +271,6 @@ fun KitsuneMediaPlayerDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Barra de progresso e timestamps
                     val sliderValue = if (duration > 0) currentPosition.toFloat() / duration else 0f
                     Slider(
                         value = sliderValue.coerceIn(0f, 1f),
@@ -311,7 +307,6 @@ fun KitsuneMediaPlayerDialog(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Controles de áudio: -10s, Play/Pause, +10s
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -370,7 +365,6 @@ fun KitsuneMediaPlayerDialog(
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                // Linha de Ações: Compartilhar Mídia e Abrir Externamente
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
