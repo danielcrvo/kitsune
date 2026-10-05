@@ -46,7 +46,7 @@ jobs:
 
       - name: Upload debug APKs
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: kitsune-nightly-apks
           path: app/build/outputs/apk/debug/Kitsune-*.apk
