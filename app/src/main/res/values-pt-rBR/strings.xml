@@ -123,4 +123,25 @@
     <string name="notif_download_complete">Download concluído</string>
     <string name="notif_download_failed">Falha no download</string>
     <string name="notif_cancel_action">Cancelar</string>
+
+    <string name="pref_dynamic_color">Cores Dinâmicas (Material You)</string>
+    <string name="pref_dynamic_color_desc">Usa cores do tema baseadas no papel de parede</string>
+    <string name="pref_wifi_only">Baixar apenas no Wi-Fi</string>
+    <string name="pref_wifi_only_desc">Pausa downloads automaticamente em dados móveis</string>
+    <string name="status_waiting_wifi">Aguardando Wi-Fi...</string>
+    <string name="notif_waiting_wifi">Download pausado: aguardando Wi-Fi</string>
+
+    <string name="queue_title">Fila de Downloads</string>
+    <string name="queue_pending_count">%1$d na fila</string>
+    <string name="queue_item_cancel">Cancelar item</string>
+    <string name="notif_queue_progress">Baixando %1$d de %2$d</string>
+
+    <string name="playlist_dialog_title">Playlist Detectada</string>
+    <string name="playlist_dialog_subtitle">Selecione os itens para download</string>
+    <string name="playlist_select_all">Selecionar todos</string>
+    <string name="playlist_deselect_all">Desmarcar todos</string>
+    <string name="playlist_download_selected">Baixar (%1$d)</string>
+    <string name="playlist_loading">Extraindo itens da playlist...</string>
+    <string name="playlist_empty">Nenhum item disponível para download na playlist</string>
+    <string name="playlist_total_items">%1$d itens encontrados</string>
 </resources>

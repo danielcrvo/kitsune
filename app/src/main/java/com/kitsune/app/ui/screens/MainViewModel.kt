@@ -12,6 +12,7 @@ import com.kitsune.app.core.model.AudioCodec
 import com.kitsune.app.core.model.DownloadConfig
 import com.kitsune.app.core.model.DownloadState
 import com.kitsune.app.core.model.DownloadedMediaFile
+import com.kitsune.app.core.model.PlaylistInfo
 import com.kitsune.app.core.service.DownloadForegroundService
 import com.kitsune.app.core.storage.DownloadedFilesRepository
 import com.kitsune.app.core.storage.UserPreferencesRepository
@@ -44,6 +45,12 @@ class MainViewModel @JvmOverloads constructor(
         }
 
         viewModelScope.launch {
+            DownloadForegroundService.downloadQueue.collect { queue ->
+                _uiState.update { it.copy(downloadQueue = queue) }
+            }
+        }
+
+        viewModelScope.launch {
             val savedConfig = preferencesRepository.userConfigFlow.firstOrNull()
             val savedMode = preferencesRepository.downloadModeFlow.firstOrNull() ?: DownloadMode.AUTO
 
@@ -63,6 +70,18 @@ class MainViewModel @JvmOverloads constructor(
             }
         }
 
+        viewModelScope.launch {
+            preferencesRepository.isDynamicColorFlow.collect { dynamicColor ->
+                _uiState.update { it.copy(isDynamicColor = dynamicColor) }
+            }
+        }
+
+        viewModelScope.launch {
+            preferencesRepository.isWifiOnlyFlow.collect { wifiOnly ->
+                _uiState.update { it.copy(isWifiOnly = wifiOnly) }
+            }
+        }
+
         loadDownloadedFiles()
     }
 
@@ -79,6 +98,15 @@ class MainViewModel @JvmOverloads constructor(
             is MainUiAction.ToggleSupportedServices -> toggleSupportedServices(action.open)
             is MainUiAction.ToggleTerms -> toggleTerms(action.open)
             is MainUiAction.ToggleAmoledTheme -> toggleAmoledTheme(action.enabled)
+            is MainUiAction.ToggleDynamicColor -> toggleDynamicColor(action.enabled)
+            is MainUiAction.ToggleWifiOnly -> toggleWifiOnly(action.enabled)
+            is MainUiAction.CancelQueueTask -> context?.let { cancelQueueTask(it, action.taskId) }
+            is MainUiAction.OpenPlaylistDialog -> openPlaylistDialog(action.info)
+            is MainUiAction.ClosePlaylistDialog -> closePlaylistDialog()
+            is MainUiAction.TogglePlaylistItem -> togglePlaylistItem(action.itemId)
+            is MainUiAction.SelectAllPlaylistItems -> selectAllPlaylistItems()
+            is MainUiAction.DeselectAllPlaylistItems -> deselectAllPlaylistItems()
+            is MainUiAction.DownloadSelectedPlaylistItems -> context?.let { downloadSelectedPlaylistItems(it) }
             is MainUiAction.CheckEngineUpdate -> context?.let { checkEngineUpdate(it) }
             is MainUiAction.PlayFile -> playDownloadedFile(action.file)
             is MainUiAction.CloseMediaPlayer -> closeMediaPlayer()
@@ -119,6 +147,7 @@ class MainViewModel @JvmOverloads constructor(
         metadataJob?.cancel()
         val detected = UrlDetector.detect(newUrl)
         val isValid = UrlDetector.isValidUrl(newUrl)
+        val isPlaylist = UrlDetector.isPlaylistUrl(newUrl)
 
         _uiState.update {
             it.copy(
@@ -126,31 +155,57 @@ class MainViewModel @JvmOverloads constructor(
                 detectedPlatform = detected,
                 isUrlValid = isValid,
                 mediaInfo = if (newUrl.isBlank()) null else it.mediaInfo,
-                isLoadingMetadata = isValid && it.mediaInfo == null,
+                isLoadingMetadata = isValid && it.mediaInfo == null && !isPlaylist,
+                isLoadingPlaylist = isValid && isPlaylist,
                 detectedClipboardUrl = null
             )
         }
 
         if (isValid) {
             metadataJob = viewModelScope.launch {
-                try {
-                    _uiState.update { it.copy(isLoadingMetadata = true) }
-                    val result = YtDlpEngine.fetchMediaInfo(getApplication(), newUrl)
-                    result.fold(
-                        onSuccess = { info ->
-                            _uiState.update {
-                                it.copy(
-                                    mediaInfo = info,
-                                    isLoadingMetadata = false
-                                )
+                if (isPlaylist) {
+                    try {
+                        _uiState.update { it.copy(isLoadingPlaylist = true) }
+                        val result = YtDlpEngine.fetchPlaylistInfo(getApplication(), newUrl)
+                        result.fold(
+                            onSuccess = { playlist ->
+                                val allIds = playlist.items.map { item -> item.id }.toSet()
+                                _uiState.update {
+                                    it.copy(
+                                        playlistInfo = playlist,
+                                        selectedPlaylistItems = allIds,
+                                        isPlaylistDialogOpen = true,
+                                        isLoadingPlaylist = false
+                                    )
+                                }
+                            },
+                            onFailure = {
+                                _uiState.update { it.copy(isLoadingPlaylist = false) }
                             }
-                        },
-                        onFailure = {
-                            _uiState.update { it.copy(isLoadingMetadata = false) }
-                        }
-                    )
-                } catch (_: Throwable) {
-                    _uiState.update { it.copy(isLoadingMetadata = false) }
+                        )
+                    } catch (_: Throwable) {
+                        _uiState.update { it.copy(isLoadingPlaylist = false) }
+                    }
+                } else {
+                    try {
+                        _uiState.update { it.copy(isLoadingMetadata = true) }
+                        val result = YtDlpEngine.fetchMediaInfo(getApplication(), newUrl)
+                        result.fold(
+                            onSuccess = { info ->
+                                _uiState.update {
+                                    it.copy(
+                                        mediaInfo = info,
+                                        isLoadingMetadata = false
+                                    )
+                                }
+                            },
+                            onFailure = {
+                                _uiState.update { it.copy(isLoadingMetadata = false) }
+                            }
+                        )
+                    } catch (_: Throwable) {
+                        _uiState.update { it.copy(isLoadingMetadata = false) }
+                    }
                 }
             }
         }
@@ -314,6 +369,92 @@ class MainViewModel @JvmOverloads constructor(
         _uiState.update { it.copy(isAmoledTheme = enabled) }
         viewModelScope.launch {
             preferencesRepository.saveAmoledTheme(enabled)
+        }
+    }
+
+    fun toggleDynamicColor(enabled: Boolean) {
+        _uiState.update { it.copy(isDynamicColor = enabled) }
+        viewModelScope.launch {
+            preferencesRepository.saveDynamicColor(enabled)
+        }
+    }
+
+    fun toggleWifiOnly(enabled: Boolean) {
+        _uiState.update { it.copy(isWifiOnly = enabled) }
+        viewModelScope.launch {
+            preferencesRepository.saveWifiOnly(enabled)
+        }
+    }
+
+    fun cancelQueueTask(context: Context, taskId: String) {
+        DownloadForegroundService.cancelTask(context, taskId)
+    }
+
+    fun openPlaylistDialog(info: PlaylistInfo? = null) {
+        if (info != null) {
+            _uiState.update {
+                it.copy(
+                    playlistInfo = info,
+                    selectedPlaylistItems = info.items.map { item -> item.id }.toSet(),
+                    isPlaylistDialogOpen = true
+                )
+            }
+        } else if (_uiState.value.playlistInfo != null) {
+            _uiState.update { it.copy(isPlaylistDialogOpen = true) }
+        }
+    }
+
+    fun closePlaylistDialog() {
+        _uiState.update { it.copy(isPlaylistDialogOpen = false) }
+    }
+
+    fun togglePlaylistItem(itemId: String) {
+        _uiState.update { state ->
+            val current = state.selectedPlaylistItems
+            val updated = if (current.contains(itemId)) {
+                current - itemId
+            } else {
+                current + itemId
+            }
+            state.copy(selectedPlaylistItems = updated)
+        }
+    }
+
+    fun selectAllPlaylistItems() {
+        _uiState.update { state ->
+            val allIds = state.playlistInfo?.items?.map { it.id }?.toSet() ?: emptySet()
+            state.copy(selectedPlaylistItems = allIds)
+        }
+    }
+
+    fun deselectAllPlaylistItems() {
+        _uiState.update { it.copy(selectedPlaylistItems = emptySet()) }
+    }
+
+    fun downloadSelectedPlaylistItems(context: Context) {
+        val state = _uiState.value
+        val playlist = state.playlistInfo ?: return
+        val selected = playlist.items.filter { state.selectedPlaylistItems.contains(it.id) }
+        if (selected.isEmpty()) return
+
+        val urls = ArrayList(selected.map { it.url })
+        val titles = ArrayList(selected.map { it.title })
+
+        DownloadForegroundService.enqueueBatch(
+            context = context,
+            urls = urls,
+            titles = titles,
+            config = state.downloadConfig
+        )
+
+        _uiState.update {
+            it.copy(
+                isPlaylistDialogOpen = false,
+                url = "",
+                isUrlValid = false,
+                playlistInfo = null,
+                selectedPlaylistItems = emptySet()
+            )
         }
     }
 }

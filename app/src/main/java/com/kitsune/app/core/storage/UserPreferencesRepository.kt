@@ -29,6 +29,8 @@ class UserPreferencesRepository(private val context: Context) {
         val EMBED_SUBTITLES = booleanPreferencesKey("pref_embed_subtitles")
         val AUTO_CLIPBOARD = booleanPreferencesKey("pref_auto_clipboard")
         val AMOLED_THEME = booleanPreferencesKey("pref_amoled_theme")
+        val DYNAMIC_COLOR = booleanPreferencesKey("pref_dynamic_color")
+        val WIFI_ONLY = booleanPreferencesKey("pref_wifi_only")
     }
 
     val isAmoledThemeFlow: Flow<Boolean> = context.dataStore.data
@@ -41,6 +43,30 @@ class UserPreferencesRepository(private val context: Context) {
         }
         .map { preferences ->
             preferences[PreferencesKeys.AMOLED_THEME] ?: false
+        }
+
+    val isDynamicColorFlow: Flow<Boolean> = context.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(androidx.datastore.preferences.core.emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.DYNAMIC_COLOR] ?: false
+        }
+
+    val isWifiOnlyFlow: Flow<Boolean> = context.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(androidx.datastore.preferences.core.emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.WIFI_ONLY] ?: false
         }
 
     val userConfigFlow: Flow<DownloadConfig> = context.dataStore.data
@@ -102,6 +128,18 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun saveAmoledTheme(isAmoled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.AMOLED_THEME] = isAmoled
+        }
+    }
+
+    suspend fun saveDynamicColor(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.DYNAMIC_COLOR] = enabled
+        }
+    }
+
+    suspend fun saveWifiOnly(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.WIFI_ONLY] = enabled
         }
     }
 }

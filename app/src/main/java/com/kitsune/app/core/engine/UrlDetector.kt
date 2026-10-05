@@ -62,6 +62,15 @@ object UrlDetector {
         }
     }
 
+    fun isPlaylistUrl(url: String): Boolean {
+        if (!isValidUrl(url)) return false
+        val lower = url.lowercase().trim()
+        return lower.contains("list=") ||
+                lower.contains("/sets/") ||
+                lower.contains("/album/") ||
+                lower.contains("/albums/")
+    }
+
 
     fun isValidUrl(url: String): Boolean {
         val trimmed = url.trim()

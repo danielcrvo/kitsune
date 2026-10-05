@@ -63,6 +63,7 @@ import com.kitsune.app.ui.components.organisms.ActiveDownloadCard
 import com.kitsune.app.ui.components.organisms.DownloadSettingsSheet
 import com.kitsune.app.ui.components.organisms.DownloadsHistorySheet
 import com.kitsune.app.ui.components.organisms.KitsuneMediaPlayerDialog
+import com.kitsune.app.ui.components.organisms.PlaylistSelectionDialog
 import com.kitsune.app.ui.components.organisms.SupportedServicesDialog
 import com.kitsune.app.ui.components.organisms.TermsDialog
 import com.kitsune.app.ui.theme.KitsuneTheme
@@ -365,11 +366,15 @@ fun MainScreenContent(
                 )
             }
 
-            if (uiState.downloadState !is DownloadState.Idle) {
+            val hasActiveOrQueuedDownloads = uiState.downloadState !is DownloadState.Idle ||
+                uiState.downloadQueue.any { it.state is DownloadState.Idle }
+            if (hasActiveOrQueuedDownloads) {
                 Spacer(modifier = Modifier.height(20.dp))
                 ActiveDownloadCard(
                     downloadState = uiState.downloadState,
+                    queue = uiState.downloadQueue,
                     onCancel = { onAction(MainUiAction.CancelDownload) },
+                    onCancelTask = { onAction(MainUiAction.CancelQueueTask(it)) },
                     onDismissError = { onAction(MainUiAction.DismissError) },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -420,8 +425,12 @@ fun MainScreenContent(
                 config = uiState.downloadConfig,
                 engineVersion = uiState.engineVersion,
                 isAmoledTheme = uiState.isAmoledTheme,
+                isDynamicColor = uiState.isDynamicColor,
+                isWifiOnly = uiState.isWifiOnly,
                 onConfigChange = { onAction(MainUiAction.ChangeConfig(it)) },
                 onToggleAmoledTheme = { onAction(MainUiAction.ToggleAmoledTheme(it)) },
+                onToggleDynamicColor = { onAction(MainUiAction.ToggleDynamicColor(it)) },
+                onToggleWifiOnly = { onAction(MainUiAction.ToggleWifiOnly(it)) },
                 onCheckEngineUpdate = { onAction(MainUiAction.CheckEngineUpdate) },
                 onDismiss = { onAction(MainUiAction.ToggleSettings(false)) }
             )
@@ -436,6 +445,18 @@ fun MainScreenContent(
                 file = file,
                 onDismiss = { onAction(MainUiAction.CloseMediaPlayer) },
                 onOpenExternal = { onAction(MainUiAction.PlayExternal(file)) }
+            )
+        }
+
+        if (uiState.isPlaylistDialogOpen && uiState.playlistInfo != null) {
+            PlaylistSelectionDialog(
+                playlistInfo = uiState.playlistInfo!!,
+                selectedItemIds = uiState.selectedPlaylistItems,
+                onToggleItem = { onAction(MainUiAction.TogglePlaylistItem(it)) },
+                onSelectAll = { onAction(MainUiAction.SelectAllPlaylistItems) },
+                onDeselectAll = { onAction(MainUiAction.DeselectAllPlaylistItems) },
+                onConfirmDownload = { onAction(MainUiAction.DownloadSelectedPlaylistItems) },
+                onDismiss = { onAction(MainUiAction.ClosePlaylistDialog) }
             )
         }
     }

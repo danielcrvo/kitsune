@@ -1,5 +1,6 @@
 package com.kitsune.app.ui.components.organisms
 
+import android.os.Build
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -59,8 +60,12 @@ fun DownloadSettingsSheet(
     config: DownloadConfig,
     engineVersion: String,
     isAmoledTheme: Boolean = false,
+    isDynamicColor: Boolean = false,
+    isWifiOnly: Boolean = false,
     onConfigChange: (DownloadConfig) -> Unit,
     onToggleAmoledTheme: (Boolean) -> Unit = {},
+    onToggleDynamicColor: (Boolean) -> Unit = {},
+    onToggleWifiOnly: (Boolean) -> Unit = {},
     onCheckEngineUpdate: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -155,6 +160,80 @@ fun DownloadSettingsSheet(
                         onCheckedChange = {
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             onToggleAmoledTheme(it)
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = KitsuneTheme.colors.background,
+                            checkedTrackColor = KitsuneTheme.colors.accentCyan
+                        )
+                    )
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    Spacer(modifier = Modifier.height(KitsuneTheme.spacing.md))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = KitsuneTheme.spacing.md)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.pref_dynamic_color),
+                                style = KitsuneTheme.typography.titleMedium,
+                                color = KitsuneTheme.colors.textPrimary
+                            )
+                            Text(
+                                text = stringResource(R.string.pref_dynamic_color_desc),
+                                style = KitsuneTheme.typography.labelSmall,
+                                color = KitsuneTheme.colors.textMuted
+                            )
+                        }
+                        Switch(
+                            checked = isDynamicColor,
+                            onCheckedChange = {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                onToggleDynamicColor(it)
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = KitsuneTheme.colors.background,
+                                checkedTrackColor = KitsuneTheme.colors.accentCyan
+                            )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(KitsuneTheme.spacing.md))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = KitsuneTheme.spacing.md)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.pref_wifi_only),
+                            style = KitsuneTheme.typography.titleMedium,
+                            color = KitsuneTheme.colors.textPrimary
+                        )
+                        Text(
+                            text = stringResource(R.string.pref_wifi_only_desc),
+                            style = KitsuneTheme.typography.labelSmall,
+                            color = KitsuneTheme.colors.textMuted
+                        )
+                    }
+                    Switch(
+                        checked = isWifiOnly,
+                        onCheckedChange = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            onToggleWifiOnly(it)
                         },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = KitsuneTheme.colors.background,

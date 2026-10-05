@@ -15,9 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,21 +24,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.R
 import com.kitsune.app.core.model.DownloadState
+import com.kitsune.app.core.model.DownloadTask
 import com.kitsune.app.ui.components.atoms.KitsuneIconButton
+import com.kitsune.app.ui.components.atoms.MascotSvg
+import com.kitsune.app.ui.components.atoms.MascotType
 import com.kitsune.app.ui.components.molecules.DownloadStatusDisplay
 import com.kitsune.app.ui.theme.KitsuneTheme
+import com.kitsune.app.ui.theme.ThemePreviews
 
 @Composable
 fun ActiveDownloadCard(
     downloadState: DownloadState,
     onCancel: () -> Unit,
     onDismissError: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    queue: List<DownloadTask> = emptyList(),
+    onCancelTask: (String) -> Unit = {}
 ) {
-    val isVisible = downloadState !is DownloadState.Idle
+    val pendingTasks = queue.filter { it.state is DownloadState.Idle }
+    val isVisible = downloadState !is DownloadState.Idle || pendingTasks.isNotEmpty()
     val shape = RoundedCornerShape(KitsuneTheme.shapes.cardRadius)
 
     AnimatedVisibility(
@@ -67,8 +74,8 @@ fun ActiveDownloadCard(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(KitsuneTheme.spacing.sm)
                         ) {
-                            com.kitsune.app.ui.components.atoms.MascotSvg(
-                                type = com.kitsune.app.ui.components.atoms.MascotType.DOWNLOADING,
+                            MascotSvg(
+                                type = MascotType.DOWNLOADING,
                                 contentDescription = stringResource(R.string.cd_mascot_downloading),
                                 size = 48.dp
                             )
@@ -101,6 +108,49 @@ fun ActiveDownloadCard(
                     )
                 }
 
+                is DownloadState.WaitingForWifi -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(KitsuneTheme.spacing.sm)
+                        ) {
+                            MascotSvg(
+                                type = MascotType.DOWNLOADING,
+                                contentDescription = stringResource(R.string.status_waiting_wifi),
+                                size = 48.dp
+                            )
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.status_waiting_wifi),
+                                    style = KitsuneTheme.typography.titleMedium,
+                                    color = KitsuneTheme.colors.accentOrange
+                                )
+                                Text(
+                                    text = stringResource(R.string.pref_wifi_only_desc),
+                                    style = KitsuneTheme.typography.bodySmall,
+                                    color = KitsuneTheme.colors.textSecondary
+                                )
+                            }
+                        }
+                        KitsuneIconButton(
+                            onClick = onCancel,
+                            size = 32.dp,
+                            containerColor = KitsuneTheme.colors.surfaceElevated
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(R.string.btn_cancel),
+                                tint = KitsuneTheme.colors.textSecondary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+
                 is DownloadState.Muxing -> {
                     Text(
                         text = stringResource(R.string.status_muxing_title),
@@ -120,8 +170,8 @@ fun ActiveDownloadCard(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        com.kitsune.app.ui.components.atoms.MascotSvg(
-                            type = com.kitsune.app.ui.components.atoms.MascotType.COMPLETED,
+                        MascotSvg(
+                            type = MascotType.COMPLETED,
                             contentDescription = stringResource(R.string.cd_mascot_completed),
                             size = 64.dp
                         )
@@ -149,8 +199,8 @@ fun ActiveDownloadCard(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        com.kitsune.app.ui.components.atoms.MascotSvg(
-                            type = com.kitsune.app.ui.components.atoms.MascotType.ERROR,
+                        MascotSvg(
+                            type = MascotType.ERROR,
                             contentDescription = stringResource(R.string.cd_mascot_error),
                             size = 64.dp
                         )
@@ -186,11 +236,75 @@ fun ActiveDownloadCard(
 
                 else -> {}
             }
+
+            if (pendingTasks.isNotEmpty()) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = KitsuneTheme.spacing.md),
+                    color = KitsuneTheme.colors.borderSubtle
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.queue_title),
+                        style = KitsuneTheme.typography.labelLarge,
+                        color = KitsuneTheme.colors.textPrimary
+                    )
+                    Text(
+                        text = stringResource(R.string.queue_pending_count, pendingTasks.size),
+                        style = KitsuneTheme.typography.labelSmall,
+                        color = KitsuneTheme.colors.textMuted
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = KitsuneTheme.spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(KitsuneTheme.spacing.xs)
+                ) {
+                    pendingTasks.take(5).forEach { task ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(KitsuneTheme.shapes.smallRadius))
+                                .background(KitsuneTheme.colors.surfaceElevated)
+                                .padding(horizontal = KitsuneTheme.spacing.sm, vertical = KitsuneTheme.spacing.xs),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = task.title.ifBlank { task.url },
+                                style = KitsuneTheme.typography.bodySmall,
+                                color = KitsuneTheme.colors.textSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = KitsuneTheme.spacing.sm)
+                            )
+                            KitsuneIconButton(
+                                onClick = { onCancelTask(task.id) },
+                                size = 24.dp,
+                                containerColor = KitsuneTheme.colors.surface
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.queue_item_cancel),
+                                    tint = KitsuneTheme.colors.textMuted,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-@com.kitsune.app.ui.theme.ThemePreviews
+@ThemePreviews
 @Composable
 private fun ActiveDownloadCardPreview() {
     KitsuneTheme {
@@ -206,4 +320,5 @@ private fun ActiveDownloadCardPreview() {
         )
     }
 }
+
 

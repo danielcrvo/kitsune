@@ -92,4 +92,18 @@ class UrlDetectorTest {
         assertFalse(UrlDetector.isValidUrl("not a valid link"))
         assertTrue(UrlDetector.isValidUrl("https://example.com/video.mp4"))
     }
+
+    @Test
+    fun `detecta playlists corretamente`() {
+        val ytPlaylist = "https://www.youtube.com/playlist?list=PL1234567890"
+        val ytVideoInPlaylist = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PL1234567890"
+        val soundcloudSet = "https://soundcloud.com/artist/sets/album-name"
+        val normalVideo = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+        assertTrue(UrlDetector.isPlaylistUrl(ytPlaylist))
+        assertTrue(UrlDetector.isPlaylistUrl(ytVideoInPlaylist))
+        assertTrue(UrlDetector.isPlaylistUrl(soundcloudSet))
+        assertFalse(UrlDetector.isPlaylistUrl(normalVideo))
+        assertFalse(UrlDetector.isPlaylistUrl(""))
+    }
 }

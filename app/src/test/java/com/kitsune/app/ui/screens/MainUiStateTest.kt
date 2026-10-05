@@ -31,9 +31,49 @@ class MainUiStateTest {
         assertFalse(state.isTermsOpen)
         assertFalse(state.isHistoryOpen)
         assertFalse(state.isAmoledTheme)
+        assertFalse(state.isDynamicColor)
+        assertFalse(state.isWifiOnly)
+        assertTrue(state.downloadQueue.isEmpty())
+        assertNull(state.playlistInfo)
+        assertFalse(state.isPlaylistDialogOpen)
+        assertTrue(state.selectedPlaylistItems.isEmpty())
+        assertFalse(state.isLoadingPlaylist)
         assertTrue(state.downloadedFiles.isEmpty())
         assertNull(state.toastMessage)
         assertNull(state.playingFile)
+    }
+
+    @Test
+    fun playlistAndQueueStateManagementWorksCorrectly() {
+        val initialState = MainUiState()
+        val playlist = com.kitsune.app.core.model.PlaylistInfo(
+            id = "PL123",
+            title = "Test Playlist",
+            originalUrl = "https://example.com/playlist",
+            items = listOf(
+                com.kitsune.app.core.model.PlaylistItem(id = "item1", title = "Track 1", url = "https://example.com/1"),
+                com.kitsune.app.core.model.PlaylistItem(id = "item2", title = "Track 2", url = "https://example.com/2")
+            )
+        )
+        val openedState = initialState.copy(
+            playlistInfo = playlist,
+            selectedPlaylistItems = setOf("item1", "item2"),
+            isPlaylistDialogOpen = true
+        )
+
+        assertEquals("Test Playlist", openedState.playlistInfo?.title)
+        assertEquals(2, openedState.playlistInfo?.items?.size)
+        assertTrue(openedState.isPlaylistDialogOpen)
+        assertEquals(setOf("item1", "item2"), openedState.selectedPlaylistItems)
+
+        val task = com.kitsune.app.core.model.DownloadTask(
+            url = "https://example.com/1",
+            title = "Track 1",
+            config = initialState.downloadConfig
+        )
+        val queueState = openedState.copy(downloadQueue = listOf(task))
+        assertEquals(1, queueState.downloadQueue.size)
+        assertEquals("Track 1", queueState.downloadQueue.first().title)
     }
 
     @Test

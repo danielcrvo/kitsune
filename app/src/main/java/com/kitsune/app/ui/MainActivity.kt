@@ -42,7 +42,10 @@ class MainActivity : ComponentActivity() {
             val viewModel: MainViewModel = viewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-            KitsuneTheme(isAmoled = uiState.isAmoledTheme) {
+            KitsuneTheme(
+                isAmoled = uiState.isAmoledTheme,
+                dynamicColor = uiState.isDynamicColor
+            ) {
                 val currentSharedUrl by sharedUrlState
                 MainScreen(
                     viewModel = viewModel,

@@ -7,11 +7,14 @@ import com.kitsune.app.core.model.DownloadConfig
 import com.kitsune.app.core.model.DownloadStage
 import com.kitsune.app.core.model.MediaInfo
 import com.kitsune.app.core.model.PlatformType
+import com.kitsune.app.core.model.PlaylistInfo
+import com.kitsune.app.core.model.PlaylistItem
 import com.kitsune.app.core.model.VideoQuality
 import com.yausername.ffmpeg.FFmpeg
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLRequest
 import com.yausername.youtubedl_android.YoutubeDLResponse
+import org.json.JSONObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -69,6 +72,64 @@ object YtDlpEngine {
                 thumbnailUrl = info.thumbnail,
                 platform = platform,
                 originalUrl = sanitized
+            )
+        }
+    }
+
+    suspend fun fetchPlaylistInfo(context: Context, url: String): Result<PlaylistInfo> = withContext(Dispatchers.IO) {
+        runCatching {
+            ensureInitialized(context).getOrThrow()
+            val sanitized = UrlDetector.sanitizeUrl(url)
+            val request = YoutubeDLRequest(sanitized).apply {
+                addOption("--flat-playlist")
+                addOption("-J")
+                addOption("--no-warnings")
+            }
+            val response = YoutubeDL.getInstance().execute(request)
+            val json = JSONObject(response.out)
+
+            val playlistTitle = json.optString("title").ifBlank { "Playlist Kitsune" }
+            val playlistAuthor = json.optString("uploader").ifBlank { json.optString("channel") }
+            val playlistId = json.optString("id").ifBlank { "playlist" }
+
+            val items = mutableListOf<PlaylistItem>()
+            val entries = json.optJSONArray("entries")
+            if (entries != null) {
+                for (i in 0 until entries.length()) {
+                    val entry = entries.optJSONObject(i) ?: continue
+                    val itemId = entry.optString("id")
+                    val itemTitle = entry.optString("title").ifBlank { "Item ${i + 1}" }
+                    val itemUrl = entry.optString("url").let { u ->
+                        if (u.startsWith("http")) u else "https://www.youtube.com/watch?v=$itemId"
+                    }
+                    val duration = entry.optLong("duration", 0L)
+                    val uploader = entry.optString("uploader")
+                    val thumbnail = entry.optString("thumbnail").ifBlank {
+                        val thumbs = entry.optJSONArray("thumbnails")
+                        if (thumbs != null && thumbs.length() > 0) {
+                            thumbs.optJSONObject(thumbs.length() - 1)?.optString("url")
+                        } else null
+                    }
+                    items.add(
+                        PlaylistItem(
+                            id = itemId,
+                            title = itemTitle,
+                            url = itemUrl,
+                            durationSeconds = duration,
+                            uploader = uploader,
+                            thumbnailUrl = thumbnail,
+                            index = i + 1
+                        )
+                    )
+                }
+            }
+
+            PlaylistInfo(
+                id = playlistId,
+                title = playlistTitle,
+                author = playlistAuthor,
+                originalUrl = sanitized,
+                items = items
             )
         }
     }

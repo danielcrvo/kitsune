@@ -20,6 +20,9 @@ sealed interface DownloadState {
     @Immutable
     data object Idle : DownloadState
 
+    @Immutable
+    data object WaitingForWifi : DownloadState
+
 
     @Immutable
     data class FetchingInfo(val url: String) : DownloadState

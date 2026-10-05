@@ -7,6 +7,9 @@ import com.kitsune.app.core.model.DownloadedMediaFile
 import com.kitsune.app.core.model.MediaInfo
 import com.kitsune.app.core.model.PlatformType
 
+import com.kitsune.app.core.model.DownloadTask
+import com.kitsune.app.core.model.PlaylistInfo
+
 enum class DownloadMode {
     AUTO,
     AUDIO,
@@ -35,7 +38,14 @@ data class MainUiState(
     val renamingFile: DownloadedMediaFile? = null,
     val deletingFile: DownloadedMediaFile? = null,
     val playingFile: DownloadedMediaFile? = null,
-    val isAmoledTheme: Boolean = false
+    val isAmoledTheme: Boolean = false,
+    val isDynamicColor: Boolean = false,
+    val isWifiOnly: Boolean = false,
+    val downloadQueue: List<DownloadTask> = emptyList(),
+    val playlistInfo: PlaylistInfo? = null,
+    val isPlaylistDialogOpen: Boolean = false,
+    val selectedPlaylistItems: Set<String> = emptySet(),
+    val isLoadingPlaylist: Boolean = false
 ) {
     val downloadMode: DownloadMode
         get() = when {
