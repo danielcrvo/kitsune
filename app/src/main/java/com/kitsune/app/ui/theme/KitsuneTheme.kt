@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -46,17 +47,28 @@ fun KitsuneTheme(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val kitsuneColors = if (isAmoled) {
-        KitsuneColorTokens.amoledDark()
-    } else {
-        KitsuneColorTokens.defaultDark()
-    }
-
-    val colorScheme = when {
+    val (colorScheme, kitsuneColors) = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            dynamicDarkColorScheme(context)
+            val dynamicScheme = dynamicDarkColorScheme(context)
+            val effectiveScheme = if (isAmoled) {
+                dynamicScheme.copy(
+                    background = Color(0xFF000000),
+                    surface = dynamicScheme.surfaceContainerLowest
+                )
+            } else {
+                dynamicScheme
+            }
+            val tokens = KitsuneColorTokens.fromColorScheme(effectiveScheme, isAmoled)
+            Pair(effectiveScheme, tokens)
         }
-        else -> buildDarkColorScheme(kitsuneColors)
+        isAmoled -> {
+            val tokens = KitsuneColorTokens.amoledDark()
+            Pair(buildDarkColorScheme(tokens), tokens)
+        }
+        else -> {
+            val tokens = KitsuneColorTokens.defaultDark()
+            Pair(buildDarkColorScheme(tokens), tokens)
+        }
     }
 
     val view = LocalView.current

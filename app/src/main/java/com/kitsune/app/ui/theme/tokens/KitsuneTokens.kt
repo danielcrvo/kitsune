@@ -1,5 +1,6 @@
 package com.kitsune.app.ui.theme.tokens
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
@@ -41,6 +42,48 @@ data class KitsuneColorTokens(
             borderFocus = Color(0xFF00F2FE),
             isAmoled = true
         )
+
+        fun fromColorScheme(scheme: ColorScheme, isAmoled: Boolean = false): KitsuneColorTokens {
+            return if (isAmoled) {
+                KitsuneColorTokens(
+                    background = Color(0xFF000000),
+                    surface = scheme.surfaceContainerLowest,
+                    surfaceVariant = scheme.surfaceContainerLow,
+                    surfaceElevated = scheme.surfaceContainer,
+                    accentCyan = scheme.secondary,
+                    accentIndigo = scheme.tertiary,
+                    accentOrange = scheme.primary,
+                    accentPurple = scheme.tertiary,
+                    textPrimary = scheme.onSurface,
+                    textSecondary = scheme.onSurfaceVariant,
+                    textMuted = scheme.outline,
+                    borderSubtle = scheme.outlineVariant.copy(alpha = 0.35f),
+                    borderFocus = scheme.primary,
+                    success = Color(0xFF22C55E),
+                    error = scheme.error,
+                    isAmoled = true
+                )
+            } else {
+                KitsuneColorTokens(
+                    background = scheme.background,
+                    surface = scheme.surface,
+                    surfaceVariant = scheme.surfaceVariant,
+                    surfaceElevated = scheme.surfaceContainer,
+                    accentCyan = scheme.secondary,
+                    accentIndigo = scheme.tertiary,
+                    accentOrange = scheme.primary,
+                    accentPurple = scheme.tertiary,
+                    textPrimary = scheme.onSurface,
+                    textSecondary = scheme.onSurfaceVariant,
+                    textMuted = scheme.outline,
+                    borderSubtle = scheme.outlineVariant.copy(alpha = 0.45f),
+                    borderFocus = scheme.primary,
+                    success = Color(0xFF22C55E),
+                    error = scheme.error,
+                    isAmoled = false
+                )
+            }
+        }
     }
 }
 
