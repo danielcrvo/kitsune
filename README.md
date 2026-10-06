@@ -5,7 +5,7 @@
   </p>
   <h1>Kitsune</h1>
   <p>
-    <strong>Fast, private, and modern on-device media downloader for Android.</strong>
+    <strong>The cutest and fastest on-device media downloader on the web.</strong>
     <br />
     Save what you love, on your own terms.
   </p>
@@ -25,7 +25,7 @@
   <br />
 </div>
 
-Kitsune is an on-device media downloader and audio extractor for Android that doesn't waste your time. It is friendly, fast, private, and contains no ads, no trackers, no paywalls, and no third-party backend servers.
+Kitsune is the cutest and fastest on-device media downloader for Android that doesn't waste your time. It is friendly, private, lightweight, and contains no ads, no trackers, no paywalls, and no third-party backend servers.
 
 Paste the link, get the file, move on. That simple, just how it should be.
 

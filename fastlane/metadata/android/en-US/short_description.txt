@@ -1,1 +1,1 @@
-Private on-device media downloader and extractor for Android.
+The cutest and fastest media downloader on the web.
