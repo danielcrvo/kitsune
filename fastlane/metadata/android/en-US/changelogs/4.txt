@@ -1,0 +1,6 @@
+- Implemented sequential background download queue
+- Added multi-item playlist support with selection dialog
+- Added Wi-Fi only mode for cellular data saving
+- Added Material You dynamic theming on Android 12+
+- Integrated complete 20-state interactive mascot animation system
+- Fixed ProGuard reflection rules for dependency injection

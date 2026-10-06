@@ -1,0 +1,4 @@
+- Full internationalization support (English and Brazilian Portuguese)
+- Android 13+ Per-App Language Preferences
+- Modern resource filtering optimizing APK package sizes
+- Localized background download notifications

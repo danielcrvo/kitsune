@@ -1,0 +1,6 @@
+- Implementada fila de downloads sequencial em segundo plano
+- Adicionado suporte a playlists com dialogo de selecao
+- Adicionado modo somente Wi-Fi para economia de dados
+- Adicionado tema dinamico Material You no Android 12+
+- Integrado sistema completo com 20 estados de animacao da mascote
+- Corrigidas regras de reflexao do ProGuard para injecao de dependencias
