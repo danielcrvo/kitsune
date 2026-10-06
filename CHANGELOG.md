@@ -5,6 +5,19 @@ All notable changes to the Kitsune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-10-06
+
+### Added
+- In-app self-updater (`AppUpdateManager`) querying GitHub Releases API with semantic version comparison and automatic device ABI resolution.
+- Dedicated background notification channel (`kitsune_update_channel`) for release alerts, real-time download progress, and direct installation actions.
+- Interactive update dialog (`AppUpdateDialog`) with dynamic mascot states, release notes changelog viewer, linear progress gauge, and installation dispatch.
+- Manual app update check option in Download Settings alongside engine updates.
+- System installation permission flow via `REQUEST_INSTALL_PACKAGES` and `FileProvider`.
+
+### Changed
+- Standardized project terminology to strictly use "downloader" across Portuguese and English documentation and UI.
+- Updated mascot vector assets and unified SVG styling across all 20 mascot states.
+
 ## [1.1.1] - 2026-10-05
 
 ### Added
