@@ -1,7 +1,7 @@
 <div align="center">
   <br />
   <p>
-    <img src="app/src/main/assets/mascot/mascot_idle.svg" alt="Kitsune Logo" width="112" height="112" />
+    <img src="app/src/main/assets/kitsune_idle.svg" alt="Kitsune Logo" width="112" height="112" />
   </p>
   <h1>Kitsune</h1>
   <p>

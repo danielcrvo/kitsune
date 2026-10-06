@@ -27,102 +27,127 @@ enum class MascotType(
     val endFrame: Int
 ) {
     IDLE(
-        assetPath = "file:///android_asset/mascot/mascot_idle.svg",
+        assetPath = "file:///android_asset/kitsune_idle.svg",
         startFrame = 0,
         endFrame = 59
     ),
     DOWNLOADING(
-        assetPath = "file:///android_asset/mascot/mascot_downloading.svg",
+        assetPath = "file:///android_asset/kitsune_downloading.svg",
         startFrame = 60,
         endFrame = 119
     ),
     COMPLETED(
-        assetPath = "file:///android_asset/mascot/mascot_completed.svg",
+        assetPath = "file:///android_asset/kitsune_completed.svg",
         startFrame = 120,
         endFrame = 179
     ),
     ERROR(
-        assetPath = "file:///android_asset/mascot/mascot_error.svg",
+        assetPath = "file:///android_asset/kitsune_error.svg",
         startFrame = 180,
         endFrame = 239
     ),
     SLEEPING(
-        assetPath = "file:///android_asset/mascot/mascot_sleeping.svg",
+        assetPath = "file:///android_asset/kitsune_sleeping.svg",
         startFrame = 240,
         endFrame = 299
     ),
     WAVING(
-        assetPath = "file:///android_asset/mascot/mascot_waving.svg",
+        assetPath = "file:///android_asset/kitsune_waving.svg",
         startFrame = 300,
         endFrame = 359
     ),
     SEARCHING(
-        assetPath = "file:///android_asset/mascot/mascot_searching.svg",
+        assetPath = "file:///android_asset/kitsune_searching.svg",
         startFrame = 360,
         endFrame = 419
     ),
     PAUSED(
-        assetPath = "file:///android_asset/mascot/mascot_paused.svg",
+        assetPath = "file:///android_asset/kitsune_paused.svg",
         startFrame = 420,
         endFrame = 479
     ),
     WAITING_FOR_WIFI(
-        assetPath = "file:///android_asset/mascot/mascot_waiting_for_wifi.svg",
+        assetPath = "file:///android_asset/kitsune_offline.svg",
+        startFrame = 480,
+        endFrame = 539
+    ),
+    OFFLINE(
+        assetPath = "file:///android_asset/kitsune_offline.svg",
         startFrame = 480,
         endFrame = 539
     ),
     DANCING(
-        assetPath = "file:///android_asset/mascot/mascot_dancing.svg",
+        assetPath = "file:///android_asset/kitsune_dancing.svg",
         startFrame = 540,
         endFrame = 599
     ),
     THINKING(
-        assetPath = "file:///android_asset/mascot/mascot_thinking.svg",
+        assetPath = "file:///android_asset/kitsune_thinking.svg",
         startFrame = 600,
         endFrame = 659
     ),
     SURPRISED(
-        assetPath = "file:///android_asset/mascot/mascot_surprised.svg",
+        assetPath = "file:///android_asset/kitsune_surprised.svg",
         startFrame = 660,
         endFrame = 719
     ),
     LOVE(
-        assetPath = "file:///android_asset/mascot/mascot_love.svg",
+        assetPath = "file:///android_asset/kitsune_love.svg",
         startFrame = 720,
         endFrame = 779
     ),
     EATING(
-        assetPath = "file:///android_asset/mascot/mascot_eating.svg",
+        assetPath = "file:///android_asset/kitsune_eating.svg",
         startFrame = 780,
         endFrame = 839
     ),
     QUEUE(
-        assetPath = "file:///android_asset/mascot/mascot_queue.svg",
+        assetPath = "file:///android_asset/kitsune_queued.svg",
+        startFrame = 840,
+        endFrame = 899
+    ),
+    QUEUED(
+        assetPath = "file:///android_asset/kitsune_queued.svg",
         startFrame = 840,
         endFrame = 899
     ),
     MUXING(
-        assetPath = "file:///android_asset/mascot/mascot_muxing.svg",
+        assetPath = "file:///android_asset/kitsune_converting.svg",
+        startFrame = 900,
+        endFrame = 959
+    ),
+    CONVERTING(
+        assetPath = "file:///android_asset/kitsune_converting.svg",
         startFrame = 900,
         endFrame = 959
     ),
     COOL(
-        assetPath = "file:///android_asset/mascot/mascot_cool.svg",
+        assetPath = "file:///android_asset/kitsune_cold.svg",
+        startFrame = 960,
+        endFrame = 1019
+    ),
+    COLD(
+        assetPath = "file:///android_asset/kitsune_cold.svg",
         startFrame = 960,
         endFrame = 1019
     ),
     ROCKET(
-        assetPath = "file:///android_asset/mascot/mascot_rocket.svg",
+        assetPath = "file:///android_asset/kitsune_rolling.svg",
+        startFrame = 1020,
+        endFrame = 1079
+    ),
+    ROLLING(
+        assetPath = "file:///android_asset/kitsune_rolling.svg",
         startFrame = 1020,
         endFrame = 1079
     ),
     TALKING(
-        assetPath = "file:///android_asset/mascot/mascot_talking.svg",
+        assetPath = "file:///android_asset/kitsune_talking.svg",
         startFrame = 1080,
         endFrame = 1139
     ),
     SINGING(
-        assetPath = "file:///android_asset/mascot/mascot_singing.svg",
+        assetPath = "file:///android_asset/kitsune_singing.svg",
         startFrame = 1140,
         endFrame = 1199
     )
@@ -160,7 +185,7 @@ fun MascotAnimation(
 ) {
     val isInspection = LocalInspectionMode.current
     val compositionResult = rememberLottieComposition(
-        LottieCompositionSpec.Asset("mascot/mascot.json")
+        LottieCompositionSpec.Asset("kitsune.json")
     )
     val composition = compositionResult.value
 

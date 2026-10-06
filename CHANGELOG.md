@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Wi-Fi Only Mode** toggle backed by persistent DataStore preferences and dynamic `NetworkMonitor` connectivity state observation.
 - Dynamic Theming (**Material You**) support on Android 12+ (API 31+) with runtime system wallpaper color scheme extraction and smooth fallback to dark theme.
 - Complete **20-State Mascot System** integrating full Lottie animation sequences (1200 frames at 30 FPS) with interactive touch feedback (waving gesture with haptic feedback) and dynamic state resolution across main screen, active downloads, dialogs, audio player, and history empty states.
-- 16 new dedicated high-fidelity static SVG mascot assets in `assets/mascot/` providing complete 1:1 fallback coverage across all 20 mascot states.
+- 20 dedicated high-fidelity static SVG mascot assets in `assets/` providing complete 1:1 fallback coverage across all 20 mascot states.
 
 ### Changed
 - Upgraded `KitsuneMediaPlayerDialog` audio player to display dynamic `SINGING` and `PAUSED` mascot animations.
