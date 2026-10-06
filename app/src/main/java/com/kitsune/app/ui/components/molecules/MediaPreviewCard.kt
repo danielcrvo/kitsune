@@ -44,7 +44,8 @@ import com.kitsune.app.ui.theme.KitsuneTheme
 fun MediaPreviewCard(
     mediaInfo: MediaInfo?,
     isLoading: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    loadingText: String = stringResource(R.string.preview_detecting)
 ) {
     AnimatedVisibility(
         visible = isLoading || mediaInfo != null,
@@ -75,7 +76,7 @@ fun MediaPreviewCard(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = stringResource(R.string.preview_detecting),
+                        text = loadingText,
                         color = KitsuneTheme.colors.textMuted,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp
@@ -150,7 +151,7 @@ fun MediaPreviewCard(
                                 )
                             }
 
-                            if (mediaInfo.uploader.isNotBlank() && mediaInfo.uploader != "Desconhecido") {
+                            if (mediaInfo.uploader.isNotBlank()) {
                                 Text(
                                     text = "• ${mediaInfo.uploader}",
                                     color = KitsuneTheme.colors.textMuted,
@@ -175,7 +176,7 @@ private fun MediaPreviewCardPreview() {
         MediaPreviewCard(
             mediaInfo = MediaInfo(
                 id = "1",
-                title = "Vídeo demonstrativo Kitsune",
+                title = "Kitsune Demo Video",
                 uploader = "Kitsune Team",
                 durationSeconds = 245,
                 thumbnailUrl = null,

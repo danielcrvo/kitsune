@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 16 new dedicated high-fidelity static SVG mascot assets in `assets/mascot/` providing complete 1:1 fallback coverage across all 20 mascot states.
 
 ### Changed
-- Upgraded `KitsuneMediaPlayerDialog` audio visualization to display dynamic `SINGING` and `PAUSED` mascot animations.
+- Upgraded `KitsuneMediaPlayerDialog` audio player to display dynamic `SINGING` and `PAUSED` mascot animations.
 - Refactored `ActiveDownloadCard` to display stateful mascots for Wi-Fi waiting, media muxing, and download queue headers.
 - Enhanced `DownloadsHistorySheet` empty state to differentiate between empty history (`SLEEPING`) and unmatched search filters (`SEARCHING`).
 - Integrated thematic mascot avatars into header dialogs for playlists (`SURPRISED`), legal terms (`TALKING`), and supported platforms (`LOVE`).
@@ -55,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated **Nightly Dev Builds** workflow on GitHub Actions generating multi-ABI split APKs (`arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`, and `universal`).
 - Nocturnal pure AMOLED dark launcher icons with golden crescent moon and cyan starlight accents for development and Nightly builds.
 - True black **AMOLED Mode** (`#000000`) toggle in settings with instant recomposition and persistent DataStore storage.
-- In-app media player dialog (`KitsuneMediaPlayerDialog`) with Media3 ExoPlayer for videos and animated pulsing audio visualizer for tracks.
+- In-app media player dialog (`KitsuneMediaPlayerDialog`) with Media3 ExoPlayer for videos and animated mascot playback for tracks.
 - Direct file sharing via Android Share Sheet (`ACTION_SEND`) directly from the media player.
 - MultiPreview annotations (`@ThemePreviews`) for seamless component design inspection in Android Studio.
 - Compose Compiler metrics and stability reports configuration in Gradle build.

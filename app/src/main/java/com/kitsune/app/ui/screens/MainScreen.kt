@@ -386,7 +386,12 @@ fun MainScreenContent(
 
                 MediaPreviewCard(
                     mediaInfo = uiState.mediaInfo,
-                    isLoading = uiState.isLoadingMetadata,
+                    isLoading = uiState.isLoadingMetadata || uiState.isLoadingPlaylist,
+                    loadingText = if (uiState.isLoadingPlaylist) {
+                        stringResource(R.string.playlist_loading)
+                    } else {
+                        stringResource(R.string.preview_detecting)
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
 

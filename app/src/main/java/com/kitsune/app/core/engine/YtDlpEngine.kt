@@ -66,8 +66,8 @@ object YtDlpEngine {
 
             MediaInfo(
                 id = info.id ?: "",
-                title = info.title ?: "Mídia Kitsune",
-                uploader = info.uploader ?: "Desconhecido",
+                title = info.title ?: "",
+                uploader = info.uploader ?: "",
                 durationSeconds = info.duration.toLong(),
                 thumbnailUrl = info.thumbnail,
                 platform = platform,
@@ -88,7 +88,7 @@ object YtDlpEngine {
             val response = YoutubeDL.getInstance().execute(request)
             val json = JSONObject(response.out)
 
-            val playlistTitle = json.optString("title").ifBlank { "Playlist Kitsune" }
+            val playlistTitle = json.optString("title").ifBlank { "Playlist" }
             val playlistAuthor = json.optString("uploader").ifBlank { json.optString("channel") }
             val playlistId = json.optString("id").ifBlank { "playlist" }
 

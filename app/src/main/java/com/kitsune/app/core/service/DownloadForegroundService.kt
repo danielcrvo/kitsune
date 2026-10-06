@@ -349,7 +349,7 @@ class DownloadForegroundService : Service() {
 
                         val completedState = DownloadState.Completed(
                             title = downloadedFile.nameWithoutExtension,
-                            outputPath = "Galeria / Kitsune",
+                            outputPath = if (task.config.audioOnly) "Music/Kitsune" else "Movies/Kitsune",
                             fileSizeFormatted = formattedSize
                         )
                         updateTaskState(task.id, completedState)
@@ -366,14 +366,14 @@ class DownloadForegroundService : Service() {
                         manager.notify(DownloadNotificationHelper.NOTIFICATION_ID + pendingIndex, completedNotif)
                     },
                     onFailure = { err ->
-                        val errState = DownloadState.Error(err.localizedMessage ?: "Erro ao salvar na galeria.")
+                        val errState = DownloadState.Error(err.localizedMessage ?: getString(R.string.error_export_generic))
                         updateTaskState(task.id, errState)
                         _currentDownloadState.value = errState
                     }
                 )
             },
             onFailure = { error ->
-                val errState = DownloadState.Error(error.localizedMessage ?: "Falha ao processar download.")
+                val errState = DownloadState.Error(error.localizedMessage ?: getString(R.string.error_download_generic))
                 updateTaskState(task.id, errState)
                 _currentDownloadState.value = errState
             }

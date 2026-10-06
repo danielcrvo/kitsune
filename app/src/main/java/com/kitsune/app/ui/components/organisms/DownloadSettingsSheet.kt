@@ -362,6 +362,12 @@ fun DownloadSettingsSheet(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+                                val displayLabel = when (quality) {
+                                    AudioQuality.BEST -> stringResource(R.string.quality_audio_best)
+                                    AudioQuality.HIGH -> stringResource(R.string.quality_audio_high)
+                                    AudioQuality.MEDIUM -> stringResource(R.string.quality_audio_medium)
+                                    AudioQuality.LOW -> stringResource(R.string.quality_audio_low)
+                                }
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         imageVector = Icons.Default.MusicNote,
@@ -370,7 +376,7 @@ fun DownloadSettingsSheet(
                                         modifier = Modifier.padding(end = 8.dp)
                                     )
                                     Text(
-                                        text = quality.label,
+                                        text = displayLabel,
                                         color = if (isSelected) KitsuneTheme.colors.textPrimary else KitsuneTheme.colors.textSecondary,
                                         fontFamily = FontFamily.Monospace,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,

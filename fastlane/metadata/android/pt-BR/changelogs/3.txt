@@ -1,4 +1,4 @@
-- Suporte completo a internacionalizacao (ingles e portugues do Brasil)
-- Preferencias de idioma por aplicativo no Android 13+
-- Otimizacao de pacotes APK com filtros de recursos
-- Notificacoes de download em segundo plano traduzidas
+- Suporte completo a internacionalização (inglês e português do Brasil)
+- Preferências de idioma por aplicativo no Android 13+
+- Otimização de pacotes APK com filtros de recursos
+- Notificações de download em segundo plano traduzidas

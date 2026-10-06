@@ -90,6 +90,7 @@ fun SupportedServicesDialog(
                     ServiceItem("SoundCloud", stringResource(R.string.services_soundcloud_desc))
                     ServiceItem("Bilibili", stringResource(R.string.services_bilibili_desc))
                     ServiceItem("Pinterest", stringResource(R.string.services_pinterest_desc))
+                    ServiceItem(stringResource(R.string.services_generic_title), stringResource(R.string.services_generic_desc))
                 }
 
                 Spacer(modifier = Modifier.height(2.dp))

@@ -63,13 +63,19 @@ fun QualityOptionTile(
             }
         }
 
+        val displayLabel = when (quality) {
+            VideoQuality.AUTO -> stringResource(R.string.quality_video_auto)
+            VideoQuality.AUDIO_ONLY -> stringResource(R.string.quality_video_audio_only)
+            else -> quality.label
+        }
+
         Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = KitsuneTheme.spacing.md)
         ) {
             Text(
-                text = quality.label,
+                text = displayLabel,
                 style = KitsuneTheme.typography.titleMedium,
                 color = if (isSelected) KitsuneTheme.colors.textPrimary else KitsuneTheme.colors.textSecondary
             )

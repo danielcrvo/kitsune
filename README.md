@@ -51,10 +51,10 @@ All media extraction, network requests, and audio/video muxing run strictly loca
 ## Features
 
 - **100% On-Device Processing**: Downloads and media conversions execute locally via bundled yt-dlp and FFmpeg binaries. Your data never touches intermediate proxy servers.
-- **Universal Service Support**: Works with YouTube, TikTok, Instagram, X (Twitter), Reddit, Bilibili, SoundCloud, Pinterest, and direct media links.
+- **Multi-Platform Service Support**: Videos and audio from YouTube, TikTok, public Instagram Reels, X (Twitter), Reddit, Bilibili, SoundCloud, Pinterest, and direct media links.
 - **Tracking Parameter Stripper**: Automatically strips tracking query parameters (`utm_*`, `si`, `igsh`, `fbclid`, `share_id`) from incoming URLs before processing.
 - **AMOLED Dark Mode**: True black (`#000000`) theme toggle for OLED/AMOLED screens to conserve battery and provide high contrast.
-- **Built-in Media Player & Share**: Internal Media3 ExoPlayer with animated audio visualizer and direct Android Share Sheet integration to WhatsApp, Telegram, or Drive.
+- **Built-in Media Player & Share**: Internal Media3 ExoPlayer for videos, animated mascot playback for audio, and direct Android Share Sheet integration to external apps.
 - **Seamless System Integration**:
   - Android Share Sheet receiver: Share links directly to Kitsune from browsers and social apps.
   - Automatic clipboard detection: Instant detection of media URLs upon opening the app.
@@ -72,17 +72,17 @@ All media extraction, network requests, and audio/video muxing run strictly loca
 
 ## Supported Services
 
-| Service | Video | Audio Extraction | URL Stripping |
-| :--- | :---: | :---: | :---: |
-| **YouTube** (`watch`, `shorts`, `youtu.be`) | Yes (up to 4K) | Yes | Yes |
-| **TikTok** (`vm.tiktok.com`, web URLs) | Yes | Yes | Yes |
-| **Instagram** (`reels`, `posts`, `tv`) | Yes | Yes | Yes |
-| **X / Twitter** (`twitter.com`, `x.com`) | Yes | Yes | Yes |
-| **Reddit** (`reddit.com`, `redd.it`) | Yes | Yes | Yes |
-| **Bilibili** (`bilibili.com`, `b23.tv`) | Yes | Yes | Yes |
-| **SoundCloud** | Audio only | Yes | Yes |
-| **Pinterest** (`pin.it`, `pinterest.*`) | Yes | Yes | Yes |
-| **Direct Media URLs** | Yes | Yes | Yes |
+| Service | Video | Audio Extraction | URL Stripping | Scope |
+| :--- | :---: | :---: | :---: | :--- |
+| **YouTube** (`watch`, `shorts`, `youtu.be`) | Yes (up to 4K) | Yes | Yes | Videos, shorts, and playlists |
+| **TikTok** (`vm.tiktok.com`, web URLs) | Yes | Yes | Yes | Public videos and audio tracks |
+| **Instagram** (`reels`, `posts`, `tv`) | Yes | Yes | Yes | Public reels and video posts |
+| **X / Twitter** (`twitter.com`, `x.com`) | Yes | Yes | Yes | Videos and GIF clips |
+| **Reddit** (`reddit.com`, `redd.it`) | Yes | Yes | Yes | Video posts with audio |
+| **Bilibili** (`bilibili.com`, `b23.tv`) | Yes | Yes | Yes | Videos and clips |
+| **SoundCloud** | N/A | Yes | Yes | Audio tracks and playlists |
+| **Pinterest** (`pin.it`, `pinterest.*`) | Yes | Yes | Yes | Video and animated pins |
+| **Direct Media URLs** | Yes | Yes | Yes | Direct HTTP/HTTPS audio and video links |
 
 ---
 

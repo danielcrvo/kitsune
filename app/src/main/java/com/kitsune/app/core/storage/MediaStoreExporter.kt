@@ -42,13 +42,13 @@ object MediaStoreExporter {
             }
 
             val targetUri = resolver.insert(contentUri, values)
-                ?: throw IllegalStateException("Falha ao criar entrada no MediaStore")
+                ?: throw IllegalStateException("Failed to insert record into MediaStore")
 
             resolver.openOutputStream(targetUri)?.use { output ->
                 FileInputStream(sourceFile).use { input ->
                     input.copyTo(output)
                 }
-            } ?: throw IllegalStateException("Não foi possível abrir OutputStream para gravação do arquivo")
+            } ?: throw IllegalStateException("Could not open OutputStream for media export")
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 values.clear()

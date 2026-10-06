@@ -22,7 +22,7 @@ object EngineUpdateManager {
             val initRes = YtDlpEngine.ensureInitialized(context)
             if (initRes.isFailure) {
                 return@withContext UpdateStatus.Error(
-                    initRes.exceptionOrNull()?.localizedMessage ?: "Falha ao inicializar engine local."
+                    initRes.exceptionOrNull()?.localizedMessage ?: "Failed to initialize local engine."
                 )
             }
             val status = YoutubeDL.getInstance().updateYoutubeDL(
@@ -31,7 +31,7 @@ object EngineUpdateManager {
             )
             when (status) {
                 YoutubeDL.UpdateStatus.DONE -> {
-                    val currentVersion = YoutubeDL.getInstance().version(context) ?: "atualizado"
+                    val currentVersion = YoutubeDL.getInstance().version(context) ?: "latest"
                     UpdateStatus.Updated(currentVersion)
                 }
                 YoutubeDL.UpdateStatus.ALREADY_UP_TO_DATE -> {
@@ -40,17 +40,17 @@ object EngineUpdateManager {
                 else -> UpdateStatus.AlreadyUpToDate
             }
         } catch (t: Throwable) {
-            Log.e(TAG, "Falha na verificação de atualização da engine", t)
+            Log.e(TAG, "Engine update check failed", t)
             val rawMsg = t.message ?: t.localizedMessage ?: ""
             val userFriendlyError = when {
                 rawMsg.contains("403", ignoreCase = true) || rawMsg.contains("rate limit", ignoreCase = true) ->
-                    "Limite temporário de requisições do GitHub atingido. Tente novamente mais tarde."
+                    "GitHub API rate limit reached. Please try again later."
                 rawMsg.contains("timeout", ignoreCase = true) || rawMsg.contains("connect", ignoreCase = true) ->
-                    "Tempo limite de conexão esgotado. Verifique sua conexão com a internet."
+                    "Connection timeout. Check your internet connection."
                 rawMsg.isNotBlank() && !rawMsg.matches(Regex("""^[a-zA-Z0-9_.$]+$""")) ->
                     rawMsg
                 else ->
-                    "Não foi possível baixar a atualização no momento. Verifique sua conexão."
+                    "Could not download update at this time."
             }
             UpdateStatus.Error(userFriendlyError)
         }
@@ -62,7 +62,7 @@ object EngineUpdateManager {
             if (initRes.isFailure) return@withContext "N/A"
             YoutubeDL.getInstance().version(context.applicationContext) ?: "N/A"
         } catch (_: Throwable) {
-            "Desconhecida"
+            "N/A"
         }
     }
 }

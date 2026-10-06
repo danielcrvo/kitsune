@@ -20,7 +20,7 @@
     <string name="btn_understood">Entendido</string>
 
     <string name="hint_url_input">Cole ou digite a URL da mídia...</string>
-    <string name="prompt_clipboard_detected">Copiar link detectado?</string>
+    <string name="prompt_clipboard_detected">Colar link detectado?</string>
     <string name="hint_rename_file">Novo nome do arquivo</string>
     <string name="terms_agreement_prefix">Ao continuar, você concorda com os</string>
     <string name="preview_detecting">Detectando detalhes da mídia...</string>
@@ -28,9 +28,6 @@
     <string name="mode_auto">Auto</string>
     <string name="mode_audio">Áudio</string>
     <string name="mode_mute">Mudo</string>
-    <string name="mode_video_mp4">Vídeo (MP4)</string>
-    <string name="mode_audio_mp3">Áudio (MP3)</string>
-    <string name="mode_custom">Personalizado</string>
     <string name="quality_best">Melhor Disponível</string>
     <string name="quality_max_res">Resolução máxima: %dp</string>
     <string name="badge_recommended">RECOMENDADO</string>
@@ -39,11 +36,11 @@
     <string name="stage_video_stream">Baixando stream de vídeo...</string>
     <string name="stage_audio_stream">Baixando áudio...</string>
     <string name="stage_ffmpeg_muxing">Unindo vídeo e áudio com FFmpeg...</string>
-    <string name="stage_finalizing">Salvando na Galeria do Android...</string>
+    <string name="stage_finalizing">Salvando no armazenamento do aparelho...</string>
     <string name="status_download_active">Download Ativo</string>
     <string name="status_muxing_title">Unindo Áudio e Vídeo...</string>
     <string name="status_muxing_desc">Processando arquivo final em alta resolução com FFmpeg local.</string>
-    <string name="status_saved_gallery">Salvo na Galeria!</string>
+    <string name="status_saved_gallery">Salvo no armazenamento do aparelho!</string>
     <string name="status_download_failed">Falha no Download</string>
     <string name="status_speed">Velocidade: %s</string>
     <string name="status_eta">Tempo restante: %s</string>
@@ -59,13 +56,13 @@
     <string name="settings_embed_subtitles">Embutir Legendas</string>
     <string name="settings_embed_subtitles_desc">Salvar legendas disponíveis dentro do MP4</string>
     <string name="settings_video_quality">Qualidade de Vídeo</string>
-    <string name="settings_mute_video">Silenciar Vídeo</string>
-    <string name="settings_mute_video_desc">Baixar apenas vídeo sem áudio</string>
     <string name="settings_engine_title">Engine de Extração</string>
     <string name="settings_engine_version">Versão instalada: %s</string>
     <string name="settings_engine_update_check">Verificar atualizações da engine</string>
     <string name="settings_engine_updating">Atualizando engine...</string>
     <string name="settings_engine_updated">Engine já está atualizada!</string>
+    <string name="settings_engine_updated_to">Engine yt-dlp atualizada para v%s!</string>
+    <string name="settings_engine_update_failed">Erro ao atualizar engine: %s</string>
 
     <string name="history_title">Biblioteca de Downloads</string>
     <string name="history_subtitle">%d arquivos salvos</string>
@@ -79,23 +76,24 @@
     <string name="history_dialog_delete_title">Excluir Arquivo</string>
     <string name="history_dialog_delete_message">Tem certeza de que deseja excluir \"%s\"? Esta ação não pode ser desfeita.</string>
     <string name="history_file_deleted">Arquivo excluído com sucesso</string>
+    <string name="history_file_delete_failed">Não foi possível excluir o arquivo</string>
     <string name="history_file_renamed">Arquivo renomeado com sucesso</string>
+    <string name="history_file_rename_failed">Não foi possível renomear o arquivo: %s</string>
 
     <string name="player_title">Reprodutor de Mídia</string>
-    <string name="player_speed">Velocidade: %sx</string>
-    <string name="player_audio_track">Faixa de Áudio</string>
     <string name="player_external">Player Externo</string>
 
     <string name="services_dialog_title">Serviços Suportados</string>
     <string name="services_dialog_desc">O Kitsune suporta download direto e privado das seguintes plataformas:</string>
     <string name="services_youtube_desc">Áudio e Vídeo até 4K</string>
-    <string name="services_tiktok_desc">Vídeos e Fotos sem marca d\'água</string>
-    <string name="services_instagram_desc">Reels, Posts e Stories públicos</string>
+    <string name="services_tiktok_desc">Vídeos e faixas de áudio</string>
+    <string name="services_instagram_desc">Reels e publicações em vídeo públicas</string>
     <string name="services_twitter_desc">Vídeos e GIFs de tweets</string>
     <string name="services_reddit_desc">Vídeos com áudio incorporado</string>
-    <string name="services_bilibili_desc">Vídeos de anime e clipes</string>
-    <string name="services_soundcloud_desc">Áudio em alta fidelidade</string>
-    <string name="services_pinterest_desc">Vídeos e Imagens</string>
+    <string name="services_bilibili_desc">Vídeos e clipes</string>
+    <string name="services_soundcloud_desc">Faixas de áudio e playlists</string>
+    <string name="services_pinterest_desc">Vídeos e pins animados</string>
+    <string name="services_generic_title">Links Diretos</string>
     <string name="services_generic_desc">Streams diretos de mídia</string>
     <string name="services_privacy_note">Todos os downloads ocorrem 100% no seu aparelho sem proxy ou servidores intermediários.</string>
 
@@ -144,4 +142,14 @@
     <string name="playlist_loading">Extraindo itens da playlist...</string>
     <string name="playlist_empty">Nenhum item disponível para download na playlist</string>
     <string name="playlist_total_items">%1$d itens encontrados</string>
+
+    <string name="error_download_generic">Falha ao processar download.</string>
+    <string name="error_export_generic">Erro ao salvar arquivo de mídia.</string>
+
+    <string name="quality_video_auto">Máxima (Até 4K)</string>
+    <string name="quality_video_audio_only">Apenas Áudio (Melhor)</string>
+    <string name="quality_audio_best">320 kbps (Melhor)</string>
+    <string name="quality_audio_high">256 kbps (Alta)</string>
+    <string name="quality_audio_medium">192 kbps (Padrão)</string>
+    <string name="quality_audio_low">128 kbps (Econômico)</string>
 </resources>

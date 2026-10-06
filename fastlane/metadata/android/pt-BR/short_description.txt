@@ -1,1 +1,1 @@
-Baixador de midias privativo e local para Android.
+Baixador de mídia privativo e local para Android.

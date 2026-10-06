@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
+import com.kitsune.app.R
 import com.kitsune.app.core.model.DownloadedMediaFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -86,7 +87,7 @@ object DownloadedFilesRepository {
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idCol)
-                val displayName = cursor.getString(nameCol) ?: "Vídeo Kitsune"
+                val displayName = cursor.getString(nameCol) ?: "Kitsune Video"
                 val title = cursor.getString(titleCol) ?: displayName
                 val size = cursor.getLong(sizeCol)
                 val date = cursor.getLong(dateCol) * 1000L
@@ -152,7 +153,7 @@ object DownloadedFilesRepository {
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idCol)
-                val displayName = cursor.getString(nameCol) ?: "Áudio Kitsune"
+                val displayName = cursor.getString(nameCol) ?: "Kitsune Audio"
                 val title = cursor.getString(titleCol) ?: displayName
                 val size = cursor.getLong(sizeCol)
                 val date = cursor.getLong(dateCol) * 1000L
@@ -237,7 +238,7 @@ object DownloadedFilesRepository {
             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
         }
         try {
-            context.startActivity(Intent.createChooser(intent, "Reproduzir mídia"))
+            context.startActivity(Intent.createChooser(intent, context.getString(R.string.player_external)))
         } catch (_: Throwable) {}
     }
 
@@ -262,7 +263,7 @@ object DownloadedFilesRepository {
     ): Result<DownloadedMediaFile> = withContext(Dispatchers.IO) {
         runCatching {
             val cleanName = newNameWithoutExt.trim().replace(Regex("[^a-zA-Z0-9._ -]"), "_")
-            if (cleanName.isBlank()) throw IllegalArgumentException("Nome de arquivo inválido.")
+            if (cleanName.isBlank()) throw IllegalArgumentException("Invalid file name.")
 
             val ext = item.file?.extension ?: item.fileName.substringAfterLast('.', "")
             val fullNewName = if (ext.isNotBlank()) "$cleanName.$ext" else cleanName

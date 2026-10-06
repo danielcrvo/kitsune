@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.kitsune.app.R
 import com.kitsune.app.core.engine.EngineUpdateManager
 import com.kitsune.app.core.engine.UrlDetector
 import com.kitsune.app.core.engine.YtDlpEngine
@@ -291,7 +292,11 @@ class MainViewModel @JvmOverloads constructor(
                 state.copy(
                     deletingFile = null,
                     downloadedFiles = state.downloadedFiles.filterNot { it.id == item.id || it.uri == item.uri },
-                    toastMessage = if (success) "Arquivo excluído com sucesso." else "Não foi possível excluir o arquivo."
+                    toastMessage = if (success) {
+                        getApplication<Application>().getString(R.string.history_file_deleted)
+                    } else {
+                        getApplication<Application>().getString(R.string.history_file_delete_failed)
+                    }
                 )
             }
         }
@@ -306,7 +311,7 @@ class MainViewModel @JvmOverloads constructor(
                         state.copy(
                             renamingFile = null,
                             downloadedFiles = state.downloadedFiles.map { if (it.id == item.id) updatedItem else it },
-                            toastMessage = "Arquivo renomeado com sucesso!"
+                            toastMessage = getApplication<Application>().getString(R.string.history_file_renamed)
                         )
                     }
                 },
@@ -314,7 +319,10 @@ class MainViewModel @JvmOverloads constructor(
                     _uiState.update {
                         it.copy(
                             renamingFile = null,
-                            toastMessage = "Erro ao renomear: ${err.localizedMessage ?: "Nome inválido"}"
+                            toastMessage = getApplication<Application>().getString(
+                                R.string.history_file_rename_failed,
+                                err.localizedMessage ?: ""
+                            )
                         )
                     }
                 }
@@ -351,9 +359,17 @@ class MainViewModel @JvmOverloads constructor(
                     isCheckingUpdate = false,
                     engineVersion = newVersion,
                     toastMessage = when (status) {
-                        is EngineUpdateManager.UpdateStatus.Updated -> "Engine yt-dlp atualizada para v${status.version}!"
-                        is EngineUpdateManager.UpdateStatus.AlreadyUpToDate -> "A engine já está na versão mais recente."
-                        is EngineUpdateManager.UpdateStatus.Error -> "Erro ao atualizar engine: ${status.error}"
+                        is EngineUpdateManager.UpdateStatus.Updated -> getApplication<Application>().getString(
+                            R.string.settings_engine_updated_to,
+                            status.version
+                        )
+                        is EngineUpdateManager.UpdateStatus.AlreadyUpToDate -> getApplication<Application>().getString(
+                            R.string.settings_engine_updated
+                        )
+                        is EngineUpdateManager.UpdateStatus.Error -> getApplication<Application>().getString(
+                            R.string.settings_engine_update_failed,
+                            status.error
+                        )
                         else -> null
                     }
                 )

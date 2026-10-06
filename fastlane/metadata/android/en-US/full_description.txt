@@ -2,12 +2,12 @@ Kitsune is a modern, lightweight, and completely private media downloader for An
 
 Features:
 - On-device processing using bundled yt-dlp and FFmpeg binaries
-- Universal platform support: YouTube, TikTok, Instagram, X (Twitter), Reddit, Bilibili, SoundCloud, Pinterest, and direct media links
+- Multi-platform support: videos and audio tracks from YouTube, TikTok, public Instagram Reels, X (Twitter), Reddit, Bilibili, SoundCloud, Pinterest, and direct media links
 - Download queue with sequential background processing and pending indicators
 - Multi-item playlist extraction with selection dialog and duration calculation
 - Wi-Fi only mode for data-saving operation
 - Dynamic Theming (Material You) on Android 12+ and pure AMOLED dark theme
-- Built-in media player with Media3 ExoPlayer for videos and animated visualizers for audio
+- Built-in media player powered by Media3 ExoPlayer for videos and thematic animations for audio
 - In-app media library for playback, renaming, sharing, and deleting files
 - Automatic stripping of URL tracking parameters (utm, si, igsh, fbclid)
 - Full internationalization with English and Brazilian Portuguese support

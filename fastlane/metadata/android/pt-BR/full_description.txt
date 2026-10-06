@@ -1,14 +1,14 @@
-Kitsune e um baixador de midias moderno, leve e totalmente privativo para Android. Ele opera 100% no proprio dispositivo, extraindo e baixando audio e video localmente sem rotear seus dados por servidores intermediarios externos.
+O Kitsune é um baixador de mídia moderno, leve e totalmente privativo para Android. Ele opera 100% no próprio dispositivo, extraindo áudio e vídeo localmente sem rotear seus dados por servidores intermediários externos.
 
 Recursos:
-- Processamento local no dispositivo utilizando binarios embarcados de yt-dlp e FFmpeg
-- Suporte a diversas plataformas: YouTube, TikTok, Instagram, X (Twitter), Reddit, Bilibili, SoundCloud, Pinterest e links diretos
-- Fila de downloads sequencial com processamento em segundo plano e indicador de pendencias
-- Suporte a playlists com dialogo de selecao individual e calculo de duracao
-- Modo somente Wi-Fi para economia de dados moveis
-- Dynamic Theming (Material You) no Android 12+ e tema escuro puro AMOLED
-- Player interno integrado com Media3 ExoPlayer para videos e visualizador para audios
-- Gerenciamento de biblioteca interna com reproducao, renomeacao, compartilhamento e exclusao
-- Remocao automatica de parametros de rastreamento em links (utm, si, igsh, fbclid)
-- Internacionalizacao completa com suporte a ingles e portugues do Brasil
-- Zero rastreamento, zero telemetria e zero anuncios
+- Processamento local no dispositivo utilizando binários embarcados de yt-dlp e FFmpeg
+- Suporte a diversas plataformas: vídeos e áudios do YouTube, TikTok, Reels públicos do Instagram, X (Twitter), Reddit, Bilibili, SoundCloud, Pinterest e links diretos
+- Fila de downloads sequencial com processamento em segundo plano e indicador de pendências
+- Suporte a playlists com diálogo de seleção individual e cálculo de duração
+- Modo somente Wi-Fi para economia de dados móveis
+- Tema Dinâmico (Material You) no Android 12+ e tema escuro puro AMOLED
+- Player interno integrado com Media3 ExoPlayer para vídeos e animações temáticas para áudios
+- Gerenciamento de biblioteca interna com reprodução, renomeação, compartilhamento e exclusão
+- Remoção automática de parâmetros de rastreamento em links (utm, si, igsh, fbclid)
+- Internacionalização completa com suporte a inglês e português do Brasil
+- Zero rastreamento, zero telemetria e zero anúncios

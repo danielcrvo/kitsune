@@ -28,9 +28,6 @@
     <string name="mode_auto">Auto</string>
     <string name="mode_audio">Audio</string>
     <string name="mode_mute">Mute</string>
-    <string name="mode_video_mp4">Video (MP4)</string>
-    <string name="mode_audio_mp3">Audio (MP3)</string>
-    <string name="mode_custom">Custom</string>
     <string name="quality_best">Best Available</string>
     <string name="quality_max_res">Maximum resolution: %dp</string>
     <string name="badge_recommended">RECOMMENDED</string>
@@ -39,11 +36,11 @@
     <string name="stage_video_stream">Downloading video stream...</string>
     <string name="stage_audio_stream">Downloading audio...</string>
     <string name="stage_ffmpeg_muxing">Muxing video and audio with FFmpeg...</string>
-    <string name="stage_finalizing">Saving to Android Gallery...</string>
+    <string name="stage_finalizing">Saving to device storage...</string>
     <string name="status_download_active">Active Download</string>
     <string name="status_muxing_title">Muxing Audio and Video...</string>
     <string name="status_muxing_desc">Processing final high-resolution file with local FFmpeg.</string>
-    <string name="status_saved_gallery">Saved to Gallery!</string>
+    <string name="status_saved_gallery">Saved to device storage!</string>
     <string name="status_download_failed">Download Failed</string>
     <string name="status_speed">Speed: %s</string>
     <string name="status_eta">ETA: %s</string>
@@ -59,13 +56,13 @@
     <string name="settings_embed_subtitles">Embed Subtitles</string>
     <string name="settings_embed_subtitles_desc">Save available subtitles inside the MP4 video</string>
     <string name="settings_video_quality">Video Quality</string>
-    <string name="settings_mute_video">Mute Video</string>
-    <string name="settings_mute_video_desc">Extract and save video stream without audio</string>
     <string name="settings_engine_title">Extraction Engine</string>
     <string name="settings_engine_version">Installed Version: %s</string>
     <string name="settings_engine_update_check">Check for Engine Updates</string>
     <string name="settings_engine_updating">Updating engine...</string>
     <string name="settings_engine_updated">Engine is up to date!</string>
+    <string name="settings_engine_updated_to">yt-dlp engine updated to v%s!</string>
+    <string name="settings_engine_update_failed">Failed to update engine: %s</string>
 
     <string name="history_title">Download Library</string>
     <string name="history_subtitle">%d saved files</string>
@@ -79,23 +76,24 @@
     <string name="history_dialog_delete_title">Delete File</string>
     <string name="history_dialog_delete_message">Are you sure you want to delete \"%s\"? This action cannot be undone.</string>
     <string name="history_file_deleted">File deleted successfully</string>
+    <string name="history_file_delete_failed">Could not delete file</string>
     <string name="history_file_renamed">File renamed successfully</string>
+    <string name="history_file_rename_failed">Could not rename file: %s</string>
 
     <string name="player_title">Media Player</string>
-    <string name="player_speed">Speed: %sx</string>
-    <string name="player_audio_track">Audio Track</string>
     <string name="player_external">External Player</string>
 
     <string name="services_dialog_title">Supported Services</string>
     <string name="services_dialog_desc">Kitsune supports direct on-device downloading from the following platforms:</string>
     <string name="services_youtube_desc">Audio and Video up to 4K</string>
-    <string name="services_tiktok_desc">Videos and Photos without watermark</string>
-    <string name="services_instagram_desc">Public Reels, Posts, and Stories</string>
+    <string name="services_tiktok_desc">Videos and audio tracks</string>
+    <string name="services_instagram_desc">Public Reels and video posts</string>
     <string name="services_twitter_desc">Videos and GIFs from tweets</string>
     <string name="services_reddit_desc">Videos with embedded audio</string>
-    <string name="services_bilibili_desc">Anime videos and clips</string>
-    <string name="services_soundcloud_desc">High-fidelity audio</string>
-    <string name="services_pinterest_desc">Videos and images</string>
+    <string name="services_bilibili_desc">Videos and clips</string>
+    <string name="services_soundcloud_desc">Audio tracks and playlists</string>
+    <string name="services_pinterest_desc">Videos and animated pins</string>
+    <string name="services_generic_title">Direct Links</string>
     <string name="services_generic_desc">Direct media streams</string>
     <string name="services_privacy_note">All downloads take place 100% on your device with no proxy or intermediary servers.</string>
 
@@ -144,4 +142,14 @@
     <string name="playlist_loading">Extracting playlist items...</string>
     <string name="playlist_empty">No downloadable items found in playlist</string>
     <string name="playlist_total_items">%1$d items found</string>
+
+    <string name="error_download_generic">Failed to process download.</string>
+    <string name="error_export_generic">Failed to save media file.</string>
+
+    <string name="quality_video_auto">Maximum (Up to 4K)</string>
+    <string name="quality_video_audio_only">Audio Only (Best)</string>
+    <string name="quality_audio_best">320 kbps (Best)</string>
+    <string name="quality_audio_high">256 kbps (High)</string>
+    <string name="quality_audio_medium">192 kbps (Standard)</string>
+    <string name="quality_audio_low">128 kbps (Economy)</string>
 </resources>

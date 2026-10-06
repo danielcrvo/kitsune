@@ -114,7 +114,7 @@ Discrete screen regions handling complex domain tasks:
 - **`ActiveDownloadCard`**: Real-time progress monitor card appearing during active downloads.
 - **`DownloadSettingsSheet`**: Modal bottom sheet configuring resolution, audio codecs (MP3, Opus, M4A), bitrate, subtitles, AMOLED pure black theme, and yt-dlp version status.
 - **`DownloadsHistorySheet`**: Modal bottom sheet listing downloaded files with options to open, share, rename, or delete.
-- **`KitsuneMediaPlayerDialog`**: High-performance in-app player leveraging Media3 ExoPlayer for videos and animated radial visualizer for audio, supporting direct Android Share Sheet intent dispatching.
+- **`KitsuneMediaPlayerDialog`**: High-performance in-app player leveraging Media3 ExoPlayer for videos and animated mascot playback for audio, supporting direct Android Share Sheet intent dispatching.
 - **`SupportedServicesDialog`**: Information modal listing supported content providers.
 - **`TermsDialog`**: Legal disclaimer and fair-use policy modal.
 

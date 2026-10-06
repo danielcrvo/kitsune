@@ -30,7 +30,7 @@ data class MainUiState(
     val isSupportedServicesOpen: Boolean = false,
     val isTermsOpen: Boolean = false,
     val isHistoryOpen: Boolean = false,
-    val engineVersion: String = "Carregando...",
+    val engineVersion: String = "",
     val isCheckingUpdate: Boolean = false,
     val toastMessage: String? = null,
     val downloadedFiles: List<DownloadedMediaFile> = emptyList(),
