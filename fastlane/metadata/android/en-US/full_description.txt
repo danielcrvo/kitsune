@@ -1,7 +1,7 @@
-Kitsune is a modern, lightweight, and completely private media downloader for Android. It operates 100% on-device, extracting and downloading audio and video locally without routing your data through external intermediary servers.
+Kitsune is an open-source, modern, lightweight, and completely private media downloader for Android. It operates 100% on-device, extracting and downloading audio and video locally without routing your data through external intermediary servers.
 
 Features:
-- On-device processing using bundled yt-dlp and FFmpeg binaries
+- Processed 100% locally on-device using bundled yt-dlp and FFmpeg binaries
 - Multi-platform support: videos and audio tracks from YouTube, TikTok, public Instagram Reels, X (Twitter), Reddit, Bilibili, SoundCloud, Pinterest, and direct media links
 - Download queue with sequential background processing and pending indicators
 - Multi-item playlist extraction with selection dialog and duration calculation
@@ -11,4 +11,5 @@ Features:
 - In-app media library for playback, renaming, sharing, and deleting files
 - Automatic stripping of URL tracking parameters (utm, si, igsh, fbclid)
 - Full internationalization with English and Brazilian Portuguese support
+- 100% open-source software licensed under the GPLv3 license
 - Zero tracking, zero telemetry, and zero ads

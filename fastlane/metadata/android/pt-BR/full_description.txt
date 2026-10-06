@@ -1,4 +1,4 @@
-O Kitsune é um baixador de mídia moderno, leve e totalmente privativo para Android. Ele opera 100% no próprio dispositivo, extraindo áudio e vídeo localmente sem rotear seus dados por servidores intermediários externos.
+O Kitsune é um downloader de mídia moderno, leve, de código aberto (open source) e totalmente privativo para Android. Ele opera 100% no próprio dispositivo, extraindo áudio e vídeo localmente sem rotear seus dados por servidores intermediários externos.
 
 Recursos:
 - Processamento local no dispositivo utilizando binários embarcados de yt-dlp e FFmpeg
@@ -11,4 +11,5 @@ Recursos:
 - Gerenciamento de biblioteca interna com reprodução, renomeação, compartilhamento e exclusão
 - Remoção automática de parâmetros de rastreamento em links (utm, si, igsh, fbclid)
 - Internacionalização completa com suporte a inglês e português do Brasil
+- Projeto 100% open source licenciado sob a licença GPLv3
 - Zero rastreamento, zero telemetria e zero anúncios

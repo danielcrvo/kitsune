@@ -25,7 +25,7 @@
   <br />
 </div>
 
-Kitsune is the cutest and fastest on-device media downloader for Android that doesn't waste your time. It is friendly, private, lightweight, and contains no ads, no trackers, no paywalls, and no third-party backend servers.
+Kitsune is an open-source, cute, and fast on-device media downloader for Android that doesn't waste your time. It is friendly, private, lightweight, and contains no ads, no trackers, no paywalls, and no third-party backend servers.
 
 Paste the link, get the file, move on. That simple, just how it should be.
 
