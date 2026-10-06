@@ -6,9 +6,12 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.kitsune.app.R
+import com.kitsune.app.core.engine.AppUpdateManager
 import com.kitsune.app.core.engine.EngineUpdateManager
 import com.kitsune.app.core.engine.UrlDetector
 import com.kitsune.app.core.engine.YtDlpEngine
+import com.kitsune.app.core.model.AppUpdateInfo
+import com.kitsune.app.core.model.AppUpdateState
 import com.kitsune.app.core.model.AudioCodec
 import com.kitsune.app.core.model.DownloadConfig
 import com.kitsune.app.core.model.DownloadState
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MainViewModel @JvmOverloads constructor(
     application: Application,
@@ -84,6 +88,13 @@ class MainViewModel @JvmOverloads constructor(
         }
 
         loadDownloadedFiles()
+
+        val currentAppVersion = AppUpdateManager.getCurrentVersionName(application)
+        _uiState.update { it.copy(appVersionName = currentAppVersion) }
+
+        viewModelScope.launch {
+            checkAppUpdateSilently()
+        }
     }
 
     fun onAction(action: MainUiAction, context: Context? = null) {
@@ -114,6 +125,10 @@ class MainViewModel @JvmOverloads constructor(
             is MainUiAction.PlayExternal -> context?.let { playFileExternal(it, action.file) }
             is MainUiAction.DeleteFile -> confirmDeleteFile(action.file)
             is MainUiAction.RenameFile -> confirmRenameFile(action.file, action.newName)
+            is MainUiAction.CheckAppUpdate -> checkAppUpdateManually()
+            is MainUiAction.DownloadAppUpdate -> downloadAppUpdate()
+            is MainUiAction.InstallAppUpdate -> context?.let { installAppUpdate(it) }
+            is MainUiAction.DismissAppUpdateDialog -> dismissAppUpdateDialog()
         }
     }
 
@@ -472,5 +487,132 @@ class MainViewModel @JvmOverloads constructor(
                 selectedPlaylistItems = emptySet()
             )
         }
+    }
+
+    private suspend fun checkAppUpdateSilently() {
+        try {
+            val result = AppUpdateManager.checkForAppUpdate(getApplication())
+            result.fold(
+                onSuccess = { info ->
+                    if (info != null) {
+                        _uiState.update {
+                            it.copy(
+                                appUpdateInfo = info,
+                                appUpdateState = AppUpdateState.UpdateAvailable(info),
+                                isAppUpdateDialogOpen = true
+                            )
+                        }
+                        AppUpdateManager.notifyUpdateAvailable(getApplication(), info.versionName)
+                    }
+                },
+                onFailure = {}
+            )
+        } catch (_: Throwable) {}
+    }
+
+    fun checkAppUpdateManually() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isCheckingAppUpdate = true) }
+            val result = AppUpdateManager.checkForAppUpdate(getApplication())
+            _uiState.update { it.copy(isCheckingAppUpdate = false) }
+            result.fold(
+                onSuccess = { info ->
+                    if (info != null) {
+                        _uiState.update {
+                            it.copy(
+                                appUpdateInfo = info,
+                                appUpdateState = AppUpdateState.UpdateAvailable(info),
+                                isAppUpdateDialogOpen = true
+                            )
+                        }
+                        AppUpdateManager.notifyUpdateAvailable(getApplication(), info.versionName)
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                toastMessage = getApplication<Application>().getString(R.string.settings_app_up_to_date)
+                            )
+                        }
+                    }
+                },
+                onFailure = { err ->
+                    _uiState.update {
+                        it.copy(
+                            toastMessage = getApplication<Application>().getString(
+                                R.string.update_download_failed,
+                                err.localizedMessage ?: ""
+                            )
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    fun downloadAppUpdate() {
+        val info = _uiState.value.appUpdateInfo ?: return
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    appUpdateState = AppUpdateState.Downloading(
+                        info = info,
+                        progressPercent = 0,
+                        bytesDownloaded = 0L,
+                        totalBytes = info.fileSizeBytes
+                    )
+                )
+            }
+            val result = AppUpdateManager.downloadUpdateApk(getApplication(), info) { percent, read, total ->
+                _uiState.update {
+                    it.copy(
+                        appUpdateState = AppUpdateState.Downloading(
+                            info = info,
+                            progressPercent = percent,
+                            bytesDownloaded = read,
+                            totalBytes = total
+                        )
+                    )
+                }
+            }
+            result.fold(
+                onSuccess = { apkFile ->
+                    _uiState.update {
+                        it.copy(
+                            appUpdateState = AppUpdateState.ReadyToInstall(
+                                info = info,
+                                apkPath = apkFile.absolutePath
+                            )
+                        )
+                    }
+                },
+                onFailure = { err ->
+                    _uiState.update {
+                        it.copy(
+                            appUpdateState = AppUpdateState.Error(
+                                err.localizedMessage ?: "Download failed"
+                            )
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    fun installAppUpdate(context: Context) {
+        val state = _uiState.value.appUpdateState
+        if (state is AppUpdateState.ReadyToInstall) {
+            val apkFile = File(state.apkPath)
+            val launched = AppUpdateManager.installApk(context, apkFile)
+            if (!launched) {
+                _uiState.update {
+                    it.copy(
+                        toastMessage = getApplication<Application>().getString(R.string.update_permission_required)
+                    )
+                }
+            }
+        }
+    }
+
+    fun dismissAppUpdateDialog() {
+        _uiState.update { it.copy(isAppUpdateDialogOpen = false) }
     }
 }

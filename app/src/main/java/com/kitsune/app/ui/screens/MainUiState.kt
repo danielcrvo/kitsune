@@ -7,6 +7,8 @@ import com.kitsune.app.core.model.DownloadedMediaFile
 import com.kitsune.app.core.model.MediaInfo
 import com.kitsune.app.core.model.PlatformType
 
+import com.kitsune.app.core.model.AppUpdateInfo
+import com.kitsune.app.core.model.AppUpdateState
 import com.kitsune.app.core.model.DownloadTask
 import com.kitsune.app.core.model.PlaylistInfo
 
@@ -45,7 +47,12 @@ data class MainUiState(
     val playlistInfo: PlaylistInfo? = null,
     val isPlaylistDialogOpen: Boolean = false,
     val selectedPlaylistItems: Set<String> = emptySet(),
-    val isLoadingPlaylist: Boolean = false
+    val isLoadingPlaylist: Boolean = false,
+    val appVersionName: String = "",
+    val appUpdateInfo: AppUpdateInfo? = null,
+    val appUpdateState: AppUpdateState = AppUpdateState.Idle,
+    val isAppUpdateDialogOpen: Boolean = false,
+    val isCheckingAppUpdate: Boolean = false
 ) {
     val downloadMode: DownloadMode
         get() = when {

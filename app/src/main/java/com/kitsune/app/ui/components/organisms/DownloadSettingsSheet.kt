@@ -59,6 +59,8 @@ import com.kitsune.app.ui.theme.KitsuneTheme
 fun DownloadSettingsSheet(
     config: DownloadConfig,
     engineVersion: String,
+    appVersion: String = "",
+    isCheckingAppUpdate: Boolean = false,
     isAmoledTheme: Boolean = false,
     isDynamicColor: Boolean = false,
     isWifiOnly: Boolean = false,
@@ -67,6 +69,7 @@ fun DownloadSettingsSheet(
     onToggleDynamicColor: (Boolean) -> Unit = {},
     onToggleWifiOnly: (Boolean) -> Unit = {},
     onCheckEngineUpdate: () -> Unit,
+    onCheckAppUpdate: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -503,6 +506,48 @@ fun DownloadSettingsSheet(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(stringResource(R.string.settings_engine_update_check), color = KitsuneTheme.colors.accentCyan)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(KitsuneTheme.spacing.md))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = KitsuneTheme.spacing.sm)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.settings_app_version_title),
+                            style = KitsuneTheme.typography.bodyMedium,
+                            color = KitsuneTheme.colors.textPrimary
+                        )
+                        Text(
+                            text = stringResource(R.string.settings_app_version, appVersion),
+                            style = KitsuneTheme.typography.labelSmall,
+                            color = KitsuneTheme.colors.accentCyan
+                        )
+                    }
+                    KitsuneButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            onCheckAppUpdate()
+                        },
+                        loading = isCheckingAppUpdate,
+                        variant = KitsuneButtonVariant.SECONDARY
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Sync,
+                            contentDescription = null,
+                            tint = KitsuneTheme.colors.accentCyan,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(stringResource(R.string.settings_app_update_check), color = KitsuneTheme.colors.accentCyan)
                     }
                 }
 

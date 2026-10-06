@@ -31,4 +31,8 @@ sealed interface MainUiAction {
     data object SelectAllPlaylistItems : MainUiAction
     data object DeselectAllPlaylistItems : MainUiAction
     data object DownloadSelectedPlaylistItems : MainUiAction
+    data object CheckAppUpdate : MainUiAction
+    data object DownloadAppUpdate : MainUiAction
+    data object InstallAppUpdate : MainUiAction
+    data object DismissAppUpdateDialog : MainUiAction
 }

@@ -65,6 +65,7 @@ import com.kitsune.app.ui.components.molecules.KitsuneModeSelector
 import com.kitsune.app.ui.components.molecules.MediaPreviewCard
 import com.kitsune.app.ui.components.molecules.UrlInputBar
 import com.kitsune.app.ui.components.organisms.ActiveDownloadCard
+import com.kitsune.app.ui.components.organisms.AppUpdateDialog
 import com.kitsune.app.ui.components.organisms.DownloadSettingsSheet
 import com.kitsune.app.ui.components.organisms.DownloadsHistorySheet
 import com.kitsune.app.ui.components.organisms.KitsuneMediaPlayerDialog
@@ -459,6 +460,8 @@ fun MainScreenContent(
             DownloadSettingsSheet(
                 config = uiState.downloadConfig,
                 engineVersion = uiState.engineVersion,
+                appVersion = uiState.appVersionName,
+                isCheckingAppUpdate = uiState.isCheckingAppUpdate,
                 isAmoledTheme = uiState.isAmoledTheme,
                 isDynamicColor = uiState.isDynamicColor,
                 isWifiOnly = uiState.isWifiOnly,
@@ -467,7 +470,17 @@ fun MainScreenContent(
                 onToggleDynamicColor = { onAction(MainUiAction.ToggleDynamicColor(it)) },
                 onToggleWifiOnly = { onAction(MainUiAction.ToggleWifiOnly(it)) },
                 onCheckEngineUpdate = { onAction(MainUiAction.CheckEngineUpdate) },
+                onCheckAppUpdate = { onAction(MainUiAction.CheckAppUpdate) },
                 onDismiss = { onAction(MainUiAction.ToggleSettings(false)) }
+            )
+        }
+
+        if (uiState.isAppUpdateDialogOpen) {
+            AppUpdateDialog(
+                updateState = uiState.appUpdateState,
+                onDownload = { onAction(MainUiAction.DownloadAppUpdate) },
+                onInstall = { onAction(MainUiAction.InstallAppUpdate) },
+                onDismiss = { onAction(MainUiAction.DismissAppUpdateDialog) }
             )
         }
 
