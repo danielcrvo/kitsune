@@ -1,0 +1,6 @@
+- In-app self-updater via GitHub Releases with automatic device ABI matching
+- System notifications for available updates, streaming progress, and one-tap install
+- Interactive update dialog with mascot animations, release notes, and progress gauge
+- Manual app update check option in Download Settings
+- Updated mascot vector assets and unified SVG styling
+- Standardized open-source terminology and enhanced localization

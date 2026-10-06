@@ -1,0 +1,6 @@
+- Auto-atualizador in-app via GitHub Releases com correspondência automática de ABI
+- Notificações do sistema para atualizações disponíveis, progresso e instalação em um toque
+- Diálogo interativo de atualização com animações da mascote, notas de versão e indicador de progresso
+- Opção de verificação manual de atualizações do aplicativo nas opções de download
+- Atualização dos assets vetoriais da mascote e estilização SVG unificada
+- Padronização da terminologia de projeto open source e aprimoramento da localização
