@@ -87,7 +87,14 @@ class MainViewModel @JvmOverloads constructor(
             }
         }
 
+        viewModelScope.launch {
+            preferencesRepository.isAutoCheckUpdatesFlow.collect { autoCheck ->
+                _uiState.update { it.copy(isAutoCheckUpdates = autoCheck) }
+            }
+        }
+
         loadDownloadedFiles()
+        refreshApkCacheSize()
 
         val currentAppVersion = AppUpdateManager.getCurrentVersionName(application)
         _uiState.update { it.copy(appVersionName = currentAppVersion) }
@@ -129,6 +136,9 @@ class MainViewModel @JvmOverloads constructor(
             is MainUiAction.DownloadAppUpdate -> downloadAppUpdate()
             is MainUiAction.InstallAppUpdate -> context?.let { installAppUpdate(it) }
             is MainUiAction.DismissAppUpdateDialog -> dismissAppUpdateDialog()
+            is MainUiAction.ToggleAbout -> toggleAbout(action.open)
+            is MainUiAction.ToggleAutoCheckUpdates -> toggleAutoCheckUpdates(action.enabled)
+            is MainUiAction.ClearUpdateCache -> clearUpdateCache()
         }
     }
 
@@ -490,6 +500,9 @@ class MainViewModel @JvmOverloads constructor(
     }
 
     private suspend fun checkAppUpdateSilently() {
+        if (!preferencesRepository.isAutoCheckUpdatesFlow.firstOrNull().let { it ?: true }) {
+            return
+        }
         try {
             val result = AppUpdateManager.checkForAppUpdate(getApplication())
             result.fold(
@@ -575,6 +588,7 @@ class MainViewModel @JvmOverloads constructor(
             }
             result.fold(
                 onSuccess = { apkFile ->
+                    refreshApkCacheSize()
                     _uiState.update {
                         it.copy(
                             appUpdateState = AppUpdateState.ReadyToInstall(
@@ -614,5 +628,40 @@ class MainViewModel @JvmOverloads constructor(
 
     fun dismissAppUpdateDialog() {
         _uiState.update { it.copy(isAppUpdateDialogOpen = false) }
+    }
+
+    fun toggleAbout(open: Boolean) {
+        _uiState.update { it.copy(isAboutDialogOpen = open) }
+    }
+
+    fun toggleAutoCheckUpdates(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.saveAutoCheckUpdates(enabled)
+        }
+    }
+
+    fun refreshApkCacheSize() {
+        viewModelScope.launch {
+            val size = AppUpdateManager.getUpdateCacheSizeBytes(getApplication())
+            _uiState.update { it.copy(apkCacheSizeBytes = size) }
+        }
+    }
+
+    fun clearUpdateCache() {
+        viewModelScope.launch {
+            val freedBytes = AppUpdateManager.clearUpdateCache(getApplication())
+            refreshApkCacheSize()
+            val msg = if (freedBytes > 0) {
+                getApplication<Application>().getString(
+                    R.string.settings_clear_cache_success,
+                    AppUpdateManager.formatFileSize(freedBytes)
+                )
+            } else {
+                getApplication<Application>().getString(R.string.settings_clear_cache_empty)
+            }
+            _uiState.update {
+                it.copy(toastMessage = msg)
+            }
+        }
     }
 }

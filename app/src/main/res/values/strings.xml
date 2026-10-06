@@ -176,4 +176,24 @@
     <string name="update_notif_ready_title">Kitsune %s ready to install</string>
     <string name="update_notif_ready_desc">Tap to complete the installation</string>
     <string name="update_permission_required">Please grant permission to install updates from Kitsune</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_downloads">Downloads &amp; Network</string>
+    <string name="settings_section_system">System &amp; Updates</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_auto_check_title">Check updates on launch</string>
+    <string name="settings_auto_check_desc">Look for new releases on GitHub when opening Kitsune</string>
+    <string name="settings_clear_cache_title">Update Cache</string>
+    <string name="settings_clear_cache_desc">Downloaded APK packages: %s</string>
+    <string name="settings_clear_cache_btn">Clean</string>
+    <string name="settings_clear_cache_success">Cache cleared (%s freed)</string>
+    <string name="settings_clear_cache_empty">No cached APKs to clean</string>
+    <string name="about_dialog_title">About Kitsune</string>
+    <string name="about_dialog_version_label">Version %s</string>
+    <string name="about_dialog_license_badge">Open Source (GPL-3.0)</string>
+    <string name="about_dialog_desc">Kitsune is an independent, open-source media downloader designed for privacy, speed, and simplicity. All operations run directly on your device.</string>
+    <string name="about_dialog_github">Source Code (GitHub)</string>
+    <string name="about_dialog_issues">Report an Issue</string>
+    <string name="about_dialog_credits_title">Core Technologies</string>
+    <string name="about_dialog_credits_desc">Powered by yt-dlp, FFmpeg, Jetpack Compose, and Material 3.</string>
+    <string name="settings_about_summary">Version %1$s • Open source (GPL-3.0)</string>
 </resources>

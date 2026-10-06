@@ -58,7 +58,7 @@ fun TermsDialog(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     MascotSvg(
-                        type = MascotType.TALKING,
+                        type = MascotType.IDLE,
                         contentDescription = null,
                         size = 48.dp
                     )

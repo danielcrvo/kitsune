@@ -35,4 +35,7 @@ sealed interface MainUiAction {
     data object DownloadAppUpdate : MainUiAction
     data object InstallAppUpdate : MainUiAction
     data object DismissAppUpdateDialog : MainUiAction
+    data class ToggleAbout(val open: Boolean) : MainUiAction
+    data class ToggleAutoCheckUpdates(val enabled: Boolean) : MainUiAction
+    data object ClearUpdateCache : MainUiAction
 }

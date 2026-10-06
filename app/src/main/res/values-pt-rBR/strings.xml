@@ -176,4 +176,24 @@
     <string name="update_notif_ready_title">Kitsune %s pronto para instalar</string>
     <string name="update_notif_ready_desc">Toque para concluir a instalação</string>
     <string name="update_permission_required">Conceda permissão para instalar atualizações pelo Kitsune</string>
+    <string name="settings_section_appearance">Aparência</string>
+    <string name="settings_section_downloads">Downloads e Rede</string>
+    <string name="settings_section_system">Sistema e Atualizações</string>
+    <string name="settings_section_about">Sobre</string>
+    <string name="settings_auto_check_title">Verificar atualizações ao iniciar</string>
+    <string name="settings_auto_check_desc">Procurar novos lançamentos no GitHub ao abrir o Kitsune</string>
+    <string name="settings_clear_cache_title">Cache de Atualizações</string>
+    <string name="settings_clear_cache_desc">Pacotes APK salvos em cache: %s</string>
+    <string name="settings_clear_cache_btn">Limpar</string>
+    <string name="settings_clear_cache_success">Cache limpo (%s liberados)</string>
+    <string name="settings_clear_cache_empty">Nenhum APK salvo em cache para limpar</string>
+    <string name="about_dialog_title">Sobre o Kitsune</string>
+    <string name="about_dialog_version_label">Versão %s</string>
+    <string name="about_dialog_license_badge">Código Aberto (GPL-3.0)</string>
+    <string name="about_dialog_desc">O Kitsune é um downloader de mídia independente e open source projetado para privacidade, velocidade e simplicidade. Todas as operações rodam diretamente no seu aparelho.</string>
+    <string name="about_dialog_github">Código-fonte (GitHub)</string>
+    <string name="about_dialog_issues">Reportar Problema</string>
+    <string name="about_dialog_credits_title">Tecnologias de Base</string>
+    <string name="about_dialog_credits_desc">Desenvolvido com yt-dlp, FFmpeg, Jetpack Compose e Material 3.</string>
+    <string name="settings_about_summary">Versão %1$s • Código aberto (GPL-3.0)</string>
 </resources>

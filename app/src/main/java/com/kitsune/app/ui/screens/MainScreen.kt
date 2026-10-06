@@ -64,6 +64,7 @@ import com.kitsune.app.ui.components.atoms.MascotType
 import com.kitsune.app.ui.components.molecules.KitsuneModeSelector
 import com.kitsune.app.ui.components.molecules.MediaPreviewCard
 import com.kitsune.app.ui.components.molecules.UrlInputBar
+import com.kitsune.app.ui.components.organisms.AboutDialog
 import com.kitsune.app.ui.components.organisms.ActiveDownloadCard
 import com.kitsune.app.ui.components.organisms.AppUpdateDialog
 import com.kitsune.app.ui.components.organisms.DownloadSettingsSheet
@@ -462,16 +463,40 @@ fun MainScreenContent(
                 engineVersion = uiState.engineVersion,
                 appVersion = uiState.appVersionName,
                 isCheckingAppUpdate = uiState.isCheckingAppUpdate,
+                isCheckingEngineUpdate = uiState.isCheckingUpdate,
                 isAmoledTheme = uiState.isAmoledTheme,
                 isDynamicColor = uiState.isDynamicColor,
                 isWifiOnly = uiState.isWifiOnly,
+                isAutoCheckUpdates = uiState.isAutoCheckUpdates,
+                apkCacheSizeBytes = uiState.apkCacheSizeBytes,
                 onConfigChange = { onAction(MainUiAction.ChangeConfig(it)) },
                 onToggleAmoledTheme = { onAction(MainUiAction.ToggleAmoledTheme(it)) },
                 onToggleDynamicColor = { onAction(MainUiAction.ToggleDynamicColor(it)) },
                 onToggleWifiOnly = { onAction(MainUiAction.ToggleWifiOnly(it)) },
+                onToggleAutoCheckUpdates = { onAction(MainUiAction.ToggleAutoCheckUpdates(it)) },
                 onCheckEngineUpdate = { onAction(MainUiAction.CheckEngineUpdate) },
                 onCheckAppUpdate = { onAction(MainUiAction.CheckAppUpdate) },
+                onClearUpdateCache = { onAction(MainUiAction.ClearUpdateCache) },
+                onOpenAbout = {
+                    onAction(MainUiAction.ToggleSettings(false))
+                    onAction(MainUiAction.ToggleAbout(true))
+                },
                 onDismiss = { onAction(MainUiAction.ToggleSettings(false)) }
+            )
+        }
+
+        if (uiState.isAboutDialogOpen) {
+            AboutDialog(
+                appVersion = uiState.appVersionName,
+                onOpenTerms = {
+                    onAction(MainUiAction.ToggleAbout(false))
+                    onAction(MainUiAction.ToggleTerms(true))
+                },
+                onOpenSupportedServices = {
+                    onAction(MainUiAction.ToggleAbout(false))
+                    onAction(MainUiAction.ToggleSupportedServices(true))
+                },
+                onDismiss = { onAction(MainUiAction.ToggleAbout(false)) }
             )
         }
 

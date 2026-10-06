@@ -293,4 +293,31 @@ object AppUpdateManager {
         context.startActivity(installIntent)
         return true
     }
+
+    fun getUpdateCacheSizeBytes(context: Context): Long {
+        return try {
+            val updateDir = File(context.cacheDir, "apk_updates")
+            if (updateDir.exists() && updateDir.isDirectory) {
+                updateDir.listFiles()?.sumOf { it.length() } ?: 0L
+            } else 0L
+        } catch (_: Throwable) {
+            0L
+        }
+    }
+
+    fun clearUpdateCache(context: Context): Long {
+        return try {
+            val updateDir = File(context.cacheDir, "apk_updates")
+            var freedBytes = 0L
+            if (updateDir.exists() && updateDir.isDirectory) {
+                updateDir.listFiles()?.forEach { file ->
+                    freedBytes += file.length()
+                    file.delete()
+                }
+            }
+            freedBytes
+        } catch (_: Throwable) {
+            0L
+        }
+    }
 }

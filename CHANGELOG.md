@@ -5,6 +5,22 @@ All notable changes to the Kitsune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-10-06
+
+### Added
+- Dedicated About dialog (`AboutDialog`) highlighting open-source licensing (GNU GPL-3.0), on-device privacy guarantee, direct GitHub/Issues buttons, and core technology credits.
+- Automatic update check toggle in user preferences with silent startup check support.
+- Update cache manager in settings displaying downloaded APK storage footprint and one-tap cache cleanup.
+- Grouped list card styling for Settings (`DownloadSettingsSheet`) with thematic leading icons and subtle dividers.
+
+### Changed
+- Refactored settings sheet layout into 4 clean cards (Appearance, Downloads & Network, System & Updates, About).
+- Progressive disclosure for audio download settings (audio format and bitrate controls are concealed until audio-only mode is active).
+- Replaced talking mascot avatar in Terms of Service dialog with standard neutral idle mascot.
+
+### Removed
+- Removed talking mascot asset (`kitsune_talking.svg`) and `TALKING` enum state, while keeping all Lottie animation sequences for all remaining mascot states.
+
 ## [1.2.0] - 2026-10-06
 
 ### Added

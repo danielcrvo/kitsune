@@ -52,7 +52,10 @@ data class MainUiState(
     val appUpdateInfo: AppUpdateInfo? = null,
     val appUpdateState: AppUpdateState = AppUpdateState.Idle,
     val isAppUpdateDialogOpen: Boolean = false,
-    val isCheckingAppUpdate: Boolean = false
+    val isCheckingAppUpdate: Boolean = false,
+    val isAboutDialogOpen: Boolean = false,
+    val isAutoCheckUpdates: Boolean = true,
+    val apkCacheSizeBytes: Long = 0L
 ) {
     val downloadMode: DownloadMode
         get() = when {

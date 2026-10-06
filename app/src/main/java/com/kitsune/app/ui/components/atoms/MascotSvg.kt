@@ -141,11 +141,6 @@ enum class MascotType(
         startFrame = 1020,
         endFrame = 1079
     ),
-    TALKING(
-        assetPath = "file:///android_asset/kitsune_talking.svg",
-        startFrame = 1080,
-        endFrame = 1139
-    ),
     SINGING(
         assetPath = "file:///android_asset/kitsune_singing.svg",
         startFrame = 1140,
