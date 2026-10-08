@@ -27,8 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.R
-import com.kitsune.app.core.model.DownloadState
-import com.kitsune.app.core.model.DownloadTask
+import com.kitsune.app.domain.model.DownloadState
+import com.kitsune.app.domain.model.DownloadTask
 import com.kitsune.app.ui.components.atoms.KitsuneIconButton
 import com.kitsune.app.ui.components.atoms.MascotSvg
 import com.kitsune.app.ui.components.atoms.MascotType
@@ -336,7 +336,7 @@ private fun ActiveDownloadCardPreview() {
                 progress = 68f,
                 speed = "4.2 MB/s",
                 eta = "00:15",
-                stage = com.kitsune.app.core.model.DownloadStage.VIDEO_STREAM
+                stage = com.kitsune.app.domain.model.DownloadStage.VIDEO_STREAM
             ),
             onCancel = {},
             onDismissError = {}

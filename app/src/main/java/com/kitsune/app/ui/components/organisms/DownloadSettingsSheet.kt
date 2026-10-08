@@ -60,13 +60,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kitsune.app.BuildConfig
 import com.kitsune.app.R
-import com.kitsune.app.core.engine.AppUpdateManager
-import com.kitsune.app.core.model.AudioCodec
-import com.kitsune.app.core.model.AudioQuality
-import com.kitsune.app.core.model.DownloadConfig
-import com.kitsune.app.core.model.VideoQuality
+import com.kitsune.app.domain.util.FileSizeFormatter
+import com.kitsune.app.domain.model.AudioCodec
+import com.kitsune.app.domain.model.AudioQuality
+import com.kitsune.app.domain.model.DownloadConfig
+import com.kitsune.app.domain.model.VideoQuality
 import com.kitsune.app.ui.components.atoms.KitsuneButton
 import com.kitsune.app.ui.components.atoms.KitsuneButtonVariant
 import com.kitsune.app.ui.components.atoms.KitsuneIconButton
@@ -84,6 +83,7 @@ fun DownloadSettingsSheet(
     isDynamicColor: Boolean = false,
     isWifiOnly: Boolean = false,
     isAutoCheckUpdates: Boolean = true,
+    isUpdaterEnabled: Boolean = true,
     apkCacheSizeBytes: Long = 0L,
     onConfigChange: (DownloadConfig) -> Unit,
     onToggleAmoledTheme: (Boolean) -> Unit = {},
@@ -419,7 +419,7 @@ fun DownloadSettingsSheet(
                 }
 
                 SettingsSection(title = stringResource(R.string.settings_section_system)) {
-                    if (BuildConfig.UPDATER_ENABLED) {
+                    if (isUpdaterEnabled) {
                         SettingsSwitchRow(
                             icon = Icons.Outlined.Update,
                             title = stringResource(R.string.settings_auto_check_title),
@@ -460,7 +460,7 @@ fun DownloadSettingsSheet(
                         }
                     )
 
-                    if (BuildConfig.UPDATER_ENABLED) {
+                    if (isUpdaterEnabled) {
                         SettingsDivider()
 
                         SettingsActionRow(
@@ -468,7 +468,7 @@ fun DownloadSettingsSheet(
                             title = stringResource(R.string.settings_clear_cache_title),
                             subtitle = stringResource(
                                 R.string.settings_clear_cache_desc,
-                                AppUpdateManager.formatFileSize(apkCacheSizeBytes)
+                                FileSizeFormatter.format(apkCacheSizeBytes)
                             ),
                             buttonText = stringResource(R.string.settings_clear_cache_btn),
                             isButtonEnabled = apkCacheSizeBytes > 0,

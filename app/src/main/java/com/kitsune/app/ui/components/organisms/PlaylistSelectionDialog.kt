@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kitsune.app.R
-import com.kitsune.app.core.model.PlaylistInfo
-import com.kitsune.app.core.model.PlaylistItem
+import com.kitsune.app.domain.model.PlaylistInfo
+import com.kitsune.app.domain.model.PlaylistItem
 import com.kitsune.app.ui.components.atoms.KitsuneButton
 import com.kitsune.app.ui.components.atoms.MascotSvg
 import com.kitsune.app.ui.components.atoms.MascotType

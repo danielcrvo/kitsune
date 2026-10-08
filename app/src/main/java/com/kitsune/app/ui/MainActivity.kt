@@ -15,10 +15,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kitsune.app.ui.screens.MainScreen
-import com.kitsune.app.ui.screens.MainViewModel
+import com.kitsune.app.ui.main.MainScreen
+import com.kitsune.app.ui.settings.SettingsViewModel
 import com.kitsune.app.ui.theme.KitsuneTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val sharedUrlState = mutableStateOf<String?>(null)
@@ -39,16 +41,16 @@ class MainActivity : ComponentActivity() {
         runCatching { requestRuntimePermissions() }
 
         setContent {
-            val viewModel: MainViewModel = viewModel()
-            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val settingsViewModel: SettingsViewModel = viewModel()
+            val settingsState by settingsViewModel.uiState.collectAsStateWithLifecycle()
 
             KitsuneTheme(
-                isAmoled = uiState.isAmoledTheme,
-                dynamicColor = uiState.isDynamicColor
+                isAmoled = settingsState.isAmoledTheme,
+                dynamicColor = settingsState.isDynamicColor
             ) {
                 val currentSharedUrl by sharedUrlState
                 MainScreen(
-                    viewModel = viewModel,
+                    settingsViewModel = settingsViewModel,
                     initialSharedUrl = currentSharedUrl,
                     onClearSharedUrl = { sharedUrlState.value = null }
                 )

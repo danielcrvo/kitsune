@@ -88,21 +88,26 @@ All media extraction, network requests, and audio/video muxing run strictly loca
 
 ## Architecture & Codebase
 
-Kitsune is built with Kotlin and Jetpack Compose following **Atomic Design** and **Unidirectional Data Flow (MVI)**:
+Kitsune is built with Kotlin and Jetpack Compose following **Clean Architecture**, **Atomic Design** and **Unidirectional Data Flow (MVI)**, with **Hilt** for dependency injection:
 
 ```
-UI Layer (Jetpack Compose)
-  ├── tokens      Design tokens (KitsuneTheme: colors, typography, shapes, spacing)
-  ├── atoms       Single-responsibility primitives (KitsuneButton, KitsuneTextField, KitsuneBadge)
-  ├── molecules   Combinations of atoms (UrlInputBar, KitsuneModeSelector, MediaPreviewCard)
-  ├── organisms   Self-contained regions (MainInputCard, DownloadSettingsSheet, KitsuneMediaPlayerDialog)
-  ├── templates   Layout containers handling window insets and scrolling (KitsuneScreenTemplate)
-  └── screens     State coordination and action dispatching (MainScreen, MainViewModel, MainUiAction)
+ui        Jetpack Compose (Atomic Design) and one @HiltViewModel per feature
+  ├── theme / components   Tokens, atoms, molecules, organisms, templates
+  ├── main                 MainScreen: composes feature states and routes MainUiAction
+  └── download · history · settings · update   Feature ViewModels, states and actions
 
-Core Layer
-  ├── engine      Extraction orchestrator (YtDlpEngine, EngineUpdateManager, UrlDetector)
-  ├── service     Background execution (DownloadForegroundService, DownloadNotificationHelper)
-  └── storage     Persistence & MediaStore (MediaStoreExporter, DownloadedFilesRepository, UserPreferencesRepository)
+domain    Models, repository interfaces, use cases, UrlDetector (no dependency on data, service or ui)
+
+data      Repository implementations
+  ├── engine        YtDlpMediaEngine (yt-dlp / FFmpeg)
+  ├── download      In-memory queue and service scheduler
+  ├── media         MediaStore export and library
+  ├── preferences   DataStore preferences
+  ├── update        GitHub Releases updater
+  └── network       Connectivity monitor
+
+service   DownloadForegroundService and KitsuneNotifier
+di        Hilt modules
 ```
 
 ---

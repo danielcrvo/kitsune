@@ -52,7 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kitsune.app.R
-import com.kitsune.app.core.model.DownloadedMediaFile
+import com.kitsune.app.domain.model.DownloadedMediaFile
 import com.kitsune.app.ui.components.atoms.KitsuneIconButton
 import com.kitsune.app.ui.components.atoms.KitsuneTextField
 import com.kitsune.app.ui.components.atoms.MascotSvg

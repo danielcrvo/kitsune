@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.R
-import com.kitsune.app.core.model.DownloadStage
+import com.kitsune.app.domain.model.DownloadStage
 import com.kitsune.app.ui.components.atoms.KitsuneBadge
 import com.kitsune.app.ui.components.atoms.KitsuneLinearGauge
 import com.kitsune.app.ui.theme.KitsuneTheme

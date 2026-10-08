@@ -36,9 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kitsune.app.R
-import com.kitsune.app.core.engine.AppUpdateManager
-import com.kitsune.app.core.model.AppUpdateInfo
-import com.kitsune.app.core.model.AppUpdateState
+import com.kitsune.app.domain.util.FileSizeFormatter
+import com.kitsune.app.domain.model.AppUpdateInfo
+import com.kitsune.app.domain.model.AppUpdateState
 import com.kitsune.app.ui.components.atoms.KitsuneButton
 import com.kitsune.app.ui.components.atoms.KitsuneButtonVariant
 import com.kitsune.app.ui.components.atoms.KitsuneLinearGauge
@@ -121,7 +121,7 @@ fun AppUpdateDialog(
                             )
                             if (info.fileSizeBytes > 0) {
                                 Text(
-                                    text = stringResource(R.string.update_dialog_size, AppUpdateManager.formatFileSize(info.fileSizeBytes)),
+                                    text = stringResource(R.string.update_dialog_size, FileSizeFormatter.format(info.fileSizeBytes)),
                                     color = KitsuneTheme.colors.textMuted,
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 12.sp
@@ -186,7 +186,7 @@ fun AppUpdateDialog(
                                     fontSize = 12.sp
                                 )
                                 Text(
-                                    text = "${AppUpdateManager.formatFileSize(updateState.bytesDownloaded)} / ${AppUpdateManager.formatFileSize(updateState.totalBytes)}",
+                                    text = "${FileSizeFormatter.format(updateState.bytesDownloaded)} / ${FileSizeFormatter.format(updateState.totalBytes)}",
                                     color = KitsuneTheme.colors.textMuted,
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 12.sp

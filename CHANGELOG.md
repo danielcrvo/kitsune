@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Backup rules limiting Android backups to user preferences.
 
 ### Changed
+- Refactored the app into `ui` / `domain` / `data` / `service` layers with Hilt dependency injection: repository interfaces and use cases in `domain`, their implementations in `data`, and one `@HiltViewModel` per feature (download, history, settings, app update) replacing the monolithic `MainViewModel`.
+- The download queue now lives in an injectable `DownloadQueueRepository` shared by the ViewModels and the foreground service instead of static service state.
+- Notifications are centralized in an injectable `KitsuneNotifier`; ViewModels no longer depend on `Context` and emit localized `UiText` messages.
 - Exported files are now named after the media title (Unicode preserved) instead of `kitsune_<id>`.
 - Metadata lookup is debounced while typing and the previous preview is cleared when the link changes.
 - Audio mode keeps the selected audio codec instead of forcing MP3.

@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.kitsune.app.R
-import com.kitsune.app.core.model.MediaInfo
+import com.kitsune.app.domain.model.MediaInfo
 import com.kitsune.app.ui.components.atoms.PlatformBadge
 import com.kitsune.app.ui.theme.KitsuneTheme
 
@@ -180,7 +180,7 @@ private fun MediaPreviewCardPreview() {
                 uploader = "Kitsune Team",
                 durationSeconds = 245,
                 thumbnailUrl = null,
-                platform = com.kitsune.app.core.model.PlatformType.YOUTUBE,
+                platform = com.kitsune.app.domain.model.PlatformType.YOUTUBE,
                 originalUrl = "https://youtube.com/watch?v=demo"
             ),
             isLoading = false

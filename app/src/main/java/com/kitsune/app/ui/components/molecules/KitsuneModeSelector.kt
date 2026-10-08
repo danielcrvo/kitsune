@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kitsune.app.R
-import com.kitsune.app.ui.screens.DownloadMode
+import com.kitsune.app.domain.model.DownloadMode
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable

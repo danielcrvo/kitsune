@@ -21,8 +21,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.R
-import com.kitsune.app.core.model.PlatformType
-import com.kitsune.app.core.model.VideoQuality
+import com.kitsune.app.domain.model.PlatformType
+import com.kitsune.app.domain.model.VideoQuality
 import com.kitsune.app.ui.components.atoms.KitsuneButton
 import com.kitsune.app.ui.components.atoms.KitsuneIconButton
 import com.kitsune.app.ui.components.molecules.UrlInputBar

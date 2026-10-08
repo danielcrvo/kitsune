@@ -71,7 +71,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.kitsune.app.R
-import com.kitsune.app.core.model.DownloadedMediaFile
+import com.kitsune.app.domain.model.DownloadedMediaFile
 import com.kitsune.app.ui.components.atoms.KitsuneBadge
 import com.kitsune.app.ui.components.atoms.KitsuneButton
 import com.kitsune.app.ui.components.atoms.KitsuneButtonVariant

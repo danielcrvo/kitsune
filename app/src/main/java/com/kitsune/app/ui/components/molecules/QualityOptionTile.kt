@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kitsune.app.R
-import com.kitsune.app.core.model.VideoQuality
+import com.kitsune.app.domain.model.VideoQuality
 import com.kitsune.app.ui.components.atoms.KitsuneBadge
 import com.kitsune.app.ui.theme.KitsuneTheme
 

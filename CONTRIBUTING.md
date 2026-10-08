@@ -39,13 +39,13 @@ Components must be placed in their respective packages under `com.kitsune.app.ui
 - **`molecules`**: Functional combinations of 2+ atoms (`UrlInputBar`, `KitsuneModeSelector`, `MediaPreviewCard`).
 - **`organisms`**: Discrete screen regions and dialogs (`MainInputCard`, `ActiveDownloadCard`, `DownloadSettingsSheet`, `KitsuneMediaPlayerDialog`).
 - **`templates`**: Layout wrappers handling safe insets and scroll behavior without hardcoded domain data (`KitsuneScreenTemplate`).
-- **`screens`**: Top-level coordinators connecting ViewModels to templates using `MainUiAction`.
+- **`main`**: `MainScreen` composes the feature states and routes each `MainUiAction` to its feature ViewModel (`ui/download`, `ui/history`, `ui/settings`, `ui/update`).
 
 ### 2.2 Compose-Expert Quality Checklist
 - **Strict Design Tokens**: Never hardcode colors (`Color(0x...)`) or raw numbers directly in composable bodies. Always use `KitsuneTheme.colors`, `KitsuneTheme.spacing`, and `KitsuneTheme.shapes`.
 - **Self-Documenting Code (Zero Comments)**: Do not add redundant or noisy inline comments. Write clean, self-explanatory code with expressive naming.
-- **Immutable State Contracts**: All UI state classes and domain models must be annotated with `@Immutable` (e.g., `MainUiState`, `DownloadConfig`).
-- **State Hoisting & MVI**: Pass state down and actions up using sealed interface actions (e.g. `MainUiAction`). Avoid passing raw ViewModels down into reusable UI components.
+- **Immutable State Contracts**: All UI state classes and domain models must be annotated with `@Immutable` (e.g., `DownloadUiState`, `DownloadConfig`).
+- **State Hoisting & MVI**: Pass state down and actions up using sealed interface actions (e.g. `DownloadUiAction`). Avoid passing raw ViewModels down into reusable UI components.
 - **Modifier Ordering**:
   - Every reusable composable must accept `modifier: Modifier = Modifier` as the first optional parameter.
   - Apply the modifier to the root layout node.

@@ -30,10 +30,3 @@
 
 -keep class com.airbnb.lottie.** { *; }
 -dontwarn com.airbnb.lottie.**
-
--keepclassmembers class com.kitsune.app.ui.screens.MainViewModel {
-    <init>(android.app.Application);
-    <init>(android.app.Application, com.kitsune.app.core.storage.UserPreferencesRepository);
-}
-
-

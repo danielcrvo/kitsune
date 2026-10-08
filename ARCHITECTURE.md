@@ -6,67 +6,60 @@ This document describes the architectural principles, component structure, data 
 
 ## 1. Architectural Overview
 
-Kitsune is designed around **Clean Architecture**, **Unidirectional Data Flow (MVI/MVVM)**, and Brad Frost's **Atomic Design System** mapped to modern **Jetpack Compose** primitives.
+Kitsune is designed around **Clean Architecture**, **Unidirectional Data Flow (MVI/MVVM)**, and Brad Frost's **Atomic Design System** mapped to modern **Jetpack Compose** primitives. Dependencies are wired with **Hilt**.
 
-The system is separated into three primary layers:
-1. **UI Layer (Presentation)**: Built entirely with Jetpack Compose (BOM 2025.02.00) using an Atomic Design component hierarchy, `@Immutable` state contracts, MVI action dispatching (`MainUiAction`), and lifecycle-aware state consumption.
-2. **Core Engine & Service Layer (Domain / Operations)**: Manages native execution (`yt-dlp` and `FFmpeg` binaries via NDK), asynchronous background tasks using Android Foreground Services, and real-time state broadcasting.
-3. **Storage & Platform Layer (Data / Infrastructure)**: Handles Android Scoped Storage integration via `MediaStore`, Jetpack DataStore for user preferences, Media3 ExoPlayer for in-app media playback, and notification channels.
+The code is split into four layers inside the `:app` module:
+1. **UI (`ui`)**: Jetpack Compose screens and Atomic Design components. Each feature owns a `@HiltViewModel` with an `@Immutable` state and a sealed action interface: `DownloadViewModel`, `HistoryViewModel`, `SettingsViewModel` and `AppUpdateViewModel`. `MainScreen` composes the four states and routes `MainUiAction`s to the right ViewModel.
+2. **Domain (`domain`)**: Models, repository interfaces and use cases (`AnalyzeLinkUseCase`, `LoadDownloadConfigUseCase`, `EnqueueDownloadsUseCase`, `CancelDownloadsUseCase`, `ExecuteDownloadTaskUseCase`, `CheckForAppUpdateUseCase`). It does not depend on `data`, `service` or `ui`.
+3. **Data (`data`)**: Implementations of the domain interfaces: `YtDlpMediaEngine` (yt-dlp / FFmpeg), `DataStorePreferencesRepository`, `InMemoryDownloadQueueRepository`, `ServiceDownloadScheduler`, `MediaStoreExporter`, `MediaStoreLibraryRepository`, `GitHubAppUpdateRepository` and `ConnectivityNetworkMonitor`.
+4. **Service (`service`)**: `DownloadForegroundService` processes the shared download queue in the background and `KitsuneNotifier` owns every notification.
+
+`di/AppModule` provides the DataStore, the IO dispatcher and the application scope; `di/DataModule` binds each domain interface to its implementation.
 
 ```mermaid
 flowchart TD
-    subgraph UI_Layer["UI Layer (Jetpack Compose)"]
-        Activity["MainActivity"]
+    subgraph UI["UI (Jetpack Compose)"]
+        Activity["MainActivity (@AndroidEntryPoint)"]
         Screen["MainScreen"]
-        ViewModel["MainViewModel"]
-        Action["MainUiAction (Sealed Interface)"]
-        State["MainUiState (@Immutable)"]
-        Template["KitsuneScreenTemplate"]
-        Organisms["Organisms\n(MainInputCard, ActiveDownloadCard, Sheets, Player)"]
-        Molecules["Molecules\n(UrlInputBar, MediaPreviewCard, ModeSelector)"]
-        Atoms["Atoms\n(KitsuneButton, KitsuneBadge, MascotSvg)"]
-        Tokens["Tokens\n(KitsuneColorTokens, KitsuneSpacingTokens, KitsuneShapeTokens)"]
+        DownloadVM["DownloadViewModel"]
+        HistoryVM["HistoryViewModel"]
+        SettingsVM["SettingsViewModel"]
+        UpdateVM["AppUpdateViewModel"]
+        Components["Atomic components\n(Atoms, Molecules, Organisms, Tokens)"]
     end
 
-    subgraph Service_Layer["Service & Engine Layer"]
-        Service["DownloadForegroundService\n(dataSync, Partial WakeLock)"]
-        Helper["DownloadNotificationHelper"]
-        Engine["YtDlpEngine\n(Native NDK Execution)"]
-        Updater["EngineUpdateManager"]
-        Detector["UrlDetector"]
+    subgraph Domain["Domain"]
+        UseCases["Use cases"]
+        Interfaces["Repository interfaces\n(MediaEngine, PreferencesRepository,\nDownloadQueueRepository, DownloadScheduler,\nMediaExporter, MediaLibraryRepository,\nAppUpdateRepository, NetworkMonitor)"]
     end
 
-    subgraph Storage_Layer["Storage & Platform Layer"]
-        Exporter["MediaStoreExporter\n(Scoped Storage: Movies/Music)"]
-        FilesRepo["DownloadedFilesRepository"]
-        PrefsRepo["UserPreferencesRepository\n(DataStore Preferences)"]
-        ExoPlayer["AndroidX Media3 ExoPlayer"]
-        AndroidMediaStore["Android MediaStore Provider"]
+    subgraph Data["Data"]
+        Engine["YtDlpMediaEngine"]
+        Prefs["DataStorePreferencesRepository"]
+        Queue["InMemoryDownloadQueueRepository"]
+        Scheduler["ServiceDownloadScheduler"]
+        Media["MediaStoreExporter /\nMediaStoreLibraryRepository"]
+        Updater["GitHubAppUpdateRepository"]
+        Network["ConnectivityNetworkMonitor"]
+    end
+
+    subgraph Service["Service"]
+        DownloadService["DownloadForegroundService"]
+        Notifier["KitsuneNotifier"]
     end
 
     Activity --> Screen
-    Screen --> Template
-    Template --> Organisms
-    Organisms --> Molecules
-    Molecules --> Atoms
-    Atoms --> Tokens
-
-    Screen -->|Dispatches Action| Action
-    Action --> ViewModel
-    ViewModel -->|Emits StateFlow| State
-    State --> Screen
-
-    ViewModel -->|Start / Cancel Intent| Service
-    Service --> Helper
-    Service --> Engine
-    Engine --> Exporter
-    Exporter --> AndroidMediaStore
-    AndroidMediaStore --> FilesRepo
-    FilesRepo --> ViewModel
-    PrefsRepo <--> ViewModel
-    ViewModel --> Updater
-    ViewModel --> Detector
-    Organisms --> ExoPlayer
+    Screen --> Components
+    Screen --> DownloadVM & HistoryVM & SettingsVM & UpdateVM
+    DownloadVM & HistoryVM & SettingsVM & UpdateVM --> UseCases
+    DownloadVM & HistoryVM & SettingsVM & UpdateVM --> Interfaces
+    UseCases --> Interfaces
+    Interfaces -.implemented by.-> Engine & Prefs & Queue & Scheduler & Media & Updater & Network
+    Scheduler -->|Intents| DownloadService
+    DownloadService --> UseCases
+    DownloadService --> Queue
+    DownloadService --> Notifier
+    Updater --> Notifier
 ```
 
 ---
@@ -118,11 +111,13 @@ Discrete screen regions handling complex domain tasks:
 - **`SupportedServicesDialog`**: Information modal listing supported content providers.
 - **`TermsDialog`**: Legal disclaimer and fair-use policy modal.
 
-### 2.5 Templates & Screen (`ui/components/templates`, `ui/screens`)
+### 2.5 Templates, Screen & Feature ViewModels (`ui/components/templates`, `ui/main`, `ui/<feature>`)
 - **`KitsuneScreenTemplate`**: Pure structural scaffold managing status/navigation bar insets (`WindowInsets.statusBars`, `WindowInsets.navigationBars`), vertical scrolling, header placement, and floating sheet anchors.
-- **`MainScreen`**: Connects `MainViewModel` to `MainScreenContent` using `MainUiAction` event dispatching.
-- **`MainUiAction`**: A sealed interface encapsulating all user actions (`ChangeUrl`, `StartDownload`, `SetDownloadMode`, `ToggleAmoledTheme`, etc.).
-- **`MainUiState`**: An immutable (`@Immutable`) data class holding all presentation state, ensuring strict Compose compiler stability.
+- **`MainScreen`**: Obtains the feature ViewModels, collects their states with `collectAsStateWithLifecycle`, shows their one-off messages (`UiText`) as toasts, and routes each `MainUiAction` to the ViewModel that owns it. Which sheet or dialog is open is kept in a saveable `MainOverlay`.
+- **`MainScreenContent`**: Stateless composable that renders `DownloadUiState`, `HistoryUiState`, `SettingsUiState` and `AppUpdateUiState`.
+- **Feature contracts**: `DownloadUiAction`, `HistoryUiAction`, `SettingsUiAction` and `AppUpdateUiAction` are sealed interfaces extending `MainUiAction`; every state class is `@Immutable`.
+
+---
 
 ---
 
@@ -135,50 +130,51 @@ sequenceDiagram
     autonumber
     actor User
     participant MainScreen
-    participant MainViewModel
+    participant VM as DownloadViewModel
+    participant Enqueue as EnqueueDownloadsUseCase
+    participant Queue as DownloadQueueRepository
     participant Service as DownloadForegroundService
-    participant Engine as YtDlpEngine
-    participant NDK as yt-dlp / FFmpeg (Native)
+    participant Execute as ExecuteDownloadTaskUseCase
+    participant Engine as YtDlpMediaEngine
     participant Exporter as MediaStoreExporter
-    participant MediaStore as Android MediaStore
 
     User->>MainScreen: Pastes URL & clicks Download
-    MainScreen->>MainViewModel: onAction(StartDownload)
-    MainViewModel->>Service: startDownload(context, url, config)
-    Service->>Service: Acquire WakeLock & Start Foreground
-    Service->>Engine: executeDownload(context, url, config, outputDir, onProgress)
-    Engine->>NDK: YoutubeDL.getInstance().execute(request)
+    MainScreen->>VM: onAction(StartDownload)
+    VM->>Enqueue: invoke(requests, config)
+    Enqueue->>Queue: enqueue(tasks)
+    Enqueue->>Service: startForegroundService(PROCESS_QUEUE)
+    Service->>Queue: nextPendingTask()
+    Service->>Execute: invoke(task, workDir)
+    Execute->>Engine: download(url, config, workDir)
     loop Download & Multiplexing
-        NDK-->>Engine: stdout / progress callbacks
-        Engine-->>Service: onProgressUpdate(progress, speed, eta, stage)
-        Service-->>MainViewModel: Update StateFlow<DownloadState>
-        MainViewModel-->>MainScreen: Recompose ActiveDownloadCard
+        Engine-->>Service: DownloadProgress
+        Service->>Queue: reportState(Downloading)
+        Queue-->>VM: StateFlow update
+        VM-->>MainScreen: Recompose ActiveDownloadCard
     end
-    NDK-->>Engine: Completed file output (temp directory)
-    Engine-->>Service: Return output File
-    Service->>Exporter: exportToGallery(context, tempFile, title, isAudio)
-    Exporter->>MediaStore: Insert record (IS_PENDING = 1)
-    Exporter->>MediaStore: Stream bytes & Commit (IS_PENDING = 0)
-    Exporter-->>Service: Output Uri
-    Service->>Service: Release WakeLock & Stop Foreground
-    Service-->>MainViewModel: Emit DownloadState.Completed
-    MainViewModel->>MainScreen: Trigger completion feedback
+    Execute->>Exporter: export(file, title, isAudio)
+    Exporter-->>Execute: ExportedMedia
+    Execute-->>Service: DownloadOutcome.Success
+    Service->>Queue: reportState(Completed)
+    Service->>Service: Next task or stop foreground
 ```
 
 ### 3.1 Lazy Warmup & Mutex Thread Safety
 Native NDK libraries require decompression and initialization upon app launch. To avoid UI jank:
-- Initialization is kicked off in the background during `Application.onCreate()` inside `KitsuneApp` using `CoroutineScope(Dispatchers.IO + SupervisorJob())`.
-- `YtDlpEngine.ensureInitialized(context)` uses a Kotlin `Mutex.withLock` to guarantee that concurrent requests wait for a single initialization routine rather than throwing duplicate extraction errors.
+- Initialization is kicked off during `Application.onCreate()` inside `KitsuneApp`, which calls `MediaEngine.warmUp()` on the injected `@ApplicationScope` coroutine scope.
+- `YtDlpMediaEngine.warmUp()` uses a Kotlin `Mutex.withLock` to guarantee that concurrent requests wait for a single initialization routine rather than throwing duplicate extraction errors.
+- Every yt-dlp invocation gets its own process id; cancelling the calling coroutine destroys the native process.
 
 ### 3.2 URL Sanitization & Platform Detection
 `UrlDetector` performs fast regex evaluation against incoming URLs to identify supported platforms (YouTube, TikTok, Instagram, Twitter/X, Reddit, Bilibili, SoundCloud, Pinterest).
 Before execution, `UrlDetector.sanitizeUrl()` strips tracking parameters:
 - General UTM tags (`utm_source`, `utm_medium`, `utm_campaign`, etc.)
-- Platform identifiers (`si`, `igsh`, `fbclid`, `ref_src`, `share_id`, `s`, `t`)
+- Platform identifiers (`si`, `igsh`, `igshid`, `fbclid`, `gclid`, `ref_src`, `share_id`), plus `s` and `t` on Twitter/X links only
+- Percent-encoding, fragments and YouTube timestamps are preserved
 
-### 3.3 Dynamic Engine Updates (`EngineUpdateManager`)
-`EngineUpdateManager` provides rolling updates to the yt-dlp binary:
-- Invokes `YoutubeDL.getInstance().updateYoutubeDL(context, UpdateChannel.STABLE)` on `Dispatchers.IO`.
+### 3.3 Dynamic Engine Updates (`MediaEngine.updateEngine`)
+`YtDlpMediaEngine.updateEngine()` provides rolling updates to the yt-dlp binary:
+- Invokes `YoutubeDL.getInstance().updateYoutubeDL(context, UpdateChannel.STABLE)` on the injected IO dispatcher.
 - Allows users to patch extractors immediately when upstream platforms change their API, without waiting for a full app release.
 
 ---
@@ -189,11 +185,11 @@ Before execution, `UrlDetector.sanitizeUrl()` strips tracking parameters:
 Background downloads are executed by `DownloadForegroundService`:
 - Declared in `AndroidManifest.xml` with `android:foregroundServiceType="dataSync"`.
 - Requests `PARTIAL_WAKE_LOCK` via `PowerManager` to prevent CPU throttling or deep sleep during high-bitrate video downloads or intensive FFmpeg remuxing.
-- Communicates progress to the system via `DownloadNotificationHelper`, posting updates with low alert frequency (`onlyAlertOnce = true`) and offering a cancel action.
+- Communicates progress to the system via `KitsuneNotifier`, posting updates with low alert frequency (`onlyAlertOnce = true`) and offering a cancel action.
 
 ### 4.2 Scoped Storage & MediaStore Export
 Starting with Android 10 (API 29), direct file path access to external storage is restricted. Kitsune is fully Scoped Storage compliant:
-1. `YtDlpEngine` downloads each queued item into its own isolated cache directory (`context.cacheDir/kitsune_tmp/<taskId>/`) and reports the final file path through `--print-to-file after_move:filepath`.
+1. `YtDlpMediaEngine` downloads each queued item into its own isolated cache directory (`context.cacheDir/kitsune_tmp/<taskId>/`) and reports the final file path through `--print-to-file after_move:filepath`.
 2. Upon download completion, `MediaStoreExporter` names the file after the media title and creates an entry in `MediaStore.Video.Media.EXTERNAL_CONTENT_URI` (for videos) or `MediaStore.Audio.Media.EXTERNAL_CONTENT_URI` (for audio tracks), with the MIME type derived from the file extension.
 3. On API 29+, the entry is created with `IS_PENDING = 1` into `Movies/Kitsune` or `Music/Kitsune`; if streaming fails, the pending entry is deleted.
 4. File bytes are streamed from cache to the MediaStore URI.

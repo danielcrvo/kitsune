@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 val releaseKeystorePath: String? = System.getenv("KITSUNE_KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
@@ -163,6 +165,9 @@ dependencies {
 
     implementation(libs.androidx.datastore.preferences)
 
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
     implementation(libs.youtubedl.library)
     implementation(libs.youtubedl.ffmpeg)
 
@@ -175,6 +180,7 @@ dependencies {
     implementation(libs.androidx.media3.ui)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

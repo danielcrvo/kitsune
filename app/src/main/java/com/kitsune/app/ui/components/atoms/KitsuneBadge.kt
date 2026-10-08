@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kitsune.app.core.model.PlatformType
+import com.kitsune.app.domain.model.PlatformType
 import com.kitsune.app.ui.theme.KitsuneTheme
 
 @Composable
