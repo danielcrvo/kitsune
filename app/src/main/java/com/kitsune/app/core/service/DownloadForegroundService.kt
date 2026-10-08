@@ -1,5 +1,6 @@
 package com.kitsune.app.core.service
 
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -7,39 +8,48 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
+import android.util.Log
 import androidx.core.app.ServiceCompat
 import com.kitsune.app.R
 import com.kitsune.app.core.engine.YtDlpEngine
-import com.kitsune.app.core.model.AudioCodec
-import com.kitsune.app.core.model.AudioQuality
 import com.kitsune.app.core.model.DownloadConfig
 import com.kitsune.app.core.model.DownloadStage
 import com.kitsune.app.core.model.DownloadState
 import com.kitsune.app.core.model.DownloadTask
-import com.kitsune.app.core.model.VideoQuality
 import com.kitsune.app.core.storage.MediaStoreExporter
 import com.kitsune.app.core.storage.UserPreferencesRepository
 import com.kitsune.app.core.util.NetworkMonitor
 import com.kitsune.app.core.util.NetworkStatus
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
 
 class DownloadForegroundService : Service() {
 
-    private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
+    private val serviceScope = CoroutineScope(
+        SupervisorJob() + Dispatchers.Main + CoroutineExceptionHandler { _, throwable ->
+            Log.e(TAG, "Unexpected failure while processing the download queue", throwable)
+        }
+    )
     private var activeJob: Job? = null
-    private var networkJob: Job? = null
     private var wakeLock: PowerManager.WakeLock? = null
+    private var isForeground = false
     private lateinit var preferencesRepository: UserPreferencesRepository
     private lateinit var networkMonitor: NetworkMonitor
 
@@ -51,13 +61,17 @@ class DownloadForegroundService : Service() {
 
         const val EXTRA_URL = "extra_url"
         const val EXTRA_TITLE = "extra_title"
-        const val EXTRA_QUALITY = "extra_quality"
-        const val EXTRA_AUDIO_ONLY = "extra_audio_only"
-        const val EXTRA_AUDIO_CODEC = "extra_audio_codec"
-        const val EXTRA_AUDIO_QUALITY = "extra_audio_quality"
+        const val EXTRA_CONFIG = "extra_config"
         const val EXTRA_TASK_ID = "extra_task_id"
         const val EXTRA_URLS = "extra_urls"
         const val EXTRA_TITLES = "extra_titles"
+
+        private const val TAG = "DownloadService"
+        private const val TEMP_DIR_NAME = "kitsune_tmp"
+        private const val WAKE_LOCK_TIMEOUT_MS = 60 * 60 * 1000L
+        private const val COMPLETED_NOTIFICATION_BASE_ID = 3000
+
+        private val completedNotificationIds = AtomicInteger(COMPLETED_NOTIFICATION_BASE_ID)
 
         private val _currentDownloadState = MutableStateFlow<DownloadState>(DownloadState.Idle)
         val currentDownloadState: StateFlow<DownloadState> = _currentDownloadState.asStateFlow()
@@ -78,10 +92,7 @@ class DownloadForegroundService : Service() {
                 action = ACTION_START_DOWNLOAD
                 putExtra(EXTRA_URL, url)
                 putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_QUALITY, config.quality.name)
-                putExtra(EXTRA_AUDIO_ONLY, config.audioOnly)
-                putExtra(EXTRA_AUDIO_CODEC, config.audioCodec.name)
-                putExtra(EXTRA_AUDIO_QUALITY, config.audioQuality.name)
+                putExtra(EXTRA_CONFIG, config.encode())
             }
             startServiceCompat(context, intent)
         }
@@ -96,10 +107,7 @@ class DownloadForegroundService : Service() {
                 action = ACTION_ENQUEUE_BATCH
                 putStringArrayListExtra(EXTRA_URLS, urls)
                 putStringArrayListExtra(EXTRA_TITLES, titles)
-                putExtra(EXTRA_QUALITY, config.quality.name)
-                putExtra(EXTRA_AUDIO_ONLY, config.audioOnly)
-                putExtra(EXTRA_AUDIO_CODEC, config.audioCodec.name)
-                putExtra(EXTRA_AUDIO_QUALITY, config.audioQuality.name)
+                putExtra(EXTRA_CONFIG, config.encode())
             }
             startServiceCompat(context, intent)
         }
@@ -108,7 +116,7 @@ class DownloadForegroundService : Service() {
             val intent = Intent(context, DownloadForegroundService::class.java).apply {
                 action = ACTION_CANCEL_DOWNLOAD
             }
-            context.startService(intent)
+            runCatching { context.startService(intent) }
         }
 
         fun cancelTask(context: Context, taskId: String) {
@@ -116,7 +124,7 @@ class DownloadForegroundService : Service() {
                 action = ACTION_CANCEL_TASK
                 putExtra(EXTRA_TASK_ID, taskId)
             }
-            context.startService(intent)
+            runCatching { context.startService(intent) }
         }
 
         private fun startServiceCompat(context: Context, intent: Intent) {
@@ -138,81 +146,74 @@ class DownloadForegroundService : Service() {
         wakeLock = powerManager.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
             "kitsune:download_wakelock"
-        )
+        ).apply { setReferenceCounted(false) }
+
+        if (_activeTask.value == null) {
+            File(cacheDir, TEMP_DIR_NAME).deleteRecursively()
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START_DOWNLOAD -> {
-                val url = intent.getStringExtra(EXTRA_URL) ?: return START_NOT_STICKY
+                ensureForeground()
+                val url = intent.getStringExtra(EXTRA_URL)
+                if (url.isNullOrBlank()) {
+                    processNextInQueue()
+                    return START_NOT_STICKY
+                }
                 val title = intent.getStringExtra(EXTRA_TITLE).orEmpty().ifBlank { url }
-                val config = parseConfigFromIntent(intent)
+                val config = DownloadConfig.decode(intent.getStringExtra(EXTRA_CONFIG))
                 val task = DownloadTask(
                     id = UUID.randomUUID().toString(),
                     url = url,
                     title = title,
                     config = config
                 )
-                enqueueTask(task)
+                enqueueTasks(listOf(task))
             }
             ACTION_ENQUEUE_BATCH -> {
-                val urls = intent.getStringArrayListExtra(EXTRA_URLS) ?: return START_NOT_STICKY
-                val titles = intent.getStringArrayListExtra(EXTRA_TITLES) ?: arrayListOf()
-                val config = parseConfigFromIntent(intent)
+                ensureForeground()
+                val urls = intent.getStringArrayListExtra(EXTRA_URLS).orEmpty()
+                val titles = intent.getStringArrayListExtra(EXTRA_TITLES).orEmpty()
+                val config = DownloadConfig.decode(intent.getStringExtra(EXTRA_CONFIG))
                 val newTasks = urls.mapIndexed { index, u ->
-                    val t = titles.getOrNull(index).orEmpty().ifBlank { u }
                     DownloadTask(
                         id = UUID.randomUUID().toString(),
                         url = u,
-                        title = t,
+                        title = titles.getOrNull(index).orEmpty().ifBlank { u },
                         config = config
                     )
                 }
-                enqueueBatchTasks(newTasks)
+                enqueueTasks(newTasks)
             }
             ACTION_CANCEL_TASK -> {
-                val taskId = intent.getStringExtra(EXTRA_TASK_ID) ?: return START_NOT_STICKY
-                handleCancelTask(taskId)
+                val taskId = intent.getStringExtra(EXTRA_TASK_ID)
+                if (taskId != null) handleCancelTask(taskId)
             }
             ACTION_CANCEL_DOWNLOAD -> {
                 handleCancelAll()
+            }
+            else -> {
+                if (activeJob?.isActive != true) cleanupAndStop()
             }
         }
         return START_NOT_STICKY
     }
 
-    private fun parseConfigFromIntent(intent: Intent): DownloadConfig {
-        val qualityName = intent.getStringExtra(EXTRA_QUALITY) ?: VideoQuality.AUTO.name
-        val audioOnly = intent.getBooleanExtra(EXTRA_AUDIO_ONLY, false)
-        val codecName = intent.getStringExtra(EXTRA_AUDIO_CODEC) ?: AudioCodec.MP3.name
-        val audioQualityName = intent.getStringExtra(EXTRA_AUDIO_QUALITY) ?: AudioQuality.BEST.name
-
-        return DownloadConfig(
-            quality = runCatching { VideoQuality.valueOf(qualityName) }.getOrDefault(VideoQuality.AUTO),
-            audioOnly = audioOnly,
-            audioCodec = runCatching { AudioCodec.valueOf(codecName) }.getOrDefault(AudioCodec.MP3),
-            audioQuality = runCatching { AudioQuality.valueOf(audioQualityName) }.getOrDefault(AudioQuality.BEST)
-        )
-    }
-
-    private fun enqueueTask(task: DownloadTask) {
-        _downloadQueue.update { it + task }
-        triggerQueueProcessing()
-    }
-
-    private fun enqueueBatchTasks(tasks: List<DownloadTask>) {
-        _downloadQueue.update { it + tasks }
-        triggerQueueProcessing()
-    }
-
-    private fun triggerQueueProcessing() {
-        if (activeJob?.isActive == true) return
+    private fun enqueueTasks(tasks: List<DownloadTask>) {
+        if (tasks.isNotEmpty()) {
+            _downloadQueue.update { it + tasks }
+        }
         processNextInQueue()
     }
 
     private fun processNextInQueue() {
-        val currentQueue = _downloadQueue.value
-        val nextTask = currentQueue.firstOrNull { it.state == DownloadState.Idle || it.state == DownloadState.WaitingForWifi }
+        if (activeJob?.isActive == true) return
+
+        val nextTask = _downloadQueue.value.firstOrNull {
+            it.state == DownloadState.Idle || it.state == DownloadState.WaitingForWifi
+        }
 
         if (nextTask == null) {
             _activeTask.value = null
@@ -221,8 +222,31 @@ class DownloadForegroundService : Service() {
         }
 
         _activeTask.value = nextTask
-        wakeLock?.acquire(60 * 60 * 1000L)
+        ensureForeground()
 
+        val job = serviceScope.launch {
+            val wifiOnly = preferencesRepository.isWifiOnlyFlow.first()
+            if (wifiOnly && !networkMonitor.isWifiConnected()) {
+                updateTaskState(nextTask.id, DownloadState.WaitingForWifi)
+                _currentDownloadState.value = DownloadState.WaitingForWifi
+                updateNotificationWaitingForWifi()
+                releaseWakeLock()
+                networkMonitor.networkStatusFlow.first { it == NetworkStatus.WIFI }
+            }
+
+            acquireWakeLock()
+            executeTaskDownload(nextTask)
+        }
+        activeJob = job
+        job.invokeOnCompletion { cause ->
+            if (cause !is CancellationException) {
+                serviceScope.launch { processNextInQueue() }
+            }
+        }
+    }
+
+    private fun ensureForeground() {
+        if (isForeground) return
         val initialNotif = DownloadNotificationHelper.buildProgressNotification(
             context = this,
             title = getString(R.string.app_name),
@@ -241,20 +265,11 @@ class DownloadForegroundService : Service() {
         } else {
             startForeground(DownloadNotificationHelper.NOTIFICATION_ID, initialNotif)
         }
-
-        activeJob = serviceScope.launch {
-            val wifiOnly = preferencesRepository.isWifiOnlyFlow.firstOrNull() ?: false
-            if (wifiOnly && !networkMonitor.isWifiConnected()) {
-                updateTaskState(nextTask.id, DownloadState.WaitingForWifi)
-                _currentDownloadState.value = DownloadState.WaitingForWifi
-                updateNotificationWaitingForWifi()
-                waitForWifiAndResume(nextTask)
-                return@launch
-            }
-
-            executeTaskDownload(nextTask)
-        }
+        isForeground = true
     }
+
+    private fun notificationManager(): NotificationManager =
+        getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     private fun updateNotificationWaitingForWifi() {
         val notif = DownloadNotificationHelper.buildProgressNotification(
@@ -264,24 +279,11 @@ class DownloadForegroundService : Service() {
             progressPercent = 0,
             isIndeterminate = true
         )
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-        manager.notify(DownloadNotificationHelper.NOTIFICATION_ID, notif)
-    }
-
-    private fun waitForWifiAndResume(task: DownloadTask) {
-        networkJob?.cancel()
-        networkJob = serviceScope.launch {
-            networkMonitor.networkStatusFlow.collect { status ->
-                if (status == NetworkStatus.WIFI) {
-                    networkJob?.cancel()
-                    executeTaskDownload(task)
-                }
-            }
-        }
+        notificationManager().notify(DownloadNotificationHelper.NOTIFICATION_ID, notif)
     }
 
     private suspend fun executeTaskDownload(task: DownloadTask) {
-        val cacheDir = File(cacheDir, "kitsune_tmp")
+        val taskDir = File(File(cacheDir, TEMP_DIR_NAME), task.id)
         val initialDownloadState = DownloadState.Downloading(
             progress = 0f,
             stage = DownloadStage.INITIALIZING
@@ -289,98 +291,113 @@ class DownloadForegroundService : Service() {
         updateTaskState(task.id, initialDownloadState)
         _currentDownloadState.value = initialDownloadState
 
-        val totalInQueue = _downloadQueue.value.size
-        val pendingIndex = _downloadQueue.value.indexOfFirst { it.id == task.id } + 1
+        val queueSnapshot = _downloadQueue.value
+        val totalInQueue = queueSnapshot.size
+        val pendingIndex = queueSnapshot.indexOfFirst { it.id == task.id } + 1
+        var lastNotifiedPercent = -1
+        var lastNotifiedStage: DownloadStage? = null
 
-        val result = YtDlpEngine.executeDownload(
-            context = this@DownloadForegroundService,
-            url = task.url,
-            config = task.config,
-            outputDir = cacheDir
-        ) { progress, speed, eta, stage ->
-            val downloadingState = DownloadState.Downloading(
-                progress = progress,
-                speed = speed,
-                eta = eta,
-                stage = stage
-            )
-            updateTaskProgress(task.id, downloadingState, progress, speed, eta)
-            _currentDownloadState.value = downloadingState
-
-            val progressInt = (progress * 100).toInt().coerceIn(0, 100)
-            val headerTitle = if (totalInQueue > 1) {
-                getString(R.string.notif_queue_progress, pendingIndex, totalInQueue)
-            } else {
-                "${getString(R.string.app_name)}: ${getString(R.string.notif_downloading_media)}"
-            }
-
-            val notif = DownloadNotificationHelper.buildProgressNotification(
+        try {
+            val result = YtDlpEngine.executeDownload(
                 context = this@DownloadForegroundService,
-                title = headerTitle,
-                statusText = "${getString(stage.labelRes)} $speed $eta".trim(),
-                progressPercent = progressInt,
-                isIndeterminate = progressInt <= 0
-            )
-            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-            manager.notify(DownloadNotificationHelper.NOTIFICATION_ID, notif)
-        }
+                url = task.url,
+                config = task.config,
+                outputDir = taskDir
+            ) { progress, speed, eta, stage ->
+                val downloadingState = DownloadState.Downloading(
+                    progress = progress,
+                    speed = speed,
+                    eta = eta,
+                    stage = stage
+                )
+                updateTaskProgress(task.id, downloadingState, progress, speed, eta)
+                _currentDownloadState.value = downloadingState
 
-        result.fold(
-            onSuccess = { downloadedFile ->
-                val muxingState = DownloadState.Muxing(getString(R.string.stage_finalizing))
-                updateTaskState(task.id, muxingState)
-                _currentDownloadState.value = muxingState
+                val progressInt = (progress * 100).toInt().coerceIn(0, 100)
+                if (progressInt == lastNotifiedPercent && stage == lastNotifiedStage) {
+                    return@executeDownload
+                }
+                lastNotifiedPercent = progressInt
+                lastNotifiedStage = stage
 
-                val exportResult = MediaStoreExporter.exportToGallery(
+                val headerTitle = if (totalInQueue > 1) {
+                    getString(R.string.notif_queue_progress, pendingIndex, totalInQueue)
+                } else {
+                    "${getString(R.string.app_name)}: ${getString(R.string.notif_downloading_media)}"
+                }
+
+                val notif = DownloadNotificationHelper.buildProgressNotification(
                     context = this@DownloadForegroundService,
-                    sourceFile = downloadedFile,
-                    title = downloadedFile.nameWithoutExtension,
-                    isAudioOnly = task.config.audioOnly
+                    title = headerTitle,
+                    statusText = "${getString(stage.labelRes)} $speed $eta".trim(),
+                    progressPercent = progressInt,
+                    isIndeterminate = progressInt <= 0
                 )
-
-                exportResult.fold(
-                    onSuccess = {
-                        val fileSize = downloadedFile.length()
-                        val formattedSize = if (fileSize > 1024 * 1024) {
-                            "%.1f MB".format(fileSize / (1024.0 * 1024.0))
-                        } else {
-                            "%.1f KB".format(fileSize / 1024.0)
-                        }
-
-                        val completedState = DownloadState.Completed(
-                            title = downloadedFile.nameWithoutExtension,
-                            outputPath = if (task.config.audioOnly) "Music/Kitsune" else "Movies/Kitsune",
-                            fileSizeFormatted = formattedSize
-                        )
-                        updateTaskState(task.id, completedState)
-                        _currentDownloadState.value = completedState
-
-                        val completedNotif = DownloadNotificationHelper.buildCompletedNotification(
-                            context = this@DownloadForegroundService,
-                            title = downloadedFile.nameWithoutExtension,
-                            subtext = getString(R.string.status_saved_gallery),
-                            targetUri = exportResult.getOrNull(),
-                            isAudioOnly = task.config.audioOnly
-                        )
-                        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-                        manager.notify(DownloadNotificationHelper.NOTIFICATION_ID + pendingIndex, completedNotif)
-                    },
-                    onFailure = { err ->
-                        val errState = DownloadState.Error(err.localizedMessage ?: getString(R.string.error_export_generic))
-                        updateTaskState(task.id, errState)
-                        _currentDownloadState.value = errState
-                    }
-                )
-            },
-            onFailure = { error ->
-                val errState = DownloadState.Error(error.localizedMessage ?: getString(R.string.error_download_generic))
-                updateTaskState(task.id, errState)
-                _currentDownloadState.value = errState
+                notificationManager().notify(DownloadNotificationHelper.NOTIFICATION_ID, notif)
             }
-        )
 
-        removeCompletedTaskAfterDelay(task.id)
-        processNextInQueue()
+            val downloadedFile = result.getOrElse { error ->
+                setTaskError(task.id, error.localizedMessage ?: getString(R.string.error_download_generic))
+                return
+            }
+
+            val muxingState = DownloadState.Muxing(getString(R.string.stage_finalizing))
+            updateTaskState(task.id, muxingState)
+            _currentDownloadState.value = muxingState
+
+            val exportTitle = task.title.takeIf { it.isNotBlank() && it != task.url }
+                ?: downloadedFile.nameWithoutExtension
+
+            val exported = MediaStoreExporter.exportToGallery(
+                context = this@DownloadForegroundService,
+                sourceFile = downloadedFile,
+                title = exportTitle,
+                isAudioOnly = task.config.audioOnly
+            ).getOrElse { error ->
+                setTaskError(task.id, error.localizedMessage ?: getString(R.string.error_export_generic))
+                return
+            }
+
+            val fileSize = exported.sizeBytes
+            val formattedSize = if (fileSize > 1024 * 1024) {
+                "%.1f MB".format(fileSize / (1024.0 * 1024.0))
+            } else {
+                "%.1f KB".format(fileSize / 1024.0)
+            }
+
+            val completedState = DownloadState.Completed(
+                title = exported.displayName,
+                outputPath = if (task.config.audioOnly) "Music/Kitsune" else "Movies/Kitsune",
+                fileSizeFormatted = formattedSize
+            )
+            updateTaskState(task.id, completedState)
+            _currentDownloadState.value = completedState
+
+            val completedNotif = DownloadNotificationHelper.buildCompletedNotification(
+                context = this@DownloadForegroundService,
+                title = exported.displayName,
+                subtext = getString(R.string.status_saved_gallery),
+                targetUri = exported.uri,
+                isAudioOnly = task.config.audioOnly
+            )
+            notificationManager().notify(completedNotificationIds.incrementAndGet(), completedNotif)
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (t: Throwable) {
+            setTaskError(task.id, t.localizedMessage ?: getString(R.string.error_download_generic))
+        } finally {
+            withContext(NonCancellable + Dispatchers.IO) {
+                taskDir.deleteRecursively()
+                File(taskDir.parentFile, "${taskDir.name}.path").delete()
+            }
+            removeTaskAfterDelay(task.id)
+        }
+    }
+
+    private fun setTaskError(taskId: String, message: String) {
+        val errState = DownloadState.Error(message)
+        updateTaskState(taskId, errState)
+        _currentDownloadState.value = errState
     }
 
     private fun updateTaskState(taskId: String, state: DownloadState) {
@@ -399,7 +416,7 @@ class DownloadForegroundService : Service() {
         }
     }
 
-    private fun removeCompletedTaskAfterDelay(taskId: String) {
+    private fun removeTaskAfterDelay(taskId: String) {
         serviceScope.launch {
             delay(1500)
             _downloadQueue.update { list -> list.filterNot { it.id == taskId } }
@@ -407,41 +424,58 @@ class DownloadForegroundService : Service() {
     }
 
     private fun handleCancelTask(taskId: String) {
+        _downloadQueue.update { list -> list.filterNot { it.id == taskId } }
         if (_activeTask.value?.id == taskId) {
             activeJob?.cancel()
-            networkJob?.cancel()
-            _downloadQueue.update { list -> list.filterNot { it.id == taskId } }
+            activeJob = null
             _activeTask.value = null
             _currentDownloadState.value = DownloadState.Idle
             processNextInQueue()
-        } else {
-            _downloadQueue.update { list -> list.filterNot { it.id == taskId } }
+        } else if (activeJob?.isActive != true) {
+            processNextInQueue()
         }
     }
 
     private fun handleCancelAll() {
         activeJob?.cancel()
-        networkJob?.cancel()
+        activeJob = null
         _downloadQueue.value = emptyList()
         _activeTask.value = null
         _currentDownloadState.value = DownloadState.Idle
         cleanupAndStop()
     }
 
-    private fun cleanupAndStop() {
+    private fun acquireWakeLock() {
+        wakeLock?.acquire(WAKE_LOCK_TIMEOUT_MS)
+    }
+
+    private fun releaseWakeLock() {
         if (wakeLock?.isHeld == true) {
             wakeLock?.release()
         }
-        stopForeground(STOP_FOREGROUND_REMOVE)
+    }
+
+    private fun cleanupAndStop() {
+        releaseWakeLock()
+        if (isForeground) {
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+            isForeground = false
+        }
         stopSelf()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         activeJob?.cancel()
-        networkJob?.cancel()
-        if (wakeLock?.isHeld == true) {
-            wakeLock?.release()
+        serviceScope.cancel()
+        releaseWakeLock()
+        _activeTask.value = null
+        _downloadQueue.value = emptyList()
+        when (_currentDownloadState.value) {
+            is DownloadState.Downloading,
+            is DownloadState.Muxing,
+            DownloadState.WaitingForWifi -> _currentDownloadState.value = DownloadState.Idle
+            else -> {}
         }
+        super.onDestroy()
     }
 }

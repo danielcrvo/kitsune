@@ -22,9 +22,9 @@ Fixes / Closes #(issue_number)
 
 Please ensure your contribution satisfies the following project standards:
 
-- [ ] Build: The project builds cleanly via ./gradlew assembleDebug.
-- [ ] Tests: Unit tests run and pass via ./gradlew testDebugUnitTest.
-- [ ] Lint: Android Lint passes cleanly via ./gradlew lintDebug.
+- [ ] Build: The project builds cleanly via ./gradlew assembleGithubDebug.
+- [ ] Tests: Unit tests run and pass via ./gradlew testGithubDebugUnitTest.
+- [ ] Lint: Android Lint passes cleanly via ./gradlew lintGithubDebug.
 - [ ] Atomic Design: UI components are placed in their proper level (atoms, molecules, organisms, templates).
 - [ ] Stability: State classes and UI models are marked with @Immutable.
 - [ ] Modifier Hygiene: Reusable composables accept modifier: Modifier = Modifier as the first optional parameter and apply it to the outermost layout node.

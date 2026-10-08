@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+val releaseKeystorePath: String? = System.getenv("KITSUNE_KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
+
 android {
     namespace = "com.kitsune.app"
     compileSdk = 35
@@ -24,6 +26,31 @@ android {
         manifestPlaceholders["appName"] = "Kitsune"
     }
 
+    signingConfigs {
+        if (releaseKeystorePath != null) {
+            create("release") {
+                storeFile = file(releaseKeystorePath)
+                storePassword = System.getenv("KITSUNE_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KITSUNE_KEY_ALIAS")
+                keyPassword = System.getenv("KITSUNE_KEY_PASSWORD")
+            }
+        }
+    }
+
+    flavorDimensions += "distribution"
+
+    productFlavors {
+        create("github") {
+            dimension = "distribution"
+            isDefault = true
+            buildConfigField("boolean", "UPDATER_ENABLED", "true")
+        }
+        create("fdroid") {
+            dimension = "distribution"
+            buildConfigField("boolean", "UPDATER_ENABLED", "false")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -32,7 +59,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            if (releaseKeystorePath != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             manifestPlaceholders["appName"] = "Kitsune"
         }
         debug {
@@ -91,6 +120,7 @@ android.applicationVariants.all {
     val baseCode = variant.versionCode
     val versionName = variant.versionName ?: "1.0.0"
     val buildType = variant.buildType.name
+    val distributionSuffix = if (variant.flavorName == "fdroid") "-fdroid" else ""
 
     outputs.all {
         val output = this as? com.android.build.gradle.internal.api.ApkVariantOutputImpl
@@ -104,7 +134,7 @@ android.applicationVariants.all {
         }
 
         val architecture = abiName ?: "universal"
-        output?.outputFileName = "Kitsune-v${versionName}-${architecture}-${buildType}.apk"
+        output?.outputFileName = "Kitsune-v${versionName}${distributionSuffix}-${architecture}-${buildType}.apk"
     }
 }
 

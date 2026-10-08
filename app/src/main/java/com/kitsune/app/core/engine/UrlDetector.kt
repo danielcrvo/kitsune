@@ -88,26 +88,41 @@ object UrlDetector {
     }
 
 
-    fun sanitizeUrl(rawUrl: String): String {
-        return try {
-            val uri = URI(rawUrl.trim())
-            if (uri.query.isNullOrBlank()) return rawUrl.trim()
+    private val TRACKING_PARAMS = setOf("si", "igsh", "igshid", "share_id", "ref_src", "fbclid", "gclid")
 
-            val cleanQuery = uri.query
+    private val TWITTER_TRACKING_PARAMS = setOf("s", "t")
+
+    private fun isTwitterHost(host: String?): Boolean {
+        val lower = host?.lowercase() ?: return false
+        return lower == "twitter.com" || lower.endsWith(".twitter.com") ||
+            lower == "x.com" || lower.endsWith(".x.com")
+    }
+
+    fun sanitizeUrl(rawUrl: String): String {
+        val trimmed = rawUrl.trim()
+        return try {
+            val uri = URI(trimmed)
+            val rawQuery = uri.rawQuery
+            if (rawQuery.isNullOrBlank() || uri.scheme.isNullOrBlank() || uri.rawAuthority.isNullOrBlank()) {
+                return trimmed
+            }
+
+            val isTwitter = isTwitterHost(uri.host)
+            val cleanQuery = rawQuery
                 .split("&")
+                .filter { it.isNotEmpty() }
                 .filterNot { param ->
                     val key = param.substringBefore("=").lowercase()
-                    key.startsWith("utm_") || key == "si" || key == "igsh" ||
-                        key == "share_id" || key == "ref_src" || key == "fbclid" ||
-                        key == "s" || key == "t"
+                    key.startsWith("utm_") || key in TRACKING_PARAMS ||
+                        (isTwitter && key in TWITTER_TRACKING_PARAMS)
                 }
                 .joinToString("&")
 
-            val port = if (uri.port != -1) ":${uri.port}" else ""
             val queryPart = if (cleanQuery.isNotEmpty()) "?$cleanQuery" else ""
-            "${uri.scheme}://${uri.host}$port${uri.path}$queryPart"
+            val fragmentPart = uri.rawFragment?.let { "#$it" } ?: ""
+            "${uri.scheme}://${uri.rawAuthority}${uri.rawPath.orEmpty()}$queryPart$fragmentPart"
         } catch (_: Exception) {
-            rawUrl.trim()
+            trimmed
         }
     }
 }

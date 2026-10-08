@@ -73,4 +73,41 @@ class DownloadConfigTest {
         assertTrue(modified.embedSubtitles)
         assertFalse(modified.muteAudio)
     }
+
+    @Test
+    fun encodedConfigurationRoundTripsEveryField() {
+        val config = DownloadConfig(
+            quality = VideoQuality.Q_1080P,
+            audioOnly = false,
+            audioCodec = AudioCodec.OPUS,
+            audioQuality = AudioQuality.MEDIUM,
+            embedSubtitles = true,
+            muteAudio = true
+        )
+
+        assertEquals(config, DownloadConfig.decode(config.encode()))
+    }
+
+    @Test
+    fun decodeFallsBackToDefaultsForMissingOrInvalidValues() {
+        assertEquals(DownloadConfig(), DownloadConfig.decode(null))
+        assertEquals(DownloadConfig(), DownloadConfig.decode(""))
+
+        val partial = DownloadConfig.decode("quality=Q_720P;muteAudio=true;audioCodec=INVALID;embedSubtitles=maybe")
+        assertEquals(VideoQuality.Q_720P, partial.quality)
+        assertTrue(partial.muteAudio)
+        assertEquals(AudioCodec.MP3, partial.audioCodec)
+        assertFalse(partial.embedSubtitles)
+    }
+
+    @Test
+    fun videoOnlySelectorsNeverRequestAudioStreams() {
+        VideoQuality.entries.forEach { quality ->
+            assertFalse(quality.ytDlpVideoOnlySelector.contains("bestaudio"))
+        }
+        assertEquals(
+            "bestvideo[height<=720]/best[height<=720]/best",
+            VideoQuality.Q_720P.ytDlpVideoOnlySelector
+        )
+    }
 }

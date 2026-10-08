@@ -6,5 +6,6 @@ data class AppUpdateInfo(
     val releaseNotes: String,
     val downloadUrl: String,
     val apkFileName: String,
-    val fileSizeBytes: Long
+    val fileSizeBytes: Long,
+    val sha256: String? = null
 )

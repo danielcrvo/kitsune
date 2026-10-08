@@ -64,4 +64,29 @@ class AppUpdateManagerTest {
         val selected = AppUpdateManager.selectBestApkAsset(assets)
         assertNull(selected)
     }
+
+    @Test
+    fun `interpreta digest sha256 publicado pelo github`() {
+        val hex = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        assertEquals(hex, AppUpdateManager.parseSha256Digest("sha256:$hex"))
+        assertEquals(hex, AppUpdateManager.parseSha256Digest("SHA256:${hex.uppercase()}"))
+        assertNull(AppUpdateManager.parseSha256Digest(""))
+        assertNull(AppUpdateManager.parseSha256Digest(null))
+        assertNull(AppUpdateManager.parseSha256Digest("md5:abc"))
+        assertNull(AppUpdateManager.parseSha256Digest("sha256:xyz"))
+    }
+
+    @Test
+    fun `calcula sha256 de arquivos`() {
+        val file = java.io.File.createTempFile("kitsune", ".bin")
+        try {
+            file.writeText("abc")
+            assertEquals(
+                "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                AppUpdateManager.sha256Hex(file)
+            )
+        } finally {
+            file.delete()
+        }
+    }
 }

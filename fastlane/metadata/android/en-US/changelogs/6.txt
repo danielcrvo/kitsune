@@ -1,0 +1,5 @@
+- New About dialog with licensing, privacy and project links
+- Automatic update check toggle with silent startup check
+- Update cache manager in settings with one-tap cleanup
+- Reorganized settings into grouped cards
+- Audio format and bitrate controls shown only in audio-only mode

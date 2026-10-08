@@ -12,7 +12,6 @@ import com.kitsune.app.core.engine.UrlDetector
 import com.kitsune.app.core.engine.YtDlpEngine
 import com.kitsune.app.core.model.AppUpdateInfo
 import com.kitsune.app.core.model.AppUpdateState
-import com.kitsune.app.core.model.AudioCodec
 import com.kitsune.app.core.model.DownloadConfig
 import com.kitsune.app.core.model.DownloadState
 import com.kitsune.app.core.model.DownloadedMediaFile
@@ -20,7 +19,9 @@ import com.kitsune.app.core.model.PlaylistInfo
 import com.kitsune.app.core.service.DownloadForegroundService
 import com.kitsune.app.core.storage.DownloadedFilesRepository
 import com.kitsune.app.core.storage.UserPreferencesRepository
+import com.kitsune.app.BuildConfig
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,6 +39,10 @@ class MainViewModel @JvmOverloads constructor(
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
     private var metadataJob: Job? = null
+
+    private companion object {
+        const val METADATA_DEBOUNCE_MS = 450L
+    }
 
     init {
         viewModelScope.launch {
@@ -62,7 +67,7 @@ class MainViewModel @JvmOverloads constructor(
             if (savedConfig != null) {
                 val configWithMode = when (savedMode) {
                     DownloadMode.AUTO -> savedConfig.copy(audioOnly = false, muteAudio = false)
-                    DownloadMode.AUDIO -> savedConfig.copy(audioOnly = true, muteAudio = false, audioCodec = AudioCodec.MP3)
+                    DownloadMode.AUDIO -> savedConfig.copy(audioOnly = true, muteAudio = false)
                     DownloadMode.MUTE -> savedConfig.copy(audioOnly = false, muteAudio = true)
                 }
                 _uiState.update { it.copy(downloadConfig = configWithMode) }
@@ -174,65 +179,61 @@ class MainViewModel @JvmOverloads constructor(
         val detected = UrlDetector.detect(newUrl)
         val isValid = UrlDetector.isValidUrl(newUrl)
         val isPlaylist = UrlDetector.isPlaylistUrl(newUrl)
+        val urlChanged = newUrl.trim() != _uiState.value.url.trim()
 
         _uiState.update {
+            val keepMetadata = !urlChanged && newUrl.isNotBlank()
             it.copy(
                 url = newUrl,
                 detectedPlatform = detected,
                 isUrlValid = isValid,
-                mediaInfo = if (newUrl.isBlank()) null else it.mediaInfo,
-                isLoadingMetadata = isValid && it.mediaInfo == null && !isPlaylist,
-                isLoadingPlaylist = isValid && isPlaylist,
+                mediaInfo = if (keepMetadata) it.mediaInfo else null,
+                playlistInfo = if (keepMetadata) it.playlistInfo else null,
+                isLoadingMetadata = isValid && !isPlaylist && (urlChanged || it.mediaInfo == null),
+                isLoadingPlaylist = isValid && isPlaylist && (urlChanged || it.playlistInfo == null),
                 detectedClipboardUrl = null
             )
         }
 
-        if (isValid) {
-            metadataJob = viewModelScope.launch {
-                if (isPlaylist) {
-                    try {
-                        _uiState.update { it.copy(isLoadingPlaylist = true) }
-                        val result = YtDlpEngine.fetchPlaylistInfo(getApplication(), newUrl)
-                        result.fold(
-                            onSuccess = { playlist ->
-                                val allIds = playlist.items.map { item -> item.id }.toSet()
-                                _uiState.update {
-                                    it.copy(
-                                        playlistInfo = playlist,
-                                        selectedPlaylistItems = allIds,
-                                        isPlaylistDialogOpen = true,
-                                        isLoadingPlaylist = false
-                                    )
-                                }
-                            },
-                            onFailure = {
-                                _uiState.update { it.copy(isLoadingPlaylist = false) }
-                            }
-                        )
-                    } catch (_: Throwable) {
+        if (!isValid) return
+        val state = _uiState.value
+        if (!state.isLoadingMetadata && !state.isLoadingPlaylist) return
+
+        metadataJob = viewModelScope.launch {
+            delay(METADATA_DEBOUNCE_MS)
+            if (isPlaylist) {
+                val result = YtDlpEngine.fetchPlaylistInfo(getApplication(), newUrl)
+                result.fold(
+                    onSuccess = { playlist ->
+                        val allIds = playlist.items.map { item -> item.id }.toSet()
+                        _uiState.update {
+                            it.copy(
+                                playlistInfo = playlist,
+                                selectedPlaylistItems = allIds,
+                                isPlaylistDialogOpen = true,
+                                isLoadingPlaylist = false
+                            )
+                        }
+                    },
+                    onFailure = {
                         _uiState.update { it.copy(isLoadingPlaylist = false) }
                     }
-                } else {
-                    try {
-                        _uiState.update { it.copy(isLoadingMetadata = true) }
-                        val result = YtDlpEngine.fetchMediaInfo(getApplication(), newUrl)
-                        result.fold(
-                            onSuccess = { info ->
-                                _uiState.update {
-                                    it.copy(
-                                        mediaInfo = info,
-                                        isLoadingMetadata = false
-                                    )
-                                }
-                            },
-                            onFailure = {
-                                _uiState.update { it.copy(isLoadingMetadata = false) }
-                            }
-                        )
-                    } catch (_: Throwable) {
-                        _uiState.update { it.copy(isLoadingMetadata = false) }
+                )
+            } else {
+                val result = YtDlpEngine.fetchMediaInfo(getApplication(), newUrl)
+                result.fold(
+                    onSuccess = { info ->
+                        _uiState.update {
+                            it.copy(
+                                mediaInfo = info,
+                                isLoadingMetadata = false
+                            )
+                        }
+                    },
+                    onFailure = {
+                        _uiState.update { it.copy(mediaInfo = null, isLoadingMetadata = false) }
                     }
-                }
+                )
             }
         }
     }
@@ -248,7 +249,7 @@ class MainViewModel @JvmOverloads constructor(
         _uiState.update { state ->
             val newConfig = when (mode) {
                 DownloadMode.AUTO -> state.downloadConfig.copy(audioOnly = false, muteAudio = false)
-                DownloadMode.AUDIO -> state.downloadConfig.copy(audioOnly = true, muteAudio = false, audioCodec = AudioCodec.MP3)
+                DownloadMode.AUDIO -> state.downloadConfig.copy(audioOnly = true, muteAudio = false)
                 DownloadMode.MUTE -> state.downloadConfig.copy(audioOnly = false, muteAudio = true)
             }
             state.copy(downloadConfig = newConfig)
@@ -362,7 +363,8 @@ class MainViewModel @JvmOverloads constructor(
         DownloadForegroundService.startDownload(
             context = context,
             url = currentState.url,
-            config = currentState.downloadConfig
+            config = currentState.downloadConfig,
+            title = currentState.mediaInfo?.title.orEmpty()
         )
     }
 
@@ -500,6 +502,7 @@ class MainViewModel @JvmOverloads constructor(
     }
 
     private suspend fun checkAppUpdateSilently() {
+        if (!BuildConfig.UPDATER_ENABLED) return
         if (!preferencesRepository.isAutoCheckUpdatesFlow.firstOrNull().let { it ?: true }) {
             return
         }
@@ -524,6 +527,7 @@ class MainViewModel @JvmOverloads constructor(
     }
 
     fun checkAppUpdateManually() {
+        if (!BuildConfig.UPDATER_ENABLED) return
         viewModelScope.launch {
             _uiState.update { it.copy(isCheckingAppUpdate = true) }
             val result = AppUpdateManager.checkForAppUpdate(getApplication())
@@ -562,6 +566,7 @@ class MainViewModel @JvmOverloads constructor(
     }
 
     fun downloadAppUpdate() {
+        if (!BuildConfig.UPDATER_ENABLED) return
         val info = _uiState.value.appUpdateInfo ?: return
         viewModelScope.launch {
             _uiState.update {

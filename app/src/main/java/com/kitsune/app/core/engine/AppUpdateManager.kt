@@ -20,6 +20,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
 import java.util.Locale
 
 object AppUpdateManager {
@@ -29,7 +30,8 @@ object AppUpdateManager {
     data class ReleaseAsset(
         val name: String,
         val downloadUrl: String,
-        val size: Long
+        val size: Long,
+        val sha256: String? = null
     )
 
     fun getCurrentVersionName(context: Context): String {
@@ -81,6 +83,26 @@ object AppUpdateManager {
         return apkAssets.firstOrNull()
     }
 
+    fun parseSha256Digest(digest: String?): String? {
+        val value = digest?.trim().orEmpty()
+        if (!value.startsWith("sha256:", ignoreCase = true)) return null
+        val hex = value.substringAfter(':').lowercase(Locale.US)
+        return hex.takeIf { it.length == 64 && it.all { c -> c in '0'..'9' || c in 'a'..'f' } }
+    }
+
+    fun sha256Hex(file: File): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        file.inputStream().use { input ->
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+            while (true) {
+                val read = input.read(buffer)
+                if (read == -1) break
+                digest.update(buffer, 0, read)
+            }
+        }
+        return digest.digest().joinToString("") { "%02x".format(it) }
+    }
+
     fun formatFileSize(bytes: Long): String {
         return when {
             bytes >= 1024 * 1024 * 1024 -> String.format(Locale.US, "%.1f GB", bytes.toDouble() / (1024 * 1024 * 1024))
@@ -127,7 +149,8 @@ object AppUpdateManager {
                     ReleaseAsset(
                         name = assetObj.optString("name", ""),
                         downloadUrl = assetObj.optString("browser_download_url", ""),
-                        size = assetObj.optLong("size", 0L)
+                        size = assetObj.optLong("size", 0L),
+                        sha256 = parseSha256Digest(assetObj.optString("digest", ""))
                     )
                 )
             }
@@ -141,7 +164,8 @@ object AppUpdateManager {
                 releaseNotes = releaseNotes,
                 downloadUrl = bestAsset.downloadUrl,
                 apkFileName = bestAsset.name,
-                fileSizeBytes = bestAsset.size
+                fileSizeBytes = bestAsset.size,
+                sha256 = bestAsset.sha256
             )
 
             Result.success(updateInfo)
@@ -166,10 +190,11 @@ object AppUpdateManager {
             if (!updateDir.exists()) {
                 updateDir.mkdirs()
             }
-            val destinationFile = File(updateDir, updateInfo.apkFileName)
-            if (destinationFile.exists()) {
-                destinationFile.delete()
-            }
+            val safeFileName = File(updateInfo.apkFileName).name.ifBlank { "kitsune-update.apk" }
+            val destinationFile = File(updateDir, safeFileName)
+            val partialFile = File(updateDir, "$safeFileName.part")
+            destinationFile.delete()
+            partialFile.delete()
 
             var redirectCount = 0
             while (redirectCount < 5) {
@@ -206,7 +231,7 @@ object AppUpdateManager {
 
             val contentLength = finalConn.contentLengthLong.let { if (it > 0) it else updateInfo.fileSizeBytes }
             inputStream = finalConn.inputStream
-            outputStream = FileOutputStream(destinationFile)
+            outputStream = FileOutputStream(partialFile)
 
             val buffer = ByteArray(16384)
             var bytesRead: Int
@@ -242,6 +267,22 @@ object AppUpdateManager {
             }
 
             outputStream.flush()
+            outputStream.close()
+            outputStream = null
+
+            val expectedSha256 = updateInfo.sha256
+            if (expectedSha256 != null) {
+                val actualSha256 = sha256Hex(partialFile)
+                if (!actualSha256.equals(expectedSha256, ignoreCase = true)) {
+                    partialFile.delete()
+                    throw SecurityException("Downloaded APK checksum does not match the published SHA-256 digest.")
+                }
+            }
+
+            if (!partialFile.renameTo(destinationFile)) {
+                partialFile.delete()
+                throw IllegalStateException("Could not finalize downloaded APK.")
+            }
 
             val readyNotif = DownloadNotificationHelper.buildAppUpdateReadyNotification(
                 context = context,
@@ -253,6 +294,9 @@ object AppUpdateManager {
             Result.success(destinationFile)
         } catch (t: Throwable) {
             notificationManager?.cancel(DownloadNotificationHelper.UPDATE_NOTIFICATION_ID)
+            runCatching {
+                File(File(context.cacheDir, "apk_updates"), "${File(updateInfo.apkFileName).name}.part").delete()
+            }
             Result.failure(t)
         } finally {
             try { outputStream?.close() } catch (_: Throwable) {}

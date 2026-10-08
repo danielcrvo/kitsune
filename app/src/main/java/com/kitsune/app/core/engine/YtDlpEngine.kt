@@ -9,21 +9,32 @@ import com.kitsune.app.core.model.MediaInfo
 import com.kitsune.app.core.model.PlatformType
 import com.kitsune.app.core.model.PlaylistInfo
 import com.kitsune.app.core.model.PlaylistItem
-import com.kitsune.app.core.model.VideoQuality
+import com.kitsune.app.core.storage.MediaFileUtils
 import com.yausername.ffmpeg.FFmpeg
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLRequest
-import com.yausername.youtubedl_android.YoutubeDLResponse
 import org.json.JSONObject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.UUID
 
 object YtDlpEngine {
 
     private const val TAG = "YtDlpEngine"
+    private const val OUTPUT_PATH_SUFFIX = ".path"
+
+    private val SPEED_REGEX = Regex("""at\s+([0-9.]+[kKMGT]?i?B/s)""")
+
+    private val POST_PROCESSOR_TAGS = listOf(
+        "[Merger]", "[ffmpeg]", "[ExtractAudio]", "[EmbedThumbnail]",
+        "[EmbedSubtitle]", "[Metadata]", "[VideoConvertor]", "[FixupM3u8]"
+    )
 
     @Volatile
     private var isInitialized = false
@@ -57,19 +68,42 @@ object YtDlpEngine {
     suspend fun initialize(context: Context): Result<Unit> = ensureInitialized(context)
 
 
+    private suspend fun <T> runKillable(processId: String, block: () -> T): T = coroutineScope {
+        val work = async(Dispatchers.IO) { block() }
+        try {
+            work.await()
+        } catch (cancellation: CancellationException) {
+            runCatching { YoutubeDL.getInstance().destroyProcessById(processId) }
+            throw cancellation
+        }
+    }
+
+    private fun newProcessId(prefix: String): String = "${prefix}_${UUID.randomUUID()}"
+
     suspend fun fetchMediaInfo(context: Context, url: String): Result<MediaInfo> = withContext(Dispatchers.IO) {
-        runCatching {
+        runCatchingNonCancellable {
             ensureInitialized(context).getOrThrow()
             val sanitized = UrlDetector.sanitizeUrl(url)
-            val info = YoutubeDL.getInstance().getInfo(sanitized)
+            val request = YoutubeDLRequest(sanitized).apply {
+                addOption("--dump-json")
+                addOption("--no-playlist")
+                addOption("--no-warnings")
+            }
+            val processId = newProcessId("kitsune_info")
+            val response = runKillable(processId) {
+                YoutubeDL.getInstance().execute(request = request, processId = processId)
+            }
+            val jsonLine = response.out.lineSequence().firstOrNull { it.trimStart().startsWith("{") }
+                ?: throw IllegalStateException("Empty metadata response.")
+            val json = JSONObject(jsonLine)
             val platform = UrlDetector.detect(sanitized)
 
             MediaInfo(
-                id = info.id ?: "",
-                title = info.title ?: "",
-                uploader = info.uploader ?: "",
-                durationSeconds = info.duration.toLong(),
-                thumbnailUrl = info.thumbnail,
+                id = json.optString("id"),
+                title = json.optString("title"),
+                uploader = json.optString("uploader").ifBlank { json.optString("channel") },
+                durationSeconds = json.optDouble("duration", 0.0).let { if (it.isNaN()) 0L else it.toLong() },
+                thumbnailUrl = json.optString("thumbnail").ifBlank { null },
                 platform = platform,
                 originalUrl = sanitized
             )
@@ -77,7 +111,7 @@ object YtDlpEngine {
     }
 
     suspend fun fetchPlaylistInfo(context: Context, url: String): Result<PlaylistInfo> = withContext(Dispatchers.IO) {
-        runCatching {
+        runCatchingNonCancellable {
             ensureInitialized(context).getOrThrow()
             val sanitized = UrlDetector.sanitizeUrl(url)
             val request = YoutubeDLRequest(sanitized).apply {
@@ -85,7 +119,10 @@ object YtDlpEngine {
                 addOption("-J")
                 addOption("--no-warnings")
             }
-            val response = YoutubeDL.getInstance().execute(request)
+            val processId = newProcessId("kitsune_playlist")
+            val response = runKillable(processId) {
+                YoutubeDL.getInstance().execute(request = request, processId = processId)
+            }
             val json = JSONObject(response.out)
 
             val playlistTitle = json.optString("title").ifBlank { "Playlist" }
@@ -98,11 +135,9 @@ object YtDlpEngine {
                 for (i in 0 until entries.length()) {
                     val entry = entries.optJSONObject(i) ?: continue
                     val itemId = entry.optString("id")
+                    val itemUrl = resolvePlaylistEntryUrl(entry) ?: continue
                     val itemTitle = entry.optString("title").ifBlank { "Item ${i + 1}" }
-                    val itemUrl = entry.optString("url").let { u ->
-                        if (u.startsWith("http")) u else "https://www.youtube.com/watch?v=$itemId"
-                    }
-                    val duration = entry.optLong("duration", 0L)
+                    val duration = entry.optDouble("duration", 0.0).let { if (it.isNaN()) 0L else it.toLong() }
                     val uploader = entry.optString("uploader")
                     val thumbnail = entry.optString("thumbnail").ifBlank {
                         val thumbs = entry.optJSONArray("thumbnails")
@@ -112,7 +147,7 @@ object YtDlpEngine {
                     }
                     items.add(
                         PlaylistItem(
-                            id = itemId,
+                            id = itemId.ifBlank { itemUrl },
                             title = itemTitle,
                             url = itemUrl,
                             durationSeconds = duration,
@@ -134,6 +169,18 @@ object YtDlpEngine {
         }
     }
 
+    private fun resolvePlaylistEntryUrl(entry: JSONObject): String? {
+        val candidates = listOf(entry.optString("webpage_url"), entry.optString("url"))
+        candidates.firstOrNull { it.startsWith("http://") || it.startsWith("https://") }?.let { return it }
+
+        val itemId = entry.optString("id")
+        val extractor = entry.optString("ie_key").ifBlank { entry.optString("extractor_key") }
+        return if (itemId.isNotBlank() && extractor.equals("Youtube", ignoreCase = true)) {
+            "https://www.youtube.com/watch?v=$itemId"
+        } else {
+            null
+        }
+    }
 
     suspend fun executeDownload(
         context: Context,
@@ -142,13 +189,15 @@ object YtDlpEngine {
         outputDir: File,
         onProgressUpdate: (progress: Float, speed: String, eta: String, stage: DownloadStage) -> Unit
     ): Result<File> = withContext(Dispatchers.IO) {
-        runCatching {
+        runCatchingNonCancellable {
             ensureInitialized(context).getOrThrow()
 
             val cleanUrl = UrlDetector.sanitizeUrl(url)
             val platform = UrlDetector.detect(cleanUrl)
 
             if (!outputDir.exists()) outputDir.mkdirs()
+            val outputPathFile = File(outputDir.parentFile, "${outputDir.name}$OUTPUT_PATH_SUFFIX")
+            outputPathFile.delete()
 
             val request = YoutubeDLRequest(cleanUrl).apply {
                 addOption("--no-mtime")
@@ -156,53 +205,34 @@ object YtDlpEngine {
                 addOption("--retries", 3)
                 addOption("--fragment-retries", 5)
 
-
-                val outputTemplate = File(outputDir, "kitsune_%(id)s.%(ext)s").absolutePath
+                val outputTemplate = File(outputDir, "%(title).150B [%(id)s].%(ext)s").absolutePath
                 addOption("-o", outputTemplate)
-
+                addCommands(listOf("--print-to-file", "after_move:filepath", outputPathFile.absolutePath))
 
                 if (config.audioOnly) {
                     addOption("-x")
                     addOption("--add-metadata")
-                    addOption("--embed-thumbnail")
                     when (config.audioCodec) {
                         AudioCodec.MP3 -> {
                             addOption("--audio-format", "mp3")
                             addOption("--audio-quality", config.audioQuality.ytDlpQuality)
+                            addOption("--embed-thumbnail")
+                            addOption("--convert-thumbnails", "jpg")
                         }
                         AudioCodec.OPUS -> {
                             addOption("--audio-format", "opus")
                             addOption("--audio-quality", config.audioQuality.ytDlpQuality)
                         }
                         AudioCodec.ORIGINAL -> {
-                            addOption("-f", "bestaudio/best")
+                            addOption("-f", "bestaudio[ext=m4a]/bestaudio/best")
                         }
                     }
                 } else if (config.muteAudio) {
-                    val formatSelector = when (config.quality) {
-                        VideoQuality.AUTO -> "bestvideo/best"
-                        VideoQuality.Q_2160P -> "bestvideo[height<=2160]/best"
-                        VideoQuality.Q_1440P -> "bestvideo[height<=1440]/best"
-                        VideoQuality.Q_1080P -> "bestvideo[height<=1080]/best"
-                        VideoQuality.Q_720P -> "bestvideo[height<=720]/best"
-                        VideoQuality.Q_480P -> "bestvideo[height<=480]/best"
-                        VideoQuality.AUDIO_ONLY -> "bestvideo/best"
-                    }
-                    addOption("-f", formatSelector)
+                    addOption("-f", config.quality.ytDlpVideoOnlySelector)
                 } else {
-                    val formatSelector = when (config.quality) {
-                        VideoQuality.AUTO -> "bestvideo+bestaudio/best"
-                        VideoQuality.Q_2160P -> "bestvideo[height<=2160]+bestaudio/best[height<=2160]/best"
-                        VideoQuality.Q_1440P -> "bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
-                        VideoQuality.Q_1080P -> "bestvideo[height<=1080]+bestaudio/best[height<=1080]/best"
-                        VideoQuality.Q_720P -> "bestvideo[height<=720]+bestaudio/best[height<=720]/best"
-                        VideoQuality.Q_480P -> "bestvideo[height<=480]+bestaudio/best[height<=480]/best"
-                        VideoQuality.AUDIO_ONLY -> "bestaudio/best"
-                    }
-                    addOption("-f", formatSelector)
+                    addOption("-f", config.quality.ytDlpFormatSelector)
                     addOption("--merge-output-format", "mp4")
                 }
-
 
                 when (platform) {
                     PlatformType.TIKTOK -> {
@@ -227,40 +257,59 @@ object YtDlpEngine {
             }
 
             var currentStage = DownloadStage.INITIALIZING
+            var destinationCount = 0
+            val processId = newProcessId("kitsune_dl")
 
-            val response: YoutubeDLResponse = YoutubeDL.getInstance().execute(
-                request = request,
-                processId = "kitsune_dl_${System.currentTimeMillis()}"
-            ) { progress, etaInSeconds, line ->
-                val speed = extractSpeed(line)
-                val etaFormatted = if (etaInSeconds > 0) "${etaInSeconds}s" else ""
+            runKillable(processId) {
+                YoutubeDL.getInstance().execute(
+                    request = request,
+                    processId = processId
+                ) { progress, etaInSeconds, line ->
+                    val speed = extractSpeed(line)
+                    val etaFormatted = if (etaInSeconds > 0) "${etaInSeconds}s" else ""
 
-                if (line.contains("[download] Destination", ignoreCase = true) || line.contains("Destination: ", ignoreCase = true)) {
-                    currentStage = if (line.contains(".f137.") || line.contains("video", ignoreCase = true)) {
-                        DownloadStage.VIDEO_STREAM
-                    } else if (line.contains(".f140.") || line.contains("audio", ignoreCase = true)) {
-                        DownloadStage.AUDIO_STREAM
-                    } else {
-                        DownloadStage.VIDEO_STREAM
+                    when {
+                        line.contains("[download] Destination:") -> {
+                            destinationCount++
+                            currentStage = when {
+                                config.audioOnly -> DownloadStage.AUDIO_STREAM
+                                destinationCount >= 2 -> DownloadStage.AUDIO_STREAM
+                                else -> DownloadStage.VIDEO_STREAM
+                            }
+                        }
+                        POST_PROCESSOR_TAGS.any { line.contains(it) } -> {
+                            currentStage = DownloadStage.FFMPEG_MUXING
+                        }
                     }
-                } else if (line.contains("[Merger]") || line.contains("[ffmpeg]")) {
-                    currentStage = DownloadStage.FFMPEG_MUXING
-                }
 
-                onProgressUpdate(progress / 100f, speed, etaFormatted, currentStage)
+                    onProgressUpdate(progress / 100f, speed, etaFormatted, currentStage)
+                }
             }
 
-            val downloadedFiles = outputDir.listFiles()?.filter {
-                it.isFile && it.name.startsWith("kitsune_")
-            } ?: emptyList()
+            val reportedPath = outputPathFile.takeIf { it.exists() }
+                ?.readLines()
+                ?.lastOrNull { it.isNotBlank() }
+                ?.trim()
+            outputPathFile.delete()
 
-            downloadedFiles.maxByOrNull { it.lastModified() }
+            reportedPath?.let { File(it) }?.takeIf { it.isFile && it.length() > 0 }
+                ?: MediaFileUtils.selectFinalOutputFile(outputDir.listFiles()?.toList().orEmpty())
                 ?: throw IllegalStateException("Output media file not found after download completion.")
         }
     }
 
+    private inline fun <T> runCatchingNonCancellable(block: () -> T): Result<T> {
+        return try {
+            Result.success(block())
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (t: Throwable) {
+            Result.failure(t)
+        }
+    }
+
     private fun extractSpeed(logLine: String): String {
-        val speedMatch = Regex("""at\s+([0-9.]+[kKMGT]?i?B/s)""").find(logLine)
+        val speedMatch = SPEED_REGEX.find(logLine)
         return speedMatch?.groupValues?.get(1) ?: ""
     }
 }

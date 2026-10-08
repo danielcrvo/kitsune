@@ -118,18 +118,24 @@ Core Layer
 ```bash
 git clone https://github.com/danielcrvo/kitsune.git
 cd kitsune
-./gradlew assembleDebug
+./gradlew assembleGithubDebug
 ```
-Output APKs will be located in `app/build/outputs/apk/debug/`.
+Output APKs will be located in `app/build/outputs/apk/github/debug/`.
+
+### Distribution Flavors
+- `github`: official builds published on GitHub Releases, including the in-app updater.
+- `fdroid`: builds without the self-updater and without the `REQUEST_INSTALL_PACKAGES` permission (`./gradlew assembleFdroidRelease`).
+
+Release builds are signed only when `KITSUNE_KEYSTORE_PATH`, `KITSUNE_KEYSTORE_PASSWORD`, `KITSUNE_KEY_ALIAS` and `KITSUNE_KEY_PASSWORD` are set; otherwise they are produced unsigned.
 
 ### Run Unit Tests
 ```bash
-./gradlew testDebugUnitTest
+./gradlew testGithubDebugUnitTest
 ```
 
 ### Run Android Lint
 ```bash
-./gradlew lintDebug
+./gradlew lintGithubDebug
 ```
 
 ---

@@ -60,6 +60,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kitsune.app.BuildConfig
 import com.kitsune.app.R
 import com.kitsune.app.core.engine.AppUpdateManager
 import com.kitsune.app.core.model.AudioCodec
@@ -418,32 +419,34 @@ fun DownloadSettingsSheet(
                 }
 
                 SettingsSection(title = stringResource(R.string.settings_section_system)) {
-                    SettingsSwitchRow(
-                        icon = Icons.Outlined.Update,
-                        title = stringResource(R.string.settings_auto_check_title),
-                        subtitle = stringResource(R.string.settings_auto_check_desc),
-                        checked = isAutoCheckUpdates,
-                        onCheckedChange = {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            onToggleAutoCheckUpdates(it)
-                        }
-                    )
+                    if (BuildConfig.UPDATER_ENABLED) {
+                        SettingsSwitchRow(
+                            icon = Icons.Outlined.Update,
+                            title = stringResource(R.string.settings_auto_check_title),
+                            subtitle = stringResource(R.string.settings_auto_check_desc),
+                            checked = isAutoCheckUpdates,
+                            onCheckedChange = {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                onToggleAutoCheckUpdates(it)
+                            }
+                        )
 
-                    SettingsDivider()
+                        SettingsDivider()
 
-                    SettingsActionRow(
-                        icon = Icons.Outlined.AppShortcut,
-                        title = stringResource(R.string.settings_app_version_title),
-                        subtitle = stringResource(R.string.settings_app_version, appVersion),
-                        buttonText = stringResource(R.string.btn_retry),
-                        isLoading = isCheckingAppUpdate,
-                        onAction = {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            onCheckAppUpdate()
-                        }
-                    )
+                        SettingsActionRow(
+                            icon = Icons.Outlined.AppShortcut,
+                            title = stringResource(R.string.settings_app_version_title),
+                            subtitle = stringResource(R.string.settings_app_version, appVersion),
+                            buttonText = stringResource(R.string.btn_retry),
+                            isLoading = isCheckingAppUpdate,
+                            onAction = {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                onCheckAppUpdate()
+                            }
+                        )
 
-                    SettingsDivider()
+                        SettingsDivider()
+                    }
 
                     SettingsActionRow(
                         icon = Icons.Outlined.Terminal,
@@ -457,22 +460,24 @@ fun DownloadSettingsSheet(
                         }
                     )
 
-                    SettingsDivider()
+                    if (BuildConfig.UPDATER_ENABLED) {
+                        SettingsDivider()
 
-                    SettingsActionRow(
-                        icon = Icons.Outlined.CleaningServices,
-                        title = stringResource(R.string.settings_clear_cache_title),
-                        subtitle = stringResource(
-                            R.string.settings_clear_cache_desc,
-                            AppUpdateManager.formatFileSize(apkCacheSizeBytes)
-                        ),
-                        buttonText = stringResource(R.string.settings_clear_cache_btn),
-                        isButtonEnabled = apkCacheSizeBytes > 0,
-                        onAction = {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            onClearUpdateCache()
-                        }
-                    )
+                        SettingsActionRow(
+                            icon = Icons.Outlined.CleaningServices,
+                            title = stringResource(R.string.settings_clear_cache_title),
+                            subtitle = stringResource(
+                                R.string.settings_clear_cache_desc,
+                                AppUpdateManager.formatFileSize(apkCacheSizeBytes)
+                            ),
+                            buttonText = stringResource(R.string.settings_clear_cache_btn),
+                            isButtonEnabled = apkCacheSizeBytes > 0,
+                            onAction = {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                onClearUpdateCache()
+                            }
+                        )
+                    }
                 }
 
                 SettingsSection(title = stringResource(R.string.settings_section_about)) {

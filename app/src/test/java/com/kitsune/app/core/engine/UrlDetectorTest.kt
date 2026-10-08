@@ -86,6 +86,21 @@ class UrlDetectorTest {
     }
 
     @Test
+    fun `sanitizacao preserva codificacao, fragmentos e timestamps`() {
+        val encoded = "https://example.com/watch?q=rock%26roll&utm_campaign=x#section"
+        assertEquals("https://example.com/watch?q=rock%26roll#section", UrlDetector.sanitizeUrl(encoded))
+
+        val ytTimestamp = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42&si=abc"
+        assertEquals("https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42", UrlDetector.sanitizeUrl(ytTimestamp))
+
+        val genericS = "https://example.com/video?s=7"
+        assertEquals(genericS, UrlDetector.sanitizeUrl(genericS))
+
+        val noQuery = "https://youtu.be/dQw4w9WgXcQ"
+        assertEquals(noQuery, UrlDetector.sanitizeUrl("  $noQuery  "))
+    }
+
+    @Test
     fun `valida URLs invalidas`() {
         assertFalse(UrlDetector.isValidUrl(""))
         assertFalse(UrlDetector.isValidUrl("   "))

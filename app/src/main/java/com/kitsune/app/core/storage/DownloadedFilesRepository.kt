@@ -196,8 +196,8 @@ object DownloadedFilesRepository {
         dir.listFiles()?.forEach { file ->
             if (file.isFile && file.length() > 0 && seenPaths.add(file.absolutePath)) {
                 val ext = file.extension.lowercase()
-                val isVid = isVideo || ext in listOf("mp4", "mkv", "webm", "avi", "mov")
-                val mime = if (isVid) "video/mp4" else if (ext == "mp3") "audio/mpeg" else "audio/*"
+                val isVid = isVideo || MediaFileUtils.isVideoExtension(ext)
+                val mime = MediaFileUtils.fallbackMimeType(ext, isAudio = !isVid)
                 val safeUri = try {
                     FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
                 } catch (_: Throwable) {
@@ -262,7 +262,7 @@ object DownloadedFilesRepository {
         newNameWithoutExt: String
     ): Result<DownloadedMediaFile> = withContext(Dispatchers.IO) {
         runCatching {
-            val cleanName = newNameWithoutExt.trim().replace(Regex("[^a-zA-Z0-9._ -]"), "_")
+            val cleanName = MediaFileUtils.sanitizeFileName(newNameWithoutExt)
             if (cleanName.isBlank()) throw IllegalArgumentException("Invalid file name.")
 
             val ext = item.file?.extension ?: item.fileName.substringAfterLast('.', "")

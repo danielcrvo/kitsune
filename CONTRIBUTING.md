@@ -19,11 +19,11 @@ Please review this guide before submitting issues or pull requests.
 git clone https://github.com/danielcrvo/kitsune.git
 cd kitsune
 
-./gradlew assembleDebug
+./gradlew assembleGithubDebug
 
-./gradlew testDebugUnitTest
+./gradlew testGithubDebugUnitTest
 
-./gradlew lintDebug
+./gradlew lintGithubDebug
 ```
 
 ---
@@ -93,9 +93,9 @@ Kitsune follows the **Conventional Commits** specification:
 ## 4. Pull Request (PR) Checklist
 
 Before submitting your pull request, please verify the following:
-1. [ ] The project compiles successfully: `./gradlew assembleDebug`.
-2. [ ] All unit tests pass: `./gradlew testDebugUnitTest`.
-3. [ ] Android Lint passes without fatal errors: `./gradlew lintDebug`.
+1. [ ] The project compiles successfully: `./gradlew assembleGithubDebug`.
+2. [ ] All unit tests pass: `./gradlew testGithubDebugUnitTest`.
+3. [ ] Android Lint passes without fatal errors: `./gradlew lintGithubDebug`.
 4. [ ] Code follows the Atomic Design package structure.
 5. [ ] No hardcoded colors or raw dimensions; 100% token usage.
 6. [ ] Zero code comments (self-documenting clean code).

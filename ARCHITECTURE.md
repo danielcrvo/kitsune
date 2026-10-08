@@ -193,12 +193,13 @@ Background downloads are executed by `DownloadForegroundService`:
 
 ### 4.2 Scoped Storage & MediaStore Export
 Starting with Android 10 (API 29), direct file path access to external storage is restricted. Kitsune is fully Scoped Storage compliant:
-1. `YtDlpEngine` downloads content to an isolated internal cache directory (`context.cacheDir/kitsune_downloads/`).
-2. Upon download completion, `MediaStoreExporter` creates an entry in `MediaStore.Video.Media.EXTERNAL_CONTENT_URI` (for videos) or `MediaStore.Audio.Media.EXTERNAL_CONTENT_URI` (for audio tracks).
-3. On API 29+, the entry is created with `IS_PENDING = 1` into `Movies/Kitsune` or `Music/Kitsune`.
+1. `YtDlpEngine` downloads each queued item into its own isolated cache directory (`context.cacheDir/kitsune_tmp/<taskId>/`) and reports the final file path through `--print-to-file after_move:filepath`.
+2. Upon download completion, `MediaStoreExporter` names the file after the media title and creates an entry in `MediaStore.Video.Media.EXTERNAL_CONTENT_URI` (for videos) or `MediaStore.Audio.Media.EXTERNAL_CONTENT_URI` (for audio tracks), with the MIME type derived from the file extension.
+3. On API 29+, the entry is created with `IS_PENDING = 1` into `Movies/Kitsune` or `Music/Kitsune`; if streaming fails, the pending entry is deleted.
 4. File bytes are streamed from cache to the MediaStore URI.
 5. `IS_PENDING` is updated to `0`, immediately registering the file in the user's gallery and media players.
-6. The temporary cache file is purged.
+6. On API 26-28, the file is copied directly into the public `Movies/Kitsune` or `Music/Kitsune` folder (requires `WRITE_EXTERNAL_STORAGE`, declared with `maxSdkVersion="28"`) and indexed with `MediaScannerConnection`.
+7. The task's temporary directory is always purged, including after failures and cancellations. Cancelling a task destroys the underlying yt-dlp process.
 
 ---
 

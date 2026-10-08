@@ -5,6 +5,32 @@ All notable changes to the Kitsune project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `fdroid` distribution flavor without the in-app updater and without `REQUEST_INSTALL_PACKAGES`; the default `github` flavor keeps the updater.
+- SHA-256 verification of downloaded update APKs against the digest published by GitHub Releases.
+- Storage permission request and direct public-folder export for Android 8 and 9 (API 26-28).
+- Backup rules limiting Android backups to user preferences.
+
+### Changed
+- Exported files are now named after the media title (Unicode preserved) instead of `kitsune_<id>`.
+- Metadata lookup is debounced while typing and the previous preview is cleared when the link changes.
+- Audio mode keeps the selected audio codec instead of forcing MP3.
+- Release builds are signed through Gradle from `KITSUNE_*` environment variables, and the release workflow fails when the signing key is missing.
+- FileProvider now only exposes `Movies/Kitsune`, `Music/Kitsune` and the update cache.
+
+### Fixed
+- "Mute audio" and "Embed subtitles" options were ignored by the download service.
+- Wi-Fi only mode never resumed a waiting download after Wi-Fi connected.
+- Cancelling a download now terminates the yt-dlp process instead of letting it run in the background.
+- Each download uses an isolated temporary folder, so a stale or partial file can no longer be exported, and temporary files are always cleaned up.
+- Failed exports no longer leave pending MediaStore entries behind.
+- Wake lock is no longer held for up to an hour per queued item.
+- URL sanitizing preserves percent-encoding and YouTube timestamps; `s`/`t` are only stripped from Twitter/X links.
+- Playlist entries from non-YouTube services no longer resolve to YouTube links.
+- Completed notifications no longer overwrite each other across queues; audio files are exported with the correct MIME type.
+
 ## [1.2.1] - 2026-10-06
 
 ### Added

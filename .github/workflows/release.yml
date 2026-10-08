@@ -42,50 +42,52 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
+        run: ./gradlew testGithubDebugUnitTest --no-daemon --stacktrace
 
       - name: Run Android Lint
-        run: ./gradlew lintDebug --no-daemon --stacktrace
+        run: ./gradlew lintGithubDebug --no-daemon --stacktrace
 
-      - name: Build release APKs
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
-
-      - name: Sign release APKs
+      - name: Prepare release keystore
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          KEY_ALIAS: ${{ secrets.ALIAS }}
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           if [ -z "$SIGNING_KEY" ]; then
-            echo "SIGNING_KEY secret not found. Skipping signing step."
-            exit 0
+            echo "::error::SIGNING_KEY secret is missing. Release APKs must be signed with the stable release key."
+            exit 1
           fi
+          echo "$SIGNING_KEY" | base64 -d > "$RUNNER_TEMP/release.keystore"
 
-          echo "$SIGNING_KEY" | base64 -d > /tmp/release.keystore
+      - name: Build signed release APKs
+        env:
+          KITSUNE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
+          KITSUNE_KEY_ALIAS: ${{ secrets.ALIAS }}
+          KITSUNE_KEYSTORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KITSUNE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleGithubRelease --no-daemon --stacktrace
 
+      - name: Verify release APK signatures
+        run: |
           BUILD_TOOLS_PATH=$(ls -d ${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools/* | sort -V | tail -n 1)
-
-          for apk in app/build/outputs/apk/release/Kitsune-*.apk; do
-            $BUILD_TOOLS_PATH/apksigner sign \
-              --ks /tmp/release.keystore \
-              --ks-key-alias "$KEY_ALIAS" \
-              --ks-pass "pass:$KEY_STORE_PASSWORD" \
-              --key-pass "pass:$KEY_PASSWORD" \
-              --out "$apk" \
-              "$apk"
-
-            $BUILD_TOOLS_PATH/apksigner verify "$apk"
+          shopt -s nullglob
+          apks=(app/build/outputs/apk/github/release/Kitsune-*.apk)
+          if [ ${#apks[@]} -eq 0 ]; then
+            echo "::error::No release APKs were produced."
+            exit 1
+          fi
+          for apk in "${apks[@]}"; do
+            "$BUILD_TOOLS_PATH/apksigner" verify --print-certs "$apk"
           done
 
-          rm -f /tmp/release.keystore
+      - name: Remove release keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.keystore"
 
       - name: Upload release APKs
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: kitsune-release-apks
-          path: app/build/outputs/apk/release/Kitsune-*.apk
+          path: app/build/outputs/apk/github/release/Kitsune-*.apk
           if-no-files-found: warn
 
       - name: Extract release notes from changelog
@@ -115,7 +117,7 @@ jobs:
           tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
           body_path: /tmp/release_notes.md
           files: |
-            app/build/outputs/apk/release/Kitsune-*.apk
+            app/build/outputs/apk/github/release/Kitsune-*.apk
           generate_release_notes: true
           draft: false
           prerelease: false

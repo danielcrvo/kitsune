@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.kitsune.app.core.model.AudioCodec
@@ -34,62 +35,36 @@ class UserPreferencesRepository(private val context: Context) {
         val AUTO_CHECK_UPDATES = booleanPreferencesKey("pref_auto_check_updates")
     }
 
-    val isAmoledThemeFlow: Flow<Boolean> = context.dataStore.data
+    private val preferencesFlow: Flow<Preferences> = context.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
-                emit(androidx.datastore.preferences.core.emptyPreferences())
+                emit(emptyPreferences())
             } else {
                 throw exception
             }
         }
+
+    val isAmoledThemeFlow: Flow<Boolean> = preferencesFlow
         .map { preferences ->
             preferences[PreferencesKeys.AMOLED_THEME] ?: false
         }
 
-    val isDynamicColorFlow: Flow<Boolean> = context.dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(androidx.datastore.preferences.core.emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
+    val isDynamicColorFlow: Flow<Boolean> = preferencesFlow
         .map { preferences ->
             preferences[PreferencesKeys.DYNAMIC_COLOR] ?: false
         }
 
-    val isWifiOnlyFlow: Flow<Boolean> = context.dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(androidx.datastore.preferences.core.emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
+    val isWifiOnlyFlow: Flow<Boolean> = preferencesFlow
         .map { preferences ->
             preferences[PreferencesKeys.WIFI_ONLY] ?: false
         }
 
-    val isAutoCheckUpdatesFlow: Flow<Boolean> = context.dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(androidx.datastore.preferences.core.emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
+    val isAutoCheckUpdatesFlow: Flow<Boolean> = preferencesFlow
         .map { preferences ->
             preferences[PreferencesKeys.AUTO_CHECK_UPDATES] ?: true
         }
 
-    val userConfigFlow: Flow<DownloadConfig> = context.dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(androidx.datastore.preferences.core.emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
+    val userConfigFlow: Flow<DownloadConfig> = preferencesFlow
         .map { preferences ->
             val qualityName = preferences[PreferencesKeys.VIDEO_QUALITY] ?: VideoQuality.AUTO.name
             val codecName = preferences[PreferencesKeys.AUDIO_CODEC] ?: AudioCodec.MP3.name
@@ -110,14 +85,7 @@ class UserPreferencesRepository(private val context: Context) {
             )
         }
 
-    val downloadModeFlow: Flow<DownloadMode> = context.dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(androidx.datastore.preferences.core.emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
+    val downloadModeFlow: Flow<DownloadMode> = preferencesFlow
         .map { preferences ->
             val modeName = preferences[PreferencesKeys.DOWNLOAD_MODE] ?: DownloadMode.AUTO.name
             runCatching { DownloadMode.valueOf(modeName) }.getOrDefault(DownloadMode.AUTO)

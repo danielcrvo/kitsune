@@ -1,0 +1,5 @@
+- Novo diálogo Sobre com licença, privacidade e links do projeto
+- Opção de verificação automática de atualizações ao iniciar
+- Gerenciador de cache de atualizações com limpeza em um toque
+- Configurações reorganizadas em cartões agrupados
+- Controles de formato e bitrate de áudio exibidos apenas no modo somente áudio

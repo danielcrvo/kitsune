@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
     private val sharedUrlState = mutableStateOf<String?>(null)
 
     private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
+        ActivityResultContracts.RequestMultiplePermissions()
     ) { _ ->
 
     }
@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
 
         handleIncomingIntent(intent)
 
-        runCatching { checkNotificationPermission() }
+        runCatching { requestRuntimePermissions() }
 
         setContent {
             val viewModel: MainViewModel = viewModel()
@@ -89,12 +89,20 @@ class MainActivity : ComponentActivity() {
         sharedUrlState.value = extracted
     }
 
-    private fun checkNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val permission = Manifest.permission.POST_NOTIFICATIONS
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissionLauncher.launch(permission)
+    private fun requestRuntimePermissions() {
+        val required = buildList {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                add(Manifest.permission.POST_NOTIFICATIONS)
             }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }
+        val missing = required.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+        if (missing.isNotEmpty()) {
+            requestPermissionLauncher.launch(missing.toTypedArray())
         }
     }
 }
